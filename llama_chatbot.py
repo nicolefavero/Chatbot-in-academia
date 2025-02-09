@@ -73,10 +73,7 @@ def extract_entities(chunks, tokenizer, model):
     Returns:
         List of entities extracted from the text chunks.
         '''
-    
-    
-
-
+    entities_prompts = ""
 
 
 def get_graphrag():
