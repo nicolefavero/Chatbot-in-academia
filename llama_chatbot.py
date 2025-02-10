@@ -25,7 +25,9 @@ from pydoc import doc
 def load_llama_model():
     '''Load Llama 3.3 model from Hugging Face'''
     tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-3.3-70B-Instruct")
-    model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-3.3-70B-Instruct")
+    model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-3.3-70B-Instruct",
+    torch_dtype= torch.float16,
+    device_map = "auto")
     return tokenizer, model
 
 # --------------------------------------------------------------------------
@@ -71,11 +73,23 @@ def extract_entities(chunks, tokenizer, model):
         tokenizer: Hugging Face tokenizer for the Llama model.
         model: Hugging Face model for the Llama model.
     Returns:
-        List of entities extracted from the text chunks.
+        DataFrame of entities extracted from the text chunks.
         '''
-    entities_prompts = ""
+    entities_prompts = """Extract the entities from the following text and then return the entities as a JSON list.
+    Text:
+    {text}
+    Entities (JSON format):"""
+    entity_list = defaultdict(list)
+
+    for idx, chunk in enumerate(chunks):
+        prompt = entities_prompts.replace("{text}", chunks)
+        input = tokenizer(prompt, return_tensors="pt").to("cuda")
+        output = model.generate(input["input_ids"], max_length= 256)
+        response = tokenizer.decode(output[0], skip_special_tokens=True)
+
+
 
 
 def get_graphrag():
-    '''Load GraohRAG model for retrieval of data from CBS Archive'''
+    '''Load GraphRAG model for retrieval of data from CBS Archive'''
 
