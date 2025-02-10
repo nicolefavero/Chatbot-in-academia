@@ -32,9 +32,11 @@ def load_llama_model():
 
     print(f"Loading model on {device}...")
 
-    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-3-7B-Instruct")
+    HF_TOKEN = "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"
+
+    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HF_TOKEN)
     model = AutoModelForCausalLM.from_pretrained(
-        "meta-llama/Llama-3-7B-Instruct", 
+        "meta-llama/Llama-2-7b-chat-hf", token=HF_TOKEN,
         torch_dtype=dtype
     ).to(device)
 
@@ -157,8 +159,8 @@ def generate_response(query, tokenizer, model, embedding_model, collection, devi
 
     # Modify prompt to ensure answer stays within found info
     prompt = f"""
-    You are an academic research assistant. Answer the question strictly using the provided academic papers.
-    Do not make up any information. If the information is not available in the sources, say you cannot find it.
+    You are an academic research assistant. Answer the question **strictly** using the provided academic papers.
+    **Do not make up any information.** If the information is not in the sources, say: "I cannot find this information in my database."
 
     Context from papers:
     {context}
@@ -171,7 +173,7 @@ def generate_response(query, tokenizer, model, embedding_model, collection, devi
     # Generate response with no gradient tracking
     with torch.no_grad():
         inputs = tokenizer(prompt, return_tensors="pt").to(device)
-        output = model.generate(**inputs, max_length=300)
+        output = model.generate(**inputs, max_length=512, do_sample=False, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id)
         response = tokenizer.decode(output[0], skip_special_tokens=True)
 
     return response
