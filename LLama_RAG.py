@@ -8,7 +8,6 @@ have to send data to external servers and retain full control over the data.'''
 
 import torch
 import fitz  # PyMuPDF for PDF processing
-import re
 import os
 import chromadb
 import spacy
@@ -21,26 +20,25 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 nlp = spacy.load("en_core_web_sm")
 
 # --------------------------------------------------------------------------
-# 1. Load Llama 7B Model (For Response Generation)
+# 1. Load Llama 3 70B Model with Multi-GPU Support
 # --------------------------------------------------------------------------
 
 def load_llama_model():
-    '''Load Llama 7B model from Hugging Face and move it to GPU if available.'''
-    
-    device = "cuda" if torch.cuda.is_available() else "cpu"  # Use GPU if available
-    dtype = torch.float16 if device == "cuda" else torch.float32  # Use float16 on GPU
+    '''Load Llama 3.3 70B model across multiple GPUs.'''
 
-    print(f"Loading model on {device}...")
+    HF_TOKEN = "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"  # Your Hugging Face token
 
-    HF_TOKEN = "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"
+    print(f"Loading Llama 3.3 70B model across multiple GPUs...")
 
-    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HF_TOKEN)
+    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-3.3-70B-Instruct", token=HF_TOKEN)
+
     model = AutoModelForCausalLM.from_pretrained(
-        "meta-llama/Llama-2-7b-chat-hf", token=HF_TOKEN,
-        torch_dtype=dtype
-    ).to(device)
+        "meta-llama/Llama-3.3-70B-Instruct", token=HF_TOKEN,
+        torch_dtype=torch.float16,  # Use float16 to reduce VRAM usage
+        device_map="auto"  # Automatically distribute across all available GPUs
+    )
 
-    return tokenizer, model, device
+    return tokenizer, model
 
 # --------------------------------------------------------------------------
 # 2. Preprocessing & Chunking Text from PDFs
@@ -55,49 +53,36 @@ def preprocess_text(text):
 def split_into_sentences(text):
     '''Use spaCy to split text into sentences before chunking.'''
     doc = nlp(text)
-    sentences = [sent.text for sent in doc.sents]
-    return sentences
+    return [sent.text for sent in doc.sents]
 
 def process_pdf_with_sentences(pdf_path):
-    '''Reads PDF, extracts text, splits it into sentences, 
-    and chunks properly to avoid splitting in the middle of sentences.'''
+    '''Reads PDF, extracts text, splits it into sentences, and chunks properly.'''
     document = fitz.Document(pdf_path)
-    pages = document.page_count
     all_sentences = []
 
-    for page_num in range(pages):
-        page = document.load_page(page_num)
-        text = page.get_text("text")  
-        text = preprocess_text(text)  # Normalize text
-        sentences = split_into_sentences(text)  # Sentence splitting
-        all_sentences.extend(sentences)
+    for page in document:
+        text = preprocess_text(page.get_text("text"))
+        all_sentences.extend(split_into_sentences(text))
 
-    # Now chunk sentences using RecursiveCharacterTextSplitter
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1200,  
-        chunk_overlap=100,
-        length_function=len,
-        is_separator_regex=False,
-    )
-
-    text_chunks = text_splitter.create_documents(all_sentences)  # Chunk sentence-wise
-    return [chunk.page_content for chunk in text_chunks]  # Return only the text content
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1200, chunk_overlap=100, length_function=len)
+    text_chunks = text_splitter.create_documents(all_sentences)
+    
+    return [chunk.page_content for chunk in text_chunks]
 
 def process_all_pdfs(folder_path):
     '''Processes all PDFs in a folder and returns all chunks.'''
     all_chunks = []
     
     for filename in os.listdir(folder_path):
-        if filename.endswith(".pdf"):  # Only process PDFs
-            pdf_path = os.path.join(folder_path, filename)
+        if filename.endswith(".pdf"):  
             print(f"Processing: {filename}")
-            chunks = process_pdf_with_sentences(pdf_path)
+            chunks = process_pdf_with_sentences(os.path.join(folder_path, filename))
             all_chunks.extend(chunks)
     
     return all_chunks
 
 # --------------------------------------------------------------------------
-# 3. Load MSMARCO BERT for Embeddings & Store in ChromaDB
+# 3. Load Embedding Model & Store Data in ChromaDB
 # --------------------------------------------------------------------------
 
 def load_embedding_model():
@@ -105,7 +90,7 @@ def load_embedding_model():
     return SentenceTransformer("msmarco-bert-base-dot-v5")
 
 def store_cleaned_embeddings(folder_path, embedding_model):
-    '''Processes all PDFs, extracts clean text & stores embeddings in ChromaDB.'''
+    '''Processes all PDFs and stores embeddings in ChromaDB.'''
     client = chromadb.PersistentClient(path="db")
     collection = client.get_or_create_collection(name="academic_papers")
 
@@ -113,51 +98,42 @@ def store_cleaned_embeddings(folder_path, embedding_model):
 
     for i, chunk in enumerate(chunks):
         embedding = embedding_model.encode(chunk).tolist()
-        collection.add(
-            ids=[str(i)], 
-            embeddings=[embedding], 
-            metadatas=[{"text": chunk}]
-        )
+        collection.add(ids=[str(i)], embeddings=[embedding], metadatas=[{"text": chunk}])
+    
     return collection
 
 # --------------------------------------------------------------------------
-# 4. Retrieve Documents (Multi-PDF Query Handling)
+# 4. Retrieve Documents using ChromaDB
 # --------------------------------------------------------------------------
 
 def retrieve_documents(query, embedding_model, collection, n_results=5):
-    '''Retrieve relevant papers using embedding search and return different sources.'''
+    '''Retrieve relevant documents using embeddings.'''
     query_embedding = embedding_model.encode(query).tolist()
-    results = collection.query(
-        query_embeddings=[query_embedding],
-        n_results=n_results
-    )
+    results = collection.query(query_embeddings=[query_embedding], n_results=n_results)
 
     retrieved_docs = []
-    seen_texts = set()  # Avoid duplicate chunks
+    seen_texts = set()
 
     for doc in results["metadatas"][0]:
         if doc["text"] not in seen_texts:
-            retrieved_docs.append(doc)
-            seen_texts.add(doc["text"])  # Prevent duplicate chunks
+            retrieved_docs.append(doc["text"])
+            seen_texts.add(doc["text"])
     
     return retrieved_docs
 
 # --------------------------------------------------------------------------
-# 5. Generate Response using Llama (Restrict Answers + GPU Optimization)
+# 5. Generate Response using Llama Model (Multi-GPU)
 # --------------------------------------------------------------------------
 
-def generate_response(query, tokenizer, model, embedding_model, collection, device):
-    '''Generate a response using retrieved documents and Llama, but only answer based on found papers.'''
+def generate_response(query, tokenizer, model, embedding_model, collection):
+    '''Generate a response using retrieved documents and Llama.'''
     retrieved_docs = retrieve_documents(query, embedding_model, collection)
 
-    # If no relevant documents, return a fallback message
     if not retrieved_docs:
-        return "Sorry, I can't find this information in my database, but I might help with another academic topic."
+        return "Sorry, I couldn't find any relevant information in the academic papers."
 
-    # Extract relevant text
-    context = " ".join([doc["text"] for doc in retrieved_docs])
+    context = " ".join(retrieved_docs)
 
-    # Modify prompt to ensure answer stays within found info
     prompt = f"""
     You are an academic research assistant. Answer the question **strictly** using the provided academic papers.
     **Do not make up any information.** If the information is not in the sources, say: "I cannot find this information in my database."
@@ -170,23 +146,22 @@ def generate_response(query, tokenizer, model, embedding_model, collection, devi
     Answer:
     """
 
-    # Generate response with no gradient tracking
     with torch.no_grad():
-        inputs = tokenizer(prompt, return_tensors="pt").to(device)
-        output = model.generate(**inputs, max_length=512, do_sample=False, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id)
+        inputs = tokenizer(prompt, return_tensors="pt").to("cuda")  # Ensure input is on GPU
+        output = model.generate(**inputs, max_length=512, do_sample=False, eos_token_id=tokenizer.eos_token_id)
         response = tokenizer.decode(output[0], skip_special_tokens=True)
 
-    return response
+    return response.strip()
 
 # --------------------------------------------------------------------------
 # 6. Run Chatbot
 # --------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    folder_path = "papers-testing"  # Path to your folder containing PDFs
+    folder_path = "papers-testing"  
 
-    # Load models
-    tokenizer, llama_model, device = load_llama_model()
+    # Load models (now with multi-GPU support)
+    tokenizer, llama_model = load_llama_model()
     embedding_model = load_embedding_model()
 
     # Process PDFs and store embeddings
@@ -198,5 +173,5 @@ if __name__ == "__main__":
         query = input("\nYou: ")
         if query.lower() == "exit":
             break
-        response = generate_response(query, tokenizer, llama_model, embedding_model, collection, device)
+        response = generate_response(query, tokenizer, llama_model, embedding_model, collection)
         print(f"\nBot: {response}")
