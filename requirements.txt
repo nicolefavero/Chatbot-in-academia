@@ -1,0 +1,8 @@
+torch
+transformers
+pymupdf
+chromadb
+spacy
+numpy
+sentence-transformers
+langchain_text_splitters
