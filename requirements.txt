@@ -6,3 +6,4 @@ spacy
 numpy
 sentence-transformers
 langchain_text_splitters
+accelerate
