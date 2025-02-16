@@ -38,7 +38,6 @@ def load_llama_model():
 # Chunking text of processed PDF with LangChain's recursive character splitter
 def process_pdf(pdf_paths):
     '''Reads PDF files, extracts text, and splits it into chunks.
-    
     Args:
         pdf_path (str): Path to the PDF file.
     Returns:
@@ -117,14 +116,18 @@ def extract_entities(all_chunks, tokenizer, model):
                 print("Warning: LLaMA did not return a valid list.")
         except json.JSONDecodeError:
             print("Warning: Could not parse LLaMA's response.")
-        return pd.DataFrame(entity_list)
+    return pd.DataFrame(entity_list)
 
 # --------------------------------------------------------------------------
 # 4. Build Knowledge Graph from Extracted Entities (GraphRAG)
 # -------------------------------------------------------------------------- 
  
 def knowledge_graph(df):
-    """Build a knowledge graph from the extracted entities."""
+    """Build a knowledge graph from the extracted entities.
+    Args:
+        df: DataFrame containing the extracted entities.
+    Returns:
+        G: NetworkX graph representing the knowledge graph."""
     G = nx.Graph() # Create the graph with nodes (entities) and edges (relationships)
 
     for _, row in df.iterrows(): 
@@ -137,54 +140,148 @@ def knowledge_graph(df):
                 G.add_edge(entities[i], entities[j], relationship="related", weight=1.0)
     return G
 
+# -----------------------------------------------------------------------------
+# 5. Merge near duplicate entities (0.9 SIMILARITY)
+# -----------------------------------------------------------------------------
+
+def merge_similar_nodes(G, threshold=0.9):
+    """
+    Merge near-duplicate entities in the knowledge graph.
+    Arg:
+        G: NetworkX graph representing the knowledge graph.
+        threshold: Similarity threshold for merging entities.
+    Returns:
+        G_copy: NetworkX graph with merged entities.
+    """
+
+    print("➡️ Merging near-duplicate entities with threshold =", threshold)
+    embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+    node_list = list(G.nodes(data=True))
+    embeddings = []
+    node_labels = []
+
+    for (node_name, data) in node_list:
+        text = f"Name: {node_name}\nDescription: {data['description']}"
+        emb = embedding_model.encode(text)
+        embeddings.append(emb)
+        node_labels.append(node_name)
+
+    embeddings = np.array(embeddings)
+    from sklearn.metrics.pairwise import cosine_similarity
+    cos_sim = cosine_similarity(embeddings)
+    np.fill_diagonal(cos_sim, 0)
+    adjacency_list = defaultdict(list)
+
+    for i in range(cos_sim.shape[0]):
+        for j in range(cos_sim.shape[0]):
+            if cos_sim[i, j] >= threshold:
+                adjacency_list[i].append(j)
+        # if none => self link
+        if not adjacency_list[i]:
+            adjacency_list[i].append(i)
+
+    visited_global = set()
+    connected_components = []
+    for idx in adjacency_list.keys():
+        if idx not in visited_global:
+            queue = [idx]
+            visited_local = []
+            while queue:
+                node = queue.pop(0)
+                if node not in visited_local:
+                    visited_local.append(node)
+                    for nbr in adjacency_list[node]:
+                        if nbr not in visited_local:
+                            queue.append(nbr)
+            for v in visited_local:
+                visited_global.add(v)
+            connected_components.append(visited_local)
+    import copy
+    G_copy = copy.deepcopy(G)
+    for comp in connected_components:
+        if len(comp) > 1:
+            # comp is list of idx, convert to node labels
+            nodes_in_comp = [node_labels[i] for i in comp]
+            merged_node_name = "\n".join(nodes_in_comp)  # or pick any name
+            # create new node
+            G_copy.add_node(merged_node_name, description=set(), chunk=set())
+
+            # gather descriptions/chunks
+            for old_node in nodes_in_comp:
+                if G_copy.has_node(old_node):
+                    data = G_copy.nodes[old_node]
+                    G_copy.nodes[merged_node_name]["description"].add(data.get("description"))
+                    G_copy.nodes[merged_node_name]["chunk"].add(data.get("chunk"))
+            
+            # flatten sets
+            desc_combined = "\n".join(list(G_copy.nodes[merged_node_name]["description"]))
+            G_copy.nodes[merged_node_name]["description"] = desc_combined
+            chunk_combined = list(G_copy.nodes[merged_node_name]["chunk"])
+            G_copy.nodes[merged_node_name]["chunk"] = chunk_combined
+
+            # update edges
+            for node1, node2, edge_data in list(G.edges(data=True)):
+                if node1 in nodes_in_comp or node2 in nodes_in_comp:
+                    new_node1 = merged_node_name if node1 in nodes_in_comp else node1
+                    new_node2 = merged_node_name if node2 in nodes_in_comp else node2
+                    if new_node1 != new_node2:
+                        # merge edge
+                        if G_copy.has_edge(new_node1, new_node2):
+                            existing = G_copy[new_node1][new_node2]
+                            existing["relationship"] += f"\n{edge_data['relationship']}"
+                            existing["weight"] = max(existing["weight"], edge_data["weight"])
+                        else:
+                            G_copy.add_edge(new_node1, new_node2, relationship=edge_data["relationship"], weight=edge_data["weight"])
+
+            # remove old nodes
+            for old_node in nodes_in_comp:
+                if G_copy.has_node(old_node):
+                    G_copy.remove_node(old_node)
+
+    return G_copy
+
 # --------------------------------------------------------------------------
-# 5. Graph-Based Retrieval 
+# 6. Graph-Based Retrieval 
 # --------------------------------------------------------------------------
 
-def graph_retrieve(query, G...)
-
-    
-
-
-
-
-
-def graph_rag_retrieve(query, G, embedding_model, top_k=3):
-    '''Retrieves the most relevant entities from the Knowledge Graph based on query similarity.'''
-    query_embedding = embedding_model.encode(query)
-    scores = []
-
+def graph_retrieval(query, G, embedding_model, top_k=3):
+    """Retrieve the most relevant entities using the knowledge graph based on similarity to the query.
+    Args:
+        query: The query string.
+        G: The knowledge graph.
+        embedding_model: covert text into numerical representations (vectors).
+        top_k: the most relevant entities by similarity scores.
+    Returns:
+    retrieved_nodes: the most relevant entities based on the query."""
+    query_embedding = embedding_model.encode(query) # convert the query into a vector
+    scores = [] 
     for node, data in G.nodes(data=True):
-        node_embedding = embedding_model.encode(data['description'])
-        sim_score = np.dot(query_embedding, node_embedding) / (np.linalg.norm(query_embedding) * np.linalg.norm(node_embedding))
-        scores.append((node, sim_score))
-
-    scores = sorted(scores, key=lambda x: x[1], reverse=True)[:top_k]
-    retrieved_nodes = [G.nodes[node]["description"] for node, _ in scores]
-
+        node_embedding = embedding_model.encode(data["description"]) # covert the description of the node into a vector
+        similarity_score = np.dot(query_embedding, node_embedding)/(np.linalg.norm(query_embedding) * np.linalg.norm(node_embedding)) # calculate the cosine similarity, so how similar regardless of magnitude
+        scores.append((node,similarity_score))
+    scores = sorted(scores, key = lambda x: x[1], reverse = True)[:top_k] # descending order and top 3 k
+    retrieved_nodes = [
+        {"description": G.nodes[node]["description"], "document": G.nodes[node]["document"]} for node, _ in scores]
     return retrieved_nodes
 
-def get_graphrag():
-    '''Load GraphRAG model for retrieval of data from CBS Archive'''
-
-
 # --------------------------------------------------------------------------
-# 3. Generate a Response 
+# 7. Generate a Response 
 # --------------------------------------------------------------------------
 
-# --------------------------------------------------------------------------
-# 4. Main Function
-# --------------------------------------------------------------------------
-
-# --------------------------------------------------------------------------
-# 6. Generate a Response Using LLaMA 3.3
-# --------------------------------------------------------------------------
-
-def generate_response(query, retrieved_texts, tokenizer, model):
-    '''Generates a response using LLaMA 3.3 and retrieved context from the Knowledge Graph.'''
-    context = "\n\n".join(retrieved_texts)
+def gen_response(query, retrieved_nodes, tokenizer, model):
+    '''Generates a response and retrieved context from GN.
+    Args:
+        query: The user's query.
+        retrieved_nodes: Retrieved text segments.
+        tokenizer: Hugging Face tokenizer for the Llama model.
+        model: Hugging Face model for the Llama model.
+    Returns: 
+        response: The generated response.'''
+    
+    context = "\n\n".join(retrieved_nodes)
     prompt = f"""
-    Use the following context to answer the question. If the answer is not in the context, say "I don't know."
+    Use the following context to answer the question. If the answer is not in the context, say "I don't know.
+     When providing information, reference the source document in brackets like this: [Source: Document_ID]"
 
     Context:
     {context}
@@ -198,29 +295,41 @@ def generate_response(query, retrieved_texts, tokenizer, model):
     inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
     outputs = model.generate(inputs["input_ids"], max_length=200)
     response = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    
     return response
 
 # --------------------------------------------------------------------------
-# 7. Main Function: Run the GraphRAG Pipeline
+# 8. Main Function
 # --------------------------------------------------------------------------
 
 def main():
     tokenizer, model = load_llama_model()
+    embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
 
-    pdf_paths = ["example1.pdf", "example2.pdf"]
-    all_chunks = process_pdfs(pdf_paths)
+    pdf_paths = ["doc1.pdf", "doc2.pdf"] 
+    all_chunks = process_pdf([(idx, path) for idx, path in enumerate(pdf_paths)])
 
-    df_chunk_entities = extract_entities(all_chunks, tokenizer, model)
+    # Extract Entities
+    df_entities = extract_entities(all_chunks, tokenizer, model)
+    print("Entity DataFrame:\n", df_entities.head())
 
-    G = build_knowledge_graph(df_chunk_entities)
+    # Build Graph
+    G = knowledge_graph(df_entities)
+    print(f"Initial Graph: {len(G.nodes)} nodes, {len(G.edges)} edges")
 
-    query = "What are the company's CO2 reduction goals?"
-    embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
-    retrieved_texts = graph_rag_retrieve(query, G, embedding_model)
+    # Merge near-duplicate nodes
+    G_merged = merge_similar_nodes(G, threshold=0.9)
+    print(f"Merged Graph: {len(G_merged.nodes)} nodes, {len(G_merged.edges)} edges")
 
-    response = generate_response(query, retrieved_texts, tokenizer, model)
-    print("\n📝 Response:", response)
+    query = "What are the key topics in this document related to marketing?"
+    
+    # Graph retrieval
+    retrieved = graph_retrieval(query, G_merged, embedding_model, top_k=3)
+    for idx, item in enumerate(retrieved):
+        print(f"Top {idx+1} => Node: {item['node']} | Score: {item['score']:.3f}")
+
+    texts_for_context = [r["description"] for r in retrieved]
+    answer = gen_response(query, texts_for_context, tokenizer, model)
+    print("\nFinal Answer:\n", answer)
 
 if __name__ == "__main__":
     main()
