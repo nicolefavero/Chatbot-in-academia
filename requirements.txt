@@ -1,0 +1,15 @@
+# requirements.txt
+
+torch>=2.0
+numpy>=1.23
+pandas>=1.5
+networkx>=2.8
+spacy>=3.5
+scikit-learn>=1.2
+tqdm>=4.64
+PyMuPDF>=1.22  
+transformers>=4.30
+sentence-transformers>=2.2
+langchain>=0.0.270  
+en-core-web-sm==3.5.0
+

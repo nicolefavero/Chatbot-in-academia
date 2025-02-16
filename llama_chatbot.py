@@ -21,7 +21,7 @@ from collections import defaultdict
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pydoc import doc
 from sklearn.metrics.pairwise import cosine_similarity
-
+from spacy import en_core_web_sm
 # --------------------------------------------------------------------------
 # 1. Loading Llama 3.3 model from Hugging Face because of storage limitations
 # --------------------------------------------------------------------------
