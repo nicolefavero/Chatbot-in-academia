@@ -21,7 +21,6 @@ from collections import defaultdict
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pydoc import doc
 from sklearn.metrics.pairwise import cosine_similarity
-from spacy import en_core_web_sm
 # --------------------------------------------------------------------------
 # 1. Loading Llama 3.3 model from Hugging Face because of storage limitations
 # --------------------------------------------------------------------------
@@ -328,9 +327,9 @@ def main():
     tokenizer, model = load_llama_model()
     embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
 
-    pdf_paths = ["papers-testing/6495.pdf", "papers-testing/7294.pdf", "papers-testing/QMOD_ICQSS_2014_CEM_and_business_performance.pdf", "papers-testing/Wieland_wallenburg_supply_chain_risk_management.pdf", 
-                 "papers-testing/allan_hansen_the_purposes_of_performance_management_systems_and_processes_acceptedversion.pdf", "papers-testing/cbs_forskningsindberetning_smg_30.pdf", "papers-testing/jan_mouritsen_et_al_performance_risk_and_overflows_acceptedversion.pdf",
-                 "papers-testing/katrine_schr_der_hansen_et_al_performance_management_trends_acceptedversion.pdf", "papers-testing/linkwp01_27.pdf", "papers-testing/smg_wp_2008_08.pdf"] 
+    pdf_paths = ["/work/Chatbot-in-academia/papers-testing/6495.pdf", "/work/Chatbot-in-academia/papers-testing/7294.pdf", "/work/Chatbot-in-academia/papers-testing/QMOD_ICQSS_2014_CEM_and_business_performance.pdf", "/work/Chatbot-in-academia/papers-testing/Wieland_wallenburg_supply_chain_risk_management.pdf", 
+                 "/work/Chatbot-in-academia/papers-testing/allan_hansen_the_purposes_of_performance_management_systems_and_processes_acceptedversion.pdf", "/work/Chatbot-in-academia/papers-testing/cbs_forskningsindberetning_smg_30.pdf", "/work/Chatbot-in-academia/papers-testing/jan_mouritsen_et_al_performance_risk_and_overflows_acceptedversion.pdf",
+                 "/work/Chatbot-in-academia/papers-testing/katrine_schr_der_hansen_et_al_performance_management_trends_acceptedversion.pdf", "/work/Chatbot-in-academia/papers-testing/linkwp01_27.pdf", "/work/Chatbot-in-academia/papers-testing/smg_wp_2008_08.pdf"] 
     all_chunks = process_pdf([(idx, path) for idx, path in enumerate(pdf_paths)])
 
     # Extract Entities

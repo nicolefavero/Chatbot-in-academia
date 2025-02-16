@@ -11,5 +11,6 @@ PyMuPDF>=1.22
 transformers>=4.30
 sentence-transformers>=2.2
 langchain>=0.0.270  
-en-core-web-sm==3.5.0
+accelerate>=0.26.0
 
+#python -m spacy download en_core_web_sm
