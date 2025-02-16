@@ -7,17 +7,20 @@ mainly because of privacy reasons, it's good that we don't have to send the data
 we have full control over the data.'''
 
 import torch
-import networkx as nx  # this lib is for graphRAG 
+import networkx as nx  
 import numpy as np
 import fitz
 import re
 import pandas as pd
+import spacy
 import json
+import copy
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from sentence_transformers import SentenceTransformer
 from collections import defaultdict
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pydoc import doc
+from sklearn.metrics.pairwise import cosine_similarity
 
 # --------------------------------------------------------------------------
 # 1. Loading Llama 3.3 model from Hugging Face because of storage limitations
@@ -34,6 +37,26 @@ def load_llama_model():
 # --------------------------------------------------------------------------
 # 2. Process PDF Files and SPlit Text into Chunks
 # --------------------------------------------------------------------------
+nlp = spacy.load("en_core_web_sm")
+
+def preprocess_text(text):
+    """Preprocess text: clean whitespace and normalize text.
+    Args:
+        text: The input text to preprocess.
+    Returns:
+        text: The preprocessed text."""
+    text = text.strip()
+    text = " ".join(text.split())
+    return text
+
+def split_into_sentences(text):
+    """Use spaCy to split text into sentences before chunking.
+    Args:
+        text: The input text to split.
+    Returns:
+        List of sentences."""
+    doc = nlp(text)
+    return [sent.text for sent in doc.sents]
 
 # Chunking text of processed PDF with LangChain's recursive character splitter
 def process_pdf(pdf_paths):
@@ -41,7 +64,6 @@ def process_pdf(pdf_paths):
     Args:
         pdf_path (str): Path to the PDF file.
     Returns:
-        full_text(list): Full extracted text for each document.
         all_chunks(list): List of chunked text segments.
     '''
     # Define the text splitter
@@ -58,17 +80,19 @@ def process_pdf(pdf_paths):
     for pdf_idx, pdf_path in pdf_paths:
         document = fitz.Document(pdf_path)
         pages = document.page_count
-        chunks = [] # Stores chunks of a single document
+        sentences_for_pdf = [] 
 
         for page_num in range(pages):
             page = document.load_page(page_num)
-            text = page.get_text("text")  
-            text = re.sub(r" +", r" ", text)  
+            raw_text = page.get_text("text")  
+            cleaned_text = preprocess_text(raw_text)
 
-            # Split the text into chunks
-            text_chunk = text_splitter.create_documents([text])  
-            chunks.extend([chunk.page_content for chunk in text_chunk])  
-        all_chunks.append(chunks)
+            page_sentences = split_into_sentences(cleaned_text)
+            sentences_for_pdf.extend(page_sentences)
+
+        doc_splits = text_splitter.create_documents(sentences_for_pdf)
+        doc_chunks = [split.page_content for split in doc_splits]
+        all_chunks.append(doc_chunks)
     
     return all_chunks
 
@@ -167,7 +191,6 @@ def merge_similar_nodes(G, threshold=0.9):
         node_labels.append(node_name)
 
     embeddings = np.array(embeddings)
-    from sklearn.metrics.pairwise import cosine_similarity
     cos_sim = cosine_similarity(embeddings)
     np.fill_diagonal(cos_sim, 0)
     adjacency_list = defaultdict(list)
@@ -196,7 +219,7 @@ def merge_similar_nodes(G, threshold=0.9):
             for v in visited_local:
                 visited_global.add(v)
             connected_components.append(visited_local)
-    import copy
+
     G_copy = copy.deepcopy(G)
     for comp in connected_components:
         if len(comp) > 1:
@@ -305,7 +328,9 @@ def main():
     tokenizer, model = load_llama_model()
     embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
 
-    pdf_paths = ["doc1.pdf", "doc2.pdf"] 
+    pdf_paths = ["papers-testing/6495.pdf", "papers-testing/7294.pdf", "papers-testing/QMOD_ICQSS_2014_CEM_and_business_performance.pdf", "papers-testing/Wieland_wallenburg_supply_chain_risk_management.pdf", 
+                 "papers-testing/allan_hansen_the_purposes_of_performance_management_systems_and_processes_acceptedversion.pdf", "papers-testing/cbs_forskningsindberetning_smg_30.pdf", "papers-testing/jan_mouritsen_et_al_performance_risk_and_overflows_acceptedversion.pdf",
+                 "papers-testing/katrine_schr_der_hansen_et_al_performance_management_trends_acceptedversion.pdf", "papers-testing/linkwp01_27.pdf", "papers-testing/smg_wp_2008_08.pdf"] 
     all_chunks = process_pdf([(idx, path) for idx, path in enumerate(pdf_paths)])
 
     # Extract Entities
@@ -320,7 +345,7 @@ def main():
     G_merged = merge_similar_nodes(G, threshold=0.9)
     print(f"Merged Graph: {len(G_merged.nodes)} nodes, {len(G_merged.edges)} edges")
 
-    query = "What are the key topics in this document related to marketing?"
+    query = "What are the main challenges companies face when redesigning performance management systems, and how have organizations adapted to these challenges?"
     
     # Graph retrieval
     retrieved = graph_retrieval(query, G_merged, embedding_model, top_k=3)
