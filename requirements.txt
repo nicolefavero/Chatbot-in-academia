@@ -13,4 +13,6 @@ sentence-transformers>=2.2
 langchain>=0.0.270  
 accelerate>=0.26.0
 
-#python -m spacy download en_core_web_sm
+# Spacy library can cause some issues so please run these two commands in the terminal
+# pip install spacy
+# python -m spacy download en_core_web_sm

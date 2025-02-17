@@ -224,7 +224,7 @@ def merge_similar_nodes(G, threshold=0.9):
         if len(comp) > 1:
             # comp is list of idx, convert to node labels
             nodes_in_comp = [node_labels[i] for i in comp]
-            merged_node_name = "\n".join(nodes_in_comp)  # or pick any name
+            merged_node_name = "\n".join(nodes_in_comp)
             # create new node
             G_copy.add_node(merged_node_name, description=set(), chunk=set())
 
@@ -324,36 +324,56 @@ def gen_response(query, retrieved_nodes, tokenizer, model):
 # --------------------------------------------------------------------------
 
 def main():
+    print("\n⏳ Loading model and processing PDFs... (This will take some time)")
+    
+    # Load model & tokenizer
     tokenizer, model = load_llama_model()
     embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
-
-    pdf_paths = ["/work/Chatbot-in-academia/papers-testing/6495.pdf", "/work/Chatbot-in-academia/papers-testing/7294.pdf", "/work/Chatbot-in-academia/papers-testing/QMOD_ICQSS_2014_CEM_and_business_performance.pdf", "/work/Chatbot-in-academia/papers-testing/Wieland_wallenburg_supply_chain_risk_management.pdf", 
-                 "/work/Chatbot-in-academia/papers-testing/allan_hansen_the_purposes_of_performance_management_systems_and_processes_acceptedversion.pdf", "/work/Chatbot-in-academia/papers-testing/cbs_forskningsindberetning_smg_30.pdf", "/work/Chatbot-in-academia/papers-testing/jan_mouritsen_et_al_performance_risk_and_overflows_acceptedversion.pdf",
-                 "/work/Chatbot-in-academia/papers-testing/katrine_schr_der_hansen_et_al_performance_management_trends_acceptedversion.pdf", "/work/Chatbot-in-academia/papers-testing/linkwp01_27.pdf", "/work/Chatbot-in-academia/papers-testing/smg_wp_2008_08.pdf"] 
+    pdf_paths = [
+        "papers-testing/6495.pdf",
+        "papers-testing/7294.pdf",
+        "papers-testing/QMOD_ICQSS_2014_CEM_and_business_performance.pdf",
+        "papers-testing/Wieland_wallenburg_supply_chain_risk_management.pdf", 
+        "papers-testing/allan_hansen_the_purposes_of_performance_management_systems_and_processes_acceptedversion.pdf",
+        "papers-testing/cbs_forskningsindberetning_smg_30.pdf",
+        "papers-testing/jan_mouritsen_et_al_performance_risk_and_overflows_acceptedversion.pdf",
+        "papers-testing/katrine_schr_der_hansen_et_al_performance_management_trends_acceptedversion.pdf",
+        "papers-testing/linkwp01_27.pdf",
+        "papers-testing/smg_wp_2008_08.pdf"
+    ]
+    
     all_chunks = process_pdf([(idx, path) for idx, path in enumerate(pdf_paths)])
 
     # Extract Entities
     df_entities = extract_entities(all_chunks, tokenizer, model)
-    print("Entity DataFrame:\n", df_entities.head())
-
+    print("\n✅ Entity extraction complete!")
+    
     # Build Graph
     G = knowledge_graph(df_entities)
-    print(f"Initial Graph: {len(G.nodes)} nodes, {len(G.edges)} edges")
+    print(f"\n📌 Initial Graph: {len(G.nodes)} nodes, {len(G.edges)} edges")
 
     # Merge near-duplicate nodes
     G_merged = merge_similar_nodes(G, threshold=0.9)
-    print(f"Merged Graph: {len(G_merged.nodes)} nodes, {len(G_merged.edges)} edges")
+    print(f"\n🔗 Merged Graph: {len(G_merged.nodes)} nodes, {len(G_merged.edges)} edges")
 
-    query = "What are the main challenges companies face when redesigning performance management systems, and how have organizations adapted to these challenges?"
-    
-    # Graph retrieval
-    retrieved = graph_retrieval(query, G_merged, embedding_model, top_k=3)
-    for idx, item in enumerate(retrieved):
-        print(f"Top {idx+1} => Node: {item['node']} | Score: {item['score']:.3f}")
+    print("\n✅ Chatbot is ready! You can start asking questions. (Type 'exit' to quit)\n")
 
-    texts_for_context = [r["description"] for r in retrieved]
-    answer = gen_response(query, texts_for_context, tokenizer, model)
-    print("\nFinal Answer:\n", answer)
+    # **Interactive Chat Loop so not to have to reload model and graph all the time**
+    while True:
+        query = input("\n🔍 Your Question: ")
+        if query.lower() == "exit":
+            print("\n👋 Exiting chatbot. Thanks for playing with me!")
+            break
+
+        # Graph retrieval
+        retrieved = graph_retrieval(query, G_merged, embedding_model, top_k=3)
+
+        # Prepare context for Llama response
+        texts_for_context = [r["description"] for r in retrieved]
+        answer = gen_response(query, texts_for_context, tokenizer, model)
+
+        print("\n🧠 Axolbot Answer:\n", answer)
 
 if __name__ == "__main__":
     main()
+
