@@ -36,7 +36,7 @@ def load_llama_model():
     return tokenizer, model
 
 # --------------------------------------------------------------------------
-# 2. Process PDF Files and SPlit Text into Chunks
+# 2. Process PDF Files and Split Text into Chunks
 # --------------------------------------------------------------------------
 nlp = spacy.load("en_core_web_sm")
 
@@ -115,15 +115,25 @@ def extract_entities(all_chunks, tokenizer, model):
         DataFrame of entities extracted from the text chunks.
         '''
     print("Starting entity extraction...")
-    entities_prompts = """Extract the entities from the following text and then return the entities as a JSON list.
+    entities_prompts = """Extract the academic-related entities from the following text, and return them in a structured JSON format. 
+    Entities should include, but are not limited to, the following categories:
+    - Person: Names of authors, researchers, and academics
+    - Organization: Names of academic institutions, journals, publishers, etc.
+    - Concept: Key academic concepts, theories, models, and terminologies
+    - Location: Universities, cities, countries related to the academic context
+    - Publication: Articles, papers, books, and conference titles
+
+    Please structure your result like this:
+
+    [
+        {"Name": "Entity Name", "Description": "Brief description of the entity"}
+        {"Name": "Another Entity", "Description": "Brief description of the entity"}
+        ...
+    ]
+
     Text:
     {text}
-    Return the result as a JSON list in this exact format:
-[
-    {"Name": "Entity Name", "Description": "Description of the entity"},
-    {"Name": "Another Entity", "Description": "Its description"},
-    ...
-]"""
+    """
     entity_list = defaultdict(list)
 
     for doc_idx, doc_chunks in enumerate(all_chunks):
@@ -134,11 +144,13 @@ def extract_entities(all_chunks, tokenizer, model):
             output = model.generate(input["input_ids"], max_length= 300) # takes the input and pass it through the model
             response = tokenizer.decode(output[0], skip_special_tokens=True) # decodes the output back from token IDs to text
             print(f"Raw response from LLaMA:\n{response}\n")
-            
+
         # Make sure the JSON format is valid
         try: 
             output_json = json.loads(response)
             if isinstance(output_json, list):
+                response_json = response.split('[', 1)[-1].split(']', 1)[0] # take only what is in the json format
+                output_json = json.loads(f"[{response_json}]")
                 for entity in output_json:
                     entity_list["Document_ID"].append(f"Doc_{doc_idx}")
                     entity_list["Chunk_ID"].append(f"Doc_{doc_idx}_Chunk_{chunk_idx}")
