@@ -27,10 +27,12 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 def load_llama_model():
     '''Load Llama 3.3 model from Hugging Face'''
+    print("Loading Llama 3.3 model from Hugging Face...")
     tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-3.3-70B-Instruct")
     model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-3.3-70B-Instruct",
     torch_dtype= torch.float16,
     device_map = "auto")
+    print("Model and tokenizer loaded successfully.")
     return tokenizer, model
 
 # --------------------------------------------------------------------------
@@ -65,6 +67,7 @@ def process_pdf(pdf_paths):
     Returns:
         all_chunks(list): List of chunked text segments.
     '''
+    print(f"Starting PDF processing for {len(pdf_paths)} files.")
     # Define the text splitter
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1200,
@@ -77,6 +80,7 @@ def process_pdf(pdf_paths):
     all_chunks = []  # Stores chunks of each document
 
     for pdf_idx, pdf_path in pdf_paths:
+        print(f"Processing PDF {pdf_idx+1}: {pdf_path}")
         document = fitz.Document(pdf_path)
         pages = document.page_count
         sentences_for_pdf = [] 
@@ -88,11 +92,13 @@ def process_pdf(pdf_paths):
 
             page_sentences = split_into_sentences(cleaned_text)
             sentences_for_pdf.extend(page_sentences)
+        print(f"Extracted {len(sentences_for_pdf)} sentences from PDF {pdf_idx+1}.")
 
         doc_splits = text_splitter.create_documents(sentences_for_pdf)
         doc_chunks = [split.page_content for split in doc_splits]
         all_chunks.append(doc_chunks)
     
+    print(f"Finished processing PDFs. Total chunks: {len(all_chunks)}")
     return all_chunks
 
 # --------------------------------------------------------------------------
@@ -108,6 +114,7 @@ def extract_entities(all_chunks, tokenizer, model):
     Returns:
         DataFrame of entities extracted from the text chunks.
         '''
+    print("Starting entity extraction...")
     entities_prompts = """Extract the entities from the following text and then return the entities as a JSON list.
     Text:
     {text}
@@ -120,6 +127,7 @@ def extract_entities(all_chunks, tokenizer, model):
     entity_list = defaultdict(list)
 
     for doc_idx, doc_chunks in enumerate(all_chunks):
+        print(f"Extracting entities from document {doc_idx+1} with {len(doc_chunks)} chunks.")
         for chunk_idx, chunk in enumerate(doc_chunks):
             prompt = entities_prompts.replace("{text}", chunk)
             input = tokenizer(prompt, return_tensors="pt").to("cuda") # tokenize the prompt and return a tensor
@@ -139,6 +147,7 @@ def extract_entities(all_chunks, tokenizer, model):
                 print("Warning: LLaMA did not return a valid list.")
         except json.JSONDecodeError:
             print("Warning: Could not parse LLaMA's response.")
+    print(f"Entity extraction complete. Extracted {len(entity_list['Entity'])} entities.")
     return pd.DataFrame(entity_list)
 
 # --------------------------------------------------------------------------
@@ -151,6 +160,7 @@ def knowledge_graph(df):
         df: DataFrame containing the extracted entities.
     Returns:
         G: NetworkX graph representing the knowledge graph."""
+    print("Building knowledge graph from entities...")
     G = nx.Graph() # Create the graph with nodes (entities) and edges (relationships)
 
     for _, row in df.iterrows(): 
@@ -161,6 +171,7 @@ def knowledge_graph(df):
         for i in range(len(entities)):
             for j in range(i + 1, len(entities)): # every entity in the chunk is connected to every other entity
                 G.add_edge(entities[i], entities[j], relationship="related", weight=1.0)
+    print(f"Graph built with {len(G.nodes)} nodes and {len(G.edges)} edges.")
     return G
 
 # -----------------------------------------------------------------------------
@@ -177,7 +188,7 @@ def merge_similar_nodes(G, threshold=0.9):
         G_copy: NetworkX graph with merged entities.
     """
 
-    print("➡️ Merging near-duplicate entities with threshold =", threshold)
+    print(f"Merging near-duplicate entities with threshold = {threshold}...")
     embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
     node_list = list(G.nodes(data=True))
     embeddings = []
@@ -259,7 +270,7 @@ def merge_similar_nodes(G, threshold=0.9):
             for old_node in nodes_in_comp:
                 if G_copy.has_node(old_node):
                     G_copy.remove_node(old_node)
-
+    print(f"Merged graph: {len(G_copy.nodes)} nodes, {len(G_copy.edges)} edges.")
     return G_copy
 
 # --------------------------------------------------------------------------
@@ -275,6 +286,7 @@ def graph_retrieval(query, G, embedding_model, top_k=3):
         top_k: the most relevant entities by similarity scores.
     Returns:
     retrieved_nodes: the most relevant entities based on the query."""
+    print(f"Retrieving top {top_k} entities for query: {query}")
     query_embedding = embedding_model.encode(query) # convert the query into a vector
     scores = [] 
     for node, data in G.nodes(data=True):
@@ -284,6 +296,7 @@ def graph_retrieval(query, G, embedding_model, top_k=3):
     scores = sorted(scores, key = lambda x: x[1], reverse = True)[:top_k] # descending order and top 3 k
     retrieved_nodes = [
         {"description": G.nodes[node]["description"], "document": G.nodes[node]["document"]} for node, _ in scores]
+    print(f"Retrieved {len(retrieved_nodes)} relevant entities.")
     return retrieved_nodes
 
 # --------------------------------------------------------------------------
