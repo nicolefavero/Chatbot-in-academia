@@ -327,8 +327,8 @@ def gen_response(query, retrieved_nodes, tokenizer, model):
     Answer:
     """
 
-    inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
-    outputs = model.generate(inputs["input_ids"], max_length=200)
+    inputs = tokenizer(prompt, return_tensors="pt", padding=True, truncation=True, max_length=1024).to("cuda")
+    outputs = model.generate(inputs["input_ids"], attention_mask= inputs["attention_mask"], pad_token_id=tokenizer.eos_token_id, max_length=200)
     response = tokenizer.decode(outputs[0], skip_special_tokens=True)
     return response
 
