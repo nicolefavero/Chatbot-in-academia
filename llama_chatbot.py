@@ -133,7 +133,8 @@ def extract_entities(all_chunks, tokenizer, model):
             input = tokenizer(prompt, return_tensors="pt").to("cuda") # tokenize the prompt and return a tensor
             output = model.generate(input["input_ids"], max_length= 300) # takes the input and pass it through the model
             response = tokenizer.decode(output[0], skip_special_tokens=True) # decodes the output back from token IDs to text
-
+            print(f"Raw response from LLaMA:\n{response}\n")
+            
         # Make sure the JSON format is valid
         try: 
             output_json = json.loads(response)
