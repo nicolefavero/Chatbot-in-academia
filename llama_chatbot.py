@@ -15,14 +15,14 @@ import pandas as pd
 import spacy
 import json
 import copy
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModelForTokenClassification
 from sentence_transformers import SentenceTransformer
 from collections import defaultdict
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pydoc import doc
 from sklearn.metrics.pairwise import cosine_similarity
 # --------------------------------------------------------------------------
-# 1. Loading Llama 3.3 model from Hugging Face because of storage limitations
+# 1.1 Loading Llama 3.3 model from Hugging Face because of storage limitations
 # --------------------------------------------------------------------------
 
 def load_llama_model():
@@ -35,6 +35,16 @@ def load_llama_model():
     print("Model and tokenizer loaded successfully.")
     return tokenizer, model
 
+# --------------------------------------------------------------------------
+# 1.2 Load a Fast NER Model for Entity Extraction (using dslim/bert-base-NER)
+# --------------------------------------------------------------------------
+def load_ner_model():
+    '''Load a fast, pre-trained NER model (dslim/bert-base-NER) from Hugging Face'''
+    print("Loading NER model (dslim/bert-base-NER)...")
+    tokenizer = AutoTokenizer.from_pretrained("dslim/bert-base-NER")
+    model = AutoModelForTokenClassification.from_pretrained("dslim/bert-base-NER")
+    print("NER model and tokenizer loaded successfully.")
+    return tokenizer, model
 # --------------------------------------------------------------------------
 # 2. Process PDF Files and Split Text into Chunks
 # --------------------------------------------------------------------------
@@ -105,61 +115,65 @@ def process_pdf(pdf_paths):
 # 3. Extract Entities from Text Chunks
 # --------------------------------------------------------------------------
 
-def extract_entities(all_chunks, tokenizer, model):
-    '''Extract entities from text chunks using the Llama model.
-    Arg:
-        chunks: List of text chunks.
-        tokenizer: Hugging Face tokenizer for the Llama model.
-        model: Hugging Face model for the Llama model.
-    Returns:
-        DataFrame of entities extracted from the text chunks.
-        '''
-    print("Starting entity extraction...")
-    entities_prompts = """Extract the academic-related entities from the following text, and return them in a structured JSON format. 
-    Entities should include, but are not limited to, the following categories:
-    - Person: Names of authors, researchers, and academics
-    - Organization: Names of academic institutions, journals, publishers, etc.
-    - Concept: Key academic concepts, theories, models, and terminologies
-    - Location: Universities, cities, countries related to the academic context
-    - Publication: Articles, papers, books, and conference titles
-
-    Please structure your result like this:
-
-    [
-        {"Name": "Entity Name", "Description": "Brief description of the entity"}
-        {"Name": "Another Entity", "Description": "Brief description of the entity"}
-        ...
-    ]
-
-    Text:
-    {text}
-    """
+def extract_entities(all_chunks, ner_tokenizer, ner_model, batch_size=4):
+    '''Extract entities using a token classification model (e.g., dslim/bert-base-NER).'''
+    print("Starting entity extraction using NER...")
     entity_list = defaultdict(list)
-
+    id2label = ner_model.config.id2label  # e.g., {0: 'O', 1: 'B-PER', 2: 'I-PER', 3: 'B-ORG', ...}
+    
     for doc_idx, doc_chunks in enumerate(all_chunks):
         print(f"Extracting entities from document {doc_idx+1} with {len(doc_chunks)} chunks.")
-        for chunk_idx, chunk in enumerate(doc_chunks):
-            prompt = entities_prompts.replace("{text}", chunk)
-            input = tokenizer(prompt, return_tensors="pt", padding=True, truncation=True, max_length=1024).to("cuda") # tokenize the prompt and return a tensor
-            output = model.generate(input["input_ids"], attention_mask=input["attention_mask"], pad_token_id=tokenizer.eos_token_id, max_length= 1024) # takes the input and pass it through the model
-            response = tokenizer.decode(output[0], skip_special_tokens=True) # decodes the output back from token IDs to text
-            print(f"Raw response from LLaMA:\n{response}\n")
-
-        # Make sure the JSON format is valid
-        try: 
-            output_json = json.loads(response)
-            if isinstance(output_json, list):
-                response_json = response.split('[', 1)[-1].split(']', 1)[0] # take only what is in the json format
-                output_json = json.loads(f"[{response_json}]")
-                for entity in output_json:
+        for batch_start in range(0, len(doc_chunks), batch_size):
+            batch_end = batch_start + batch_size
+            chunk_batch = doc_chunks[batch_start:batch_end]
+            combined_text = "\n\n".join(chunk_batch)
+            inputs = ner_tokenizer(combined_text, return_tensors="pt", padding=True, truncation=True, max_length=512).to("cuda")
+            with torch.no_grad():
+                outputs = ner_model(**inputs)
+            logits = outputs.logits  # shape: (batch_size, seq_len, num_labels)
+            predictions = torch.argmax(logits, dim=2)  # shape: (batch_size, seq_len)
+            # Process each sample in the batch
+            for i in range(inputs["input_ids"].size(0)):
+                input_ids = inputs["input_ids"][i]
+                pred = predictions[i]
+                tokens = ner_tokenizer.convert_ids_to_tokens(input_ids)
+                current_entity = ""
+                current_label = ""
+                # Optional: track chunk id (using batch_start for now)
+                chunk_id = f"Doc_{doc_idx}_Chunk_{batch_start}"
+                for token, label_id in zip(tokens, pred):
+                    label = id2label[label_id.item()]
+                    # If the token is not 'O'
+                    if label != "O":
+                        # If token is a subword, merge it
+                        if token.startswith("##"):
+                            current_entity += token[2:]
+                        else:
+                            # If there's an existing entity, store it before starting a new one
+                            if current_entity:
+                                entity_list["Document_ID"].append(f"Doc_{doc_idx}")
+                                entity_list["Chunk_ID"].append(chunk_id)
+                                entity_list["Entity"].append(current_entity)
+                                entity_list["Entity_Label"].append(current_label)
+                                entity_list["Description"].append(f"Label: {current_label}")
+                            current_entity = token
+                            current_label = label
+                    else:
+                        # End of an entity span
+                        if current_entity:
+                            entity_list["Document_ID"].append(f"Doc_{doc_idx}")
+                            entity_list["Chunk_ID"].append(chunk_id)
+                            entity_list["Entity"].append(current_entity)
+                            entity_list["Entity_Label"].append(current_label)
+                            entity_list["Description"].append(f"Label: {current_label}")
+                            current_entity = ""
+                            current_label = ""
+                if current_entity:  # catch any trailing entity
                     entity_list["Document_ID"].append(f"Doc_{doc_idx}")
-                    entity_list["Chunk_ID"].append(f"Doc_{doc_idx}_Chunk_{chunk_idx}")
-                    entity_list["Entity"].append(entity.get("Name", "Unknown"))
-                    entity_list["Description"].append(entity.get("Description", "Unknown"))
-            else:
-                print("Warning: LLaMA did not return a valid list.")
-        except json.JSONDecodeError:
-            print("Warning: Could not parse LLaMA's response.")
+                    entity_list["Chunk_ID"].append(chunk_id)
+                    entity_list["Entity"].append(current_entity)
+                    entity_list["Entity_Label"].append(current_label)
+                    entity_list["Description"].append(f"Label: {current_label}")
     print(f"Entity extraction complete. Extracted {len(entity_list['Entity'])} entities.")
     return pd.DataFrame(entity_list)
 
@@ -316,7 +330,7 @@ def graph_retrieval(query, G, embedding_model, top_k=3):
 # 7. Generate a Response 
 # --------------------------------------------------------------------------
 
-def gen_response(query, retrieved_nodes, tokenizer, model):
+def gen_response(query, retrieved_nodes, llama_tokenizer, llama_model):
     '''Generates a response and retrieved context from GN.
     Args:
         query: The user's query.
@@ -340,9 +354,9 @@ def gen_response(query, retrieved_nodes, tokenizer, model):
     Answer:
     """
 
-    inputs = tokenizer(prompt, return_tensors="pt", padding=True, truncation=True, max_length=1024).to("cuda")
-    outputs = model.generate(inputs["input_ids"], attention_mask= inputs["attention_mask"], pad_token_id=tokenizer.eos_token_id, max_length=200)
-    response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    inputs = llama_tokenizer(prompt, return_tensors="pt", padding=True, truncation=True, max_length=1024).to("cuda")
+    outputs = llama_model.generate(inputs["input_ids"], attention_mask= inputs["attention_mask"], pad_token_id=llama_tokenizer.eos_token_id, max_length=200)
+    response = llama_tokenizer.decode(outputs[0], skip_special_tokens=True)
     return response
 
 # --------------------------------------------------------------------------
@@ -353,7 +367,8 @@ def main():
     print("\n⏳ Loading model and processing PDFs... (This will take some time)")
     
     # Load model & tokenizer
-    tokenizer, model = load_llama_model()
+    llama_tokenizer, llama_model = load_llama_model()
+    ner_tokenizer, ner_model = load_ner_model()
     embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
     pdf_paths = [
         "papers-testing/6495.pdf",
@@ -371,7 +386,7 @@ def main():
     all_chunks = process_pdf([(idx, path) for idx, path in enumerate(pdf_paths)])
 
     # Extract Entities
-    df_entities = extract_entities(all_chunks, tokenizer, model)
+    df_entities = extract_entities(all_chunks, ner_tokenizer, ner_model, batch_size=4)
     print("\n✅ Entity extraction complete!")
     
     # Build Graph
@@ -396,7 +411,7 @@ def main():
 
         # Prepare context for Llama response
         texts_for_context = [r["description"] for r in retrieved]
-        answer = gen_response(query, texts_for_context, tokenizer, model)
+        answer = gen_response(query, texts_for_context, llama_tokenizer, llama_model)
 
         print("\n🧠 Axolbot Answer:\n", answer)
 
