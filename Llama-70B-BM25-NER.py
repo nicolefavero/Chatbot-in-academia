@@ -1,5 +1,5 @@
 ################################################################################
-#  CHATBOT WITH LLAMA 3 - 70B + RAG RETRIEVAL (ACADEMIC) - MULTI-PDF CITATIONS #
+#  CHATBOT WITH LLAMA 3 - 70B + RAG RETRIEVAL (ACADEMIC)  #
 ################################################################################
 
 import torch
@@ -361,15 +361,16 @@ def generate_response(query, tokenizer, model, embedding_model, collection, devi
 
     # Sort doc names
     all_sources_str = ", ".join(sorted(doc_names_used))
-
     system_instruction = f"""\
-You are an academic research assistant.
+You are an expert academic research assistant, who must help university professors prepare materials for their lessons. 
+You must provide **clear and structured expository answers** using the retrieved context.
+
 Follow these rules:
 1. Use ONLY the text in the 'Context' below to answer the question.
-2. You may use text from multiple documents if needed.
-3. If the answer is not in the context, respond: "I don’t have information in my database to answer this question."
-5. Do NOT add outside knowledge.
-6. Keep your answer concise.
+3. DO NOT copy exact sentences; **rephrase and explain naturally**.
+4. Summarize the retrieved information **without redundancy**.
+5. If the answer is not in the context, respond: "I don’t have information in my database to answer this question."
+6. Do NOT add outside knowledge.
 """
 
     prompt = f"""
@@ -454,3 +455,4 @@ if __name__ == "__main__":
             bm25=bm25, all_chunks=all_chunks
         )
         print(f"\nBot: {response}")
+
