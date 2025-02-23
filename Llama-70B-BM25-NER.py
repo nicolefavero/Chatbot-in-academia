@@ -9,6 +9,7 @@ import os
 import chromadb
 import spacy
 import numpy as np
+from collections import Counter
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
@@ -47,9 +48,10 @@ def load_llama_model():
 
 
 ###############################################################################
-# 2. Preprocessing & Chunking Text from PDFs
+# 2. Preprocessing & Chunking Text from PDFs (NEW CODE)
 ###############################################################################
-def preprocess_text(text):
+
+def preprocess_text(text: str) -> str:
     """
     Clean whitespace and normalize text.
     """
@@ -57,43 +59,141 @@ def preprocess_text(text):
     text = " ".join(text.split())
     return text
 
-def split_into_sentences(text):
+def split_into_sentences(text: str):
     """
     Use spaCy to split text into sentences before chunking.
     """
     doc = nlp(text)
-    return [sent.text for sent in doc.sents]
+    # only keep non-empty sentences
+    return [sent.text.strip() for sent in doc.sents if sent.text.strip()]
 
-def process_pdf_with_sentences(pdf_path):
+def filter_repeated_sentences(sentences, min_length=30, max_repetitions=3):
     """
-    Reads a PDF, extracts text, splits into sentences, then chunk them.
-    Returns a list of chunk strings.
+    Filter out short sentences that repeat too many times (likely boilerplate).
+    - min_length: only consider filtering lines shorter than this length.
+    - max_repetitions: if a short line appears more than this many times, exclude it.
+    """
+    counter = Counter(sentences)
+    filtered = []
+    for s in sentences:
+        # Exclude repeated short lines
+        if len(s) < min_length and counter[s] > max_repetitions:
+            continue
+        filtered.append(s)
+    return filtered
+
+def process_pdf_for_rag(pdf_path: str, metadata_pages=2):
+    """
+    Reads a PDF, separates metadata pages, extracts text from main pages,
+    splits into sentences, filters repeated lines, then chunks them using
+    RecursiveCharacterTextSplitter.
+
+    Returns two lists:
+      - metadata_chunks: list of raw text strings from metadata
+      - main_content_chunks: list of dicts with:
+            {"content": <chunk_text>, "metadata": { ... }}
     """
     document = fitz.Document(pdf_path)
     pages = document.page_count
-    all_sentences = []
 
-    for page_num in range(pages):
+    # Collect metadata text from first 'metadata_pages' pages
+    metadata_text = []
+    for page_num in range(min(metadata_pages, pages)):
         page = document.load_page(page_num)
-        text = page.get_text("text")
-        text = preprocess_text(text)
-        sentences = split_into_sentences(text)
-        all_sentences.extend(sentences)
+        raw_text = page.get_text("text")
+        raw_text = preprocess_text(raw_text)
+        metadata_text.append(raw_text)
+    full_metadata_text = "\n".join(metadata_text)
 
-    # Use RecursiveCharacterTextSplitter to chunk
+    # Split metadata into sentences (often short anyway)
+    meta_sentences = split_into_sentences(full_metadata_text)
+
+    # Collect main content from the rest
+    main_sentences_with_page = []
+    for page_num in range(metadata_pages, pages):
+        page = document.load_page(page_num)
+        raw_text = preprocess_text(page.get_text("text"))
+        sentences = split_into_sentences(raw_text)
+        for s in sentences:
+            main_sentences_with_page.append((s, page_num))
+
+    # Filter out repeated short lines
+    all_main_sentences = [s for s, _ in main_sentences_with_page]
+    filtered_main_sentences = filter_repeated_sentences(all_main_sentences)
+
+    filtered_main_sentences_with_page = []
+    filtered_set = set(filtered_main_sentences)
+    for s, page_num in main_sentences_with_page:
+        if s in filtered_set:
+            filtered_main_sentences_with_page.append((s, page_num))
+
+    # Chunk metadata
+    if meta_sentences:
+        meta_text = "\n".join(meta_sentences)
+        metadata_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=800,
+            chunk_overlap=50,
+            length_function=len
+        )
+        metadata_docs = metadata_splitter.create_documents([meta_text])
+        metadata_chunks = [doc.page_content for doc in metadata_docs]
+    else:
+        metadata_chunks = []
+
+    # Chunk main content
+    main_text = "\n".join(s for s, _ in filtered_main_sentences_with_page)
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1200,
         chunk_overlap=100,
         length_function=len
     )
-    chunk_docs = text_splitter.create_documents(all_sentences)
-    chunks = [doc.page_content for doc in chunk_docs]
-    return chunks
+    chunk_docs = text_splitter.create_documents([main_text])
+
+    # Build structured output for main content
+    main_content_chunks = []
+    for doc in chunk_docs:
+        chunk_dict = {
+            "content": doc.page_content,
+            "metadata": {
+                "source_file": os.path.basename(pdf_path),
+                # Could track page ranges, etc.
+            }
+        }
+        main_content_chunks.append(chunk_dict)
+
+    return metadata_chunks, main_content_chunks
+
+def process_pdf_and_combine(pdf_path, metadata_pages=2):
+    """
+    Wrapper that calls process_pdf_for_rag, then merges metadata and main content
+    into a single list of dicts with "text" and "doc_name".
+    """
+    doc_name = os.path.splitext(os.path.basename(pdf_path))[0]
+
+    metadata_chunks, main_content_chunks = process_pdf_for_rag(pdf_path, metadata_pages=metadata_pages)
+
+    combined_chunks = []
+
+    # (A) Store metadata chunks if you want them in your DB:
+    for meta_chunk in metadata_chunks:
+        combined_chunks.append({
+            "text": meta_chunk,
+            "doc_name": f"{doc_name}_metadata"
+        })
+
+    # (B) Store main content chunks
+    for chunk_dict in main_content_chunks:
+        combined_chunks.append({
+            "text": chunk_dict["content"],
+            "doc_name": doc_name
+        })
+
+    return combined_chunks
 
 def process_all_pdfs(folder_path):
     """
-    Processes all PDFs in folder, returning a list of dicts: 
-    {"text": <chunk_text>, "doc_name": <filename_without_pdf>}.
+    Processes all PDFs in the folder using the new approach (metadata vs main content).
+    Returns a list of dicts: {"text": <chunk_text>, "doc_name": <filename_without_pdf>}.
     """
     all_chunks = []
     
@@ -101,14 +201,9 @@ def process_all_pdfs(folder_path):
         if filename.endswith(".pdf"):
             pdf_path = os.path.join(folder_path, filename)
             print(f"Processing: {filename}")
-            doc_name = os.path.splitext(filename)[0]  # remove .pdf extension
+            pdf_chunks = process_pdf_and_combine(pdf_path, metadata_pages=2)
+            all_chunks.extend(pdf_chunks)
 
-            chunks = process_pdf_with_sentences(pdf_path)
-            for chunk_text in chunks:
-                all_chunks.append({
-                    "text": chunk_text,
-                    "doc_name": doc_name
-                })
     return all_chunks
 
 
@@ -126,7 +221,10 @@ def get_or_create_embedding_collection(folder_path, embedding_model):
     Load existing ChromaDB collection if available, otherwise create embeddings.
     """
     client = chromadb.PersistentClient(path="db")
-    collection = client.get_or_create_collection(name="academic_papers", metadata={"hnsw:space": "cosine"})
+    collection = client.get_or_create_collection(
+        name="academic_papers",
+        metadata={"hnsw:space": "cosine"}
+    )
 
     # If it already has vectors, skip creation
     if collection.count() > 0:
@@ -155,7 +253,6 @@ def get_or_create_embedding_collection(folder_path, embedding_model):
 ###############################################################################
 # 3b. BM25 Index Creation
 ###############################################################################
-
 def create_bm25_index(chunks):
     """
     Build BM25Okapi index from chunked text.
@@ -188,10 +285,10 @@ def retrieve_documents_bm25(query, bm25, all_chunks, top_k=5):
         })
     return top_results
 
+
 ###############################################################################
 # 3c. NER-Based Query Refinement
 ###############################################################################
-
 def extract_entities(query):
     """
     Use spaCy NER on the query to extract named entities.
@@ -210,19 +307,17 @@ def refine_query_with_ner(query):
     refined_query = query + " " + " ".join(entities)
     return refined_query
 
+
 ###############################################################################
 # 3d. Hybrid Retrieval (BM25 + Embeddings)
 ###############################################################################
-
 def hybrid_retrieve(query, bm25, all_chunks, embedding_model, collection, top_k=5):
     """
     1) Refine the query with NER
     2) Retrieve top_k with BM25
     3) Retrieve top_k with embeddings
     4) Merge results (unique by 'text')
-    5) Print debug for embedding results (distances, doc name, snippet)
     """
-    # Always do query refinement with NER
     refined_q = refine_query_with_ner(query)
 
     # BM25 retrieval
@@ -232,7 +327,7 @@ def hybrid_retrieve(query, bm25, all_chunks, embedding_model, collection, top_k=
     query_embedding = embedding_model.encode(refined_q).tolist()
     results = collection.query(query_embeddings=[query_embedding], n_results=top_k)
 
-    # --- Debug prints for embedding retrieval ---
+    # Debug prints for embedding retrieval
     print("\nDEBUG - Embedding-based top-{} results (hybrid path):".format(top_k))
     for i, meta in enumerate(results["metadatas"][0]):
         dist = results["distances"][0][i]
@@ -247,7 +342,7 @@ def hybrid_retrieve(query, bm25, all_chunks, embedding_model, collection, top_k=
             "doc_name": meta["doc_name"],
         })
 
-    # Merge results
+    # Merge BM25 + embedding results
     combined = []
     seen_texts = set()
     
@@ -268,14 +363,13 @@ def hybrid_retrieve(query, bm25, all_chunks, embedding_model, collection, top_k=
             combined.append({
                 "text": emb_r["text"],
                 "doc_name": emb_r["doc_name"],
-                "score": 0,  # not merging numeric scores here
+                "score": 0,  # no combined scoring here
                 "retrieval_method": "Embedding"
             })
             seen_texts.add(emb_r["text"])
 
     return combined[:top_k]
 
-# --- NEW CODE END ---
 
 ###############################################################################
 # 4. Retrieve Documents (Embedding-only)
@@ -283,12 +377,9 @@ def hybrid_retrieve(query, bm25, all_chunks, embedding_model, collection, top_k=
 def retrieve_documents(query, embedding_model, collection, n_results=5):
     """
     Retrieve relevant chunk texts for the given query using embeddings only.
-    NOTE: We won't do thresholding here; we'll let generate_response handle that.
     """
     query_embedding = embedding_model.encode(query).tolist()
     results = collection.query(query_embeddings=[query_embedding], n_results=n_results)
-
-    # Return both the metadata and the distances, so we can debug elsewhere
     return results
 
 
@@ -317,19 +408,18 @@ def generate_response(query, tokenizer, model, embedding_model, collection, devi
                       bm25=None, all_chunks=None):
     """
     If BM25 is provided, do hybrid retrieval; else, embedding-only.
-    Also print debug info about embedding retrieval results (distances, doc, snippet).
     """
-    # --- 1) Always refine the user query with NER ---
+    # 1) Refine query with NER
     refined_q = refine_query_with_ner(query)
 
     if bm25 is not None and all_chunks is not None:
-        # --- 2) Hybrid retrieval ---
+        # 2) Hybrid retrieval
         retrieved_docs = hybrid_retrieve(refined_q, bm25, all_chunks, embedding_model, collection, top_k=5)
     else:
-        # --- 2) Embedding-only retrieval ---
+        # 2) Embedding-only retrieval
         results = retrieve_documents(refined_q, embedding_model, collection, n_results=5)
 
-        # Debug prints: Show top 5 embedding results
+        # Debug prints for embedding retrieval
         print("\nDEBUG - Embedding-based top-5 results (no BM25):")
         for i, meta in enumerate(results["metadatas"][0]):
             dist = results["distances"][0][i]
@@ -337,7 +427,7 @@ def generate_response(query, tokenizer, model, embedding_model, collection, devi
             snippet = meta["text"][:150].replace("\n", " ")
             print(f"{i+1}) distance={dist:.4f} | doc={doc_name} | snippet={snippet}...")
 
-        # --- 3) Thresholding logic (user's existing code) ---
+        # Optional threshold logic
         distances = results["distances"][0]
         metadatas = results["metadatas"][0]
         threshold = 0.3
@@ -346,11 +436,11 @@ def generate_response(query, tokenizer, model, embedding_model, collection, devi
             if dist < threshold:
                 retrieved_docs.append(doc_meta)
 
-    # --- 4) If no relevant docs, fallback
+    # 3) Fallback if no docs found
     if not retrieved_docs:
         return "I don’t have information in my database to answer this question."
 
-    # Build context from retrieved docs
+    # 4) Build context from retrieved docs
     doc_names_used = set()
     context_str = ""
     for doc in retrieved_docs:
@@ -359,8 +449,8 @@ def generate_response(query, tokenizer, model, embedding_model, collection, devi
         doc_names_used.add(doc_name)
         context_str += f"[{doc_name}]\n{chunk_text}\n\n"
 
-    # Sort doc names
     all_sources_str = ", ".join(sorted(doc_names_used))
+
     system_instruction = f"""\
 You are an expert academic research assistant, who must help university professors prepare materials for their lessons. 
 You must provide **clear and structured expository answers** using the retrieved context.
@@ -398,6 +488,7 @@ Answer:
 
     raw_output = tokenizer.decode(output[0], skip_special_tokens=True)
 
+    # Clean up prompt text from output
     if "Answer:" in raw_output:
         raw_output = raw_output.split("Answer:", 1)[-1].strip()
 
@@ -415,7 +506,6 @@ Answer:
     if fallback_phrase not in raw_output:
         raw_output += f"\nSource: {all_sources_str}"
 
-
     return raw_output
 
 
@@ -425,24 +515,26 @@ Answer:
 if __name__ == "__main__":
     folder_path = "papers-testing"  # Path to your PDFs
 
+    # 1) Load model & tokenizer
     tokenizer, llama_model, device = load_llama_model()
+
+    # 2) Load embedding model
     embedding_model = load_embedding_model()
 
-    # Test the distance for identical text:
+    # Test identical text distance (debug)
     test_text = "some example text"
     embA = embedding_model.encode(test_text)
     embB = embedding_model.encode(test_text)
     dist = np.linalg.norm(embA - embB)
     print(f"DEBUG - Distance for identical text: {dist}")
 
+    # 3) Get or create ChromaDB collection
     collection = get_or_create_embedding_collection(folder_path, embedding_model)
 
-    # --- NEW CODE START ---
-    # Build the BM25 index using the same chunk data
+    # 4) Build the BM25 index
     print("Building BM25 index...")
     all_chunks = process_all_pdfs(folder_path)
     bm25 = create_bm25_index(all_chunks)
-    # --- NEW CODE END ---
 
     print("\nChatbot is ready! Type 'exit' to quit.")
     while True:
@@ -451,8 +543,13 @@ if __name__ == "__main__":
             break
 
         response = generate_response(
-            query, tokenizer, llama_model, embedding_model, collection, device,
-            bm25=bm25, all_chunks=all_chunks
+            query,
+            tokenizer,
+            llama_model,
+            embedding_model,
+            collection,
+            device,
+            bm25=bm25,
+            all_chunks=all_chunks
         )
         print(f"\nBot: {response}")
-
