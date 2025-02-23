@@ -1,18 +1,33 @@
-# requirements.txt
+# fullrequirements.txt
 
-torch>=2.0
-numpy>=1.23
+torch>=2.0  
+numpy>=1.23  
 pandas>=1.5
 networkx>=2.8
-spacy>=3.5
 scikit-learn>=1.2
-tqdm>=4.64
-PyMuPDF>=1.22  
-transformers>=4.30
+tqdm>=4.64  
+regex>=2019.8.19
+spacy>=3.5
+transformers>=4.30  
 sentence-transformers>=2.2
-langchain>=0.0.270  
+nltk>=3.4.5  
+segtok>=1.5.7
+flair>=0.6.1  
+pytorch-transformers==1.2.0  
+langchain>=0.0.270
+matplotlib>=3.1.0  
+PyMuPDF>=1.22
+pysolr==3.8.1
+emoji>=0.5.3
+colorama>=0.4.3
+termcolor>=1.1.0
+faiss-cpu>=1.6.1
 accelerate>=0.26.0
 
-# Spacy library can cause some issues so please run these two commands in the terminal
-# pip install spacy
+# Run also this in the terminal for spacy
 # python -m spacy download en_core_web_sm
+
+# Process to access Blink Repository from Facebook
+# git clone https://github.com/facebookresearch/BLINK.git
+# chmod +x download_blink_models.sh
+# ./download_blink_models.sh
