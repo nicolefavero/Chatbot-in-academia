@@ -19,6 +19,8 @@ from transformers import (
 from sentence_transformers import SentenceTransformer
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from rank_bm25 import BM25Okapi
+from rapidfuzz import fuzz
+from DOC_REGISTRY import DOC_REGISTRY
 
 # Load spaCy NLP model for sentence splitting + NER
 nlp = spacy.load("en_core_web_sm")
@@ -206,6 +208,30 @@ def process_all_pdfs(folder_path):
 
     return all_chunks
 
+def detect_target_doc(query: str, registry: dict, threshold=80):
+    """
+    Use fuzzy matching on all doc aliases in registry to find the best match.
+    Returns the doc_name (key in registry) if the highest match is above threshold,
+    else returns None.
+    """
+    query_lower = query.lower()
+    best_doc = None
+    best_score = 0
+
+    for doc_name, data in registry.items():
+        aliases = data["aliases"]
+        for alias in aliases:
+            # Try partial_ratio or token_sort_ratio etc.
+            score = fuzz.partial_ratio(query_lower, alias.lower())
+            if score > best_score:
+                best_score = score
+                best_doc = doc_name
+
+    if best_score >= threshold:
+        return best_doc
+    else:
+        return None
+
 
 ###############################################################################
 # 3. Embeddings & ChromaDB
@@ -311,7 +337,7 @@ def refine_query_with_ner(query):
 ###############################################################################
 # 3d. Hybrid Retrieval (BM25 + Embeddings)
 ###############################################################################
-def hybrid_retrieve(query, bm25, all_chunks, embedding_model, collection, top_k=5):
+def hybrid_retrieve(query, bm25, all_chunks, embedding_model, collection, top_k=5, doc_filter=None):
     """
     1) Refine the query with NER
     2) Retrieve top_k with BM25
@@ -320,12 +346,19 @@ def hybrid_retrieve(query, bm25, all_chunks, embedding_model, collection, top_k=
     """
     refined_q = refine_query_with_ner(query)
 
+    if doc_filter and "doc_name" in doc_filter:
+        doc_name_filter = doc_filter["doc_name"]
+        filtered_chunks = [ch for ch in all_chunks if ch["doc_name"] == doc_name_filter]
+    else:
+        filtered_chunks = all_chunks
+
+
     # BM25 retrieval
     bm25_results = retrieve_documents_bm25(refined_q, bm25, all_chunks, top_k=top_k)
 
     # Embedding-based retrieval
     query_embedding = embedding_model.encode(refined_q).tolist()
-    results = collection.query(query_embeddings=[query_embedding], n_results=top_k)
+    results = collection.query(query_embeddings=[query_embedding], n_results=top_k, where=doc_filter)
 
     # Debug prints for embedding retrieval
     print("\nDEBUG - Embedding-based top-{} results (hybrid path):".format(top_k))
@@ -374,12 +407,19 @@ def hybrid_retrieve(query, bm25, all_chunks, embedding_model, collection, top_k=
 ###############################################################################
 # 4. Retrieve Documents (Embedding-only)
 ###############################################################################
-def retrieve_documents(query, embedding_model, collection, n_results=5):
+def retrieve_documents(query, embedding_model, collection, n_results=5, doc_filter=None):
     """
-    Retrieve relevant chunk texts for the given query using embeddings only.
+    Retrieve relevant chunks for query using embeddings only.
+    If doc_filter is not None, e.g. {"doc_name": "..."},
+    we restrict the search to that doc.
     """
     query_embedding = embedding_model.encode(query).tolist()
-    results = collection.query(query_embeddings=[query_embedding], n_results=n_results)
+
+    results = collection.query(
+        query_embeddings=[query_embedding],
+        n_results=n_results,
+        where=doc_filter
+    )
     return results
 
 
@@ -409,15 +449,24 @@ def generate_response(query, tokenizer, model, embedding_model, collection, devi
     """
     If BM25 is provided, do hybrid retrieval; else, embedding-only.
     """
+
+        # (A) Detect if user refers to a specific PDF from the registry
+    matched_doc_name = detect_target_doc(query, DOC_REGISTRY, threshold=80)
+    if matched_doc_name:
+        doc_filter = {"doc_name": matched_doc_name}
+        print(f"DEBUG: Matched doc => {matched_doc_name} (score above threshold)")
+    else:
+        doc_filter = None
+
     # 1) Refine query with NER
     refined_q = refine_query_with_ner(query)
 
     if bm25 is not None and all_chunks is not None:
         # 2) Hybrid retrieval
-        retrieved_docs = hybrid_retrieve(refined_q, bm25, all_chunks, embedding_model, collection, top_k=5)
+        retrieved_docs = hybrid_retrieve(refined_q, bm25, all_chunks, embedding_model, collection, top_k=5, doc_filter=doc_filter)
     else:
         # 2) Embedding-only retrieval
-        results = retrieve_documents(refined_q, embedding_model, collection, n_results=5)
+        results = retrieve_documents(refined_q, embedding_model, collection, n_results=5, doc_filter=doc_filter)
 
         # Debug prints for embedding retrieval
         print("\nDEBUG - Embedding-based top-5 results (no BM25):")
@@ -481,7 +530,7 @@ Answer:
     with torch.no_grad():
         output = model.generate(
             **inputs,
-            max_new_tokens=1024,
+            max_new_tokens=256,
             do_sample=False,
             stopping_criteria=stopping_criteria
         )

@@ -9,3 +9,4 @@ langchain_text_splitters
 accelerate
 rank_bm25
 fitz
+rapidfuzz
