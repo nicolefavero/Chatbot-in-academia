@@ -1,13 +1,22 @@
+################################################################################
+#  CHATBOT WITH LLAMA MODEL   #
+################################################################################
+
+'''Reason: use internal chatbot based on Llama model instead of ChatGPT or any other third party model
+mainly because of privacy reasons, it's good that we don't have to send the data to any third party server and 
+we have full control over the data.'''
+
 import os
 import pickle
 import re
 import torch
-import fitz  # PyMuPDF
+import fitz  
 import networkx as nx
 import numpy as np
 import pandas as pd
 import spacy
 import copy
+import sys
 from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from sentence_transformers import SentenceTransformer  # (still imported; may remove if unused elsewhere)
@@ -16,13 +25,11 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from sklearn.metrics.pairwise import cosine_similarity
 from argparse import Namespace
 from torch.utils.data import DataLoader, SequentialSampler
-
-# Import the python-louvain library
 import community as community_louvain
 
-###############################################################################
-# 1. Load LLaMA for response generation
-###############################################################################
+# --------------------------------------------------------------------------
+# 1. Loading Llama 3.3 model from Hugging Face because of storage limitations
+# --------------------------------------------------------------------------
 def load_llama_model():
     print("Loading Llama 3.3 model from Hugging Face...")
     tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-3.3-70B-Instruct")
@@ -34,10 +41,9 @@ def load_llama_model():
     print("Model and tokenizer loaded successfully.")
     return tokenizer, model
 
-###############################################################################
+# -------------------------------------------------------------------------------
 # 2. BLINK Entity Linking
-###############################################################################
-import sys
+# -------------------------------------------------------------------------------
 sys.path.insert(0, "/work/BLINK")
 from blink.main_dense import load_models
 from blink.biencoder.data_process import process_mention_data
@@ -59,7 +65,7 @@ def load_blink_model():
     return blink_models
 
 def run_biencoder(biencoder, dataloader, candidate_encoding, top_k=10, indexer=None):
-    biencoder.model.eval()  # Set model to eval mode
+    biencoder.model.eval()  
     labels = []
     nns = []
     all_scores = []
@@ -143,9 +149,9 @@ def run_blink(text, blink_models):
 
     return linked_entities
 
-###############################################################################
+# -------------------------------------------------------------------------------
 # 3. PDF Processing + Metadata Extraction
-###############################################################################
+# -------------------------------------------------------------------------------
 nlp = spacy.load("en_core_web_sm")
 
 def preprocess_text(text):
@@ -236,17 +242,17 @@ def process_all_pdfs(pdf_paths_with_idx):
 
     return all_chunks, doc_citations
 
-###############################################################################
+# -------------------------------------------------------------------------------
 # 4. BLINK Linking Over Chunks
-###############################################################################
+# -------------------------------------------------------------------------------
 def link_entities_with_blink(text, blink_models):
     linked = run_blink(text, blink_models)
     return linked
 
-###############################################################################
+# -------------------------------------------------------------------------------
 # 5. Build or Load Entities
-###############################################################################
-ENTITY_CSV = "saved_entities.csv"  # Adjust path as needed
+# -------------------------------------------------------------------------------
+ENTITY_CSV = "Chatbot-in-academia/saved_entities.csv"  
 
 def extract_entities(all_chunks, blink_models):
     entity_rows = defaultdict(list)
@@ -276,10 +282,10 @@ def load_or_extract_entities(all_chunks, blink_models):
         print(f"Saved entities to {ENTITY_CSV}")
     return df_entities
 
-###############################################################################
+# -------------------------------------------------------------------------------
 # 6. Build a Knowledge Graph & Merge
-###############################################################################
-GRAPH_PKL = "saved_graph.pkl"  # Adjust path as needed
+# -------------------------------------------------------------------------------
+GRAPH_PKL = "Chatbot-in-academia/saved_graph.pkl" 
 
 def knowledge_graph(df):
     G = nx.Graph()
@@ -365,9 +371,9 @@ def load_or_build_graph(df_entities, threshold=0.9):
         print(f"Saved merged graph to {GRAPH_PKL}")
         return G_merged
 
-###############################################################################
+# -------------------------------------------------------------------------------
 # 7. Community Detection + Summaries
-###############################################################################
+# -------------------------------------------------------------------------------
 def detect_communities_louvain(G):
     """
     Simple function that returns a dict {node: community_id} using Louvain.
@@ -377,7 +383,8 @@ def detect_communities_louvain(G):
 
 def summarize_community(community_text, tokenizer, model):
     system_instruction = """\
-You are a helpful assistant that summarizes large collections of text into a short statement of main themes, people, relationships.
+You are a university professor that wants to help fellow collegues prepare summaries on academic topics.
+Take all the knowledge connected to the topic which you have as a large collection of text and summarize it into helpful statements well connected with each other based on the theme. 
 """
     prompt = f"""
 {system_instruction}
@@ -388,9 +395,10 @@ TEXT:
 SUMMARY:
 """
     inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=2048).to("cuda")
+    # Instead of max_length, we use max_new_tokens to generate additional tokens.
     outputs = model.generate(
         **inputs,
-        max_length=1024,
+        max_new_tokens=256,
         pad_token_id=tokenizer.eos_token_id,
         do_sample=False
     )
@@ -429,13 +437,16 @@ def build_community_summaries(G, partition, all_chunks, tokenizer, model):
 
     return community_summaries
 
-###############################################################################
+# -------------------------------------------------------------------------------
 # 8. Query Phase: Map–Reduce Over Community Summaries
-###############################################################################
+# -------------------------------------------------------------------------------
 def generate_partial_answer(question, summary_text, tokenizer, model):
     system_instruction = """\
-You have the summary of ONE community. If you see relevant info about the question, produce a partial answer.
-Otherwise say "I don't know."
+You are an expert academic summarizer. With the community summary provided below, determine if it contains any relevant information to answer the question.
+- Generate a concise partial answer that fits well with other responses.
+- Structure the response to ensure a logical flow, avoiding redundancy.
+- Prioritize academic clarity and always cite sources.
+- If it does not, simply respond with "I don't know."
 """
     prompt = f"""
 {system_instruction}
@@ -451,7 +462,7 @@ Partial Answer:
     inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=2048).to("cuda")
     outputs = model.generate(
         **inputs,
-        max_length=512,
+        max_new_tokens=128,
         pad_token_id=tokenizer.eos_token_id,
         do_sample=False
     )
@@ -474,8 +485,12 @@ def combine_answers(question, partial_answers, tokenizer, model):
     big_context = "\n".join(all_parts)
 
     system_instruction = """\
-You are a summarizer that merges multiple partial answers into a final integrated answer. 
-If contradictory, mention it.
+You are an expert summarizer tasked with merging multiple partial answers into a final, integrated answer. 
+Ensure that your final answer is:
+- Coherent and logically organized, the flow of the answer needs to be great and as a rule do not repeat yourself or leave phrases half done. 
+- Directly responsive to the question.
+- If the partial answers contain contradictory information, explicitly mention and reconcile the contradictions.
+- Make sure to always quote the paper you are taking information from. 
 """
     prompt = f"""
 {system_instruction}
@@ -491,14 +506,13 @@ Final Answer:
     inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=2048).to("cuda")
     outputs = model.generate(
         **inputs,
-        max_length=768,
+        max_new_tokens=128,
         pad_token_id=tokenizer.eos_token_id,
         do_sample=False
     )
     final_ans = tokenizer.decode(outputs[0], skip_special_tokens=True)
     if "Final Answer:" in final_ans:
         final_ans = final_ans.split("Final Answer:",1)[-1].strip()
-
     return final_ans
 
 def graph_rag_query_map_reduce(question, community_summaries, tokenizer, model):
@@ -516,9 +530,9 @@ def graph_rag_query_map_reduce(question, community_summaries, tokenizer, model):
     final_answer = combine_answers(question, partials, tokenizer, model)
     return final_answer
 
-###############################################################################
+# -------------------------------------------------------------------------------
 # 9. Main
-###############################################################################
+# -------------------------------------------------------------------------------
 def main():
     print("Loading models...")
 
@@ -539,7 +553,6 @@ def main():
 
     # 4) PDF paths
     pdf_paths = [
-        # Your PDFs
         "/work/Chatbot-in-academia/papers-testing/6495.pdf",
         "/work/Chatbot-in-academia/papers-testing/7294.pdf",
         "/work/Chatbot-in-academia/papers-testing/QMOD_ICQSS_2014_CEM_and_business_performance.pdf",
