@@ -1,5 +1,5 @@
 DOC_REGISTRY = {
-    "wieland_wallenburg_supply_chain_risk_management": {
+    "Wieland_wallenburg_supply_chain_risk_management": {
         "aliases": [
             "wieland and wallenburg",
             "dealing with supply chain risks",

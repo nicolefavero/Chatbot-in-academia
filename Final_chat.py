@@ -292,40 +292,46 @@ def create_bm25_index(chunks):
 
 def retrieve_documents_bm25(query, bm25, all_chunks, top_k=5, doc_filter=None):
     """
-    Retrieve top_k chunks using BM25 ranking, optionally filtered by doc_filter.
-    doc_filter should be a dict like {"doc_name": <matched_doc_name>}, or None.
+    Retrieve top_k chunks using BM25 ranking while reducing the score of chunks
+    that contain too many words from the document title or aliases.
     """
     query_tokens = query.split()
-    scores = bm25.get_scores(query_tokens)  # BM25 scores for all_chunks in their original order
-    ranked_results = sorted(
-        zip(range(len(scores)), scores),
-        key=lambda x: x[1],
-        reverse=True
-    )
+    scores = bm25.get_scores(query_tokens)
+
+    # Extract document title/aliases if filtering by a specific document
+    title_aliases = []
+    if doc_filter and doc_filter.get("doc_name") in DOC_REGISTRY:
+        title_aliases = DOC_REGISTRY[doc_filter["doc_name"]]["aliases"]
+        title_aliases = [alias.lower().split() for alias in title_aliases]  # Split into words
+
+    for i, chunk in enumerate(all_chunks):
+        text = chunk["text"].lower()
+        chunk_doc_name = chunk["doc_name"]
+
+        # If filtering by a specific document, apply alias-based score penalty
+        if doc_filter and chunk_doc_name == doc_filter.get("doc_name"):
+            alias_match_count = sum(
+                sum(1 for word in alias if word in text) / len(alias)  # Compute % of words matched
+                for alias in title_aliases
+            )
+
+            if alias_match_count > 0.5:  # If >50% of alias words match, reduce score
+                scores[i] *= 0.5  # Reduce relevance by 50%
+
+    ranked_results = sorted(zip(range(len(scores)), scores), key=lambda x: x[1], reverse=True)
 
     results = []
-    for idx, score in ranked_results:
+    for idx, score in ranked_results[:top_k]:
         chunk_doc_name = all_chunks[idx]["doc_name"]
 
-        # If doc_filter is provided, only keep chunks whose doc_name matches doc_filter
-        if doc_filter:
-            if chunk_doc_name == doc_filter.get("doc_name"):
-                results.append({
-                    "text": all_chunks[idx]["text"],
-                    "doc_name": chunk_doc_name,
-                    "score": score
-                })
-                if len(results) >= top_k:
-                    break
-        else:
-            # No doc_filter => allow any doc
-            results.append({
-                "text": all_chunks[idx]["text"],
-                "doc_name": chunk_doc_name,
-                "score": score
-            })
-            if len(results) >= top_k:
-                break
+        if doc_filter and chunk_doc_name != doc_filter.get("doc_name"):
+            continue  # Skip non-matching docs
+
+        results.append({
+            "text": all_chunks[idx]["text"],
+            "doc_name": chunk_doc_name,
+            "score": score
+        })
 
     return results
 
@@ -515,8 +521,9 @@ def generate_response(query, tokenizer, model, embedding_model, collection, devi
     all_sources_str = ", ".join(sorted(doc_names_used))
 
     system_instruction = f"""\
-You are an expert academic research assistant, who must help university professors prepare materials for their lessons. 
+You are an expert academic research assistant, who must help university professors by answering their questions. 
 You must provide **clear and structured expository answers** using the retrieved context.
+Don't copy paste the context but use it to find the answer and then reformulate your answer in a natual way.
 
 Follow these rules:
 1. Use ONLY the text in the 'Context' below to answer the question.
