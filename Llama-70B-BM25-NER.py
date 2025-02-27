@@ -290,26 +290,44 @@ def create_bm25_index(chunks):
     bm25 = BM25Okapi(tokenized_corpus)
     return bm25
 
-def retrieve_documents_bm25(query, bm25, all_chunks, top_k=5):
+def retrieve_documents_bm25(query, bm25, all_chunks, top_k=5, doc_filter=None):
     """
-    Retrieve top_k chunks using BM25 ranking.
+    Retrieve top_k chunks using BM25 ranking, optionally filtered by doc_filter.
+    doc_filter should be a dict like {"doc_name": <matched_doc_name>}, or None.
     """
     query_tokens = query.split()
-    scores = bm25.get_scores(query_tokens)
+    scores = bm25.get_scores(query_tokens)  # BM25 scores for all_chunks in their original order
     ranked_results = sorted(
         zip(range(len(scores)), scores),
         key=lambda x: x[1],
         reverse=True
     )
 
-    top_results = []
-    for idx, score in ranked_results[:top_k]:
-        top_results.append({
-            "text": all_chunks[idx]["text"],
-            "doc_name": all_chunks[idx]["doc_name"],
-            "score": score
-        })
-    return top_results
+    results = []
+    for idx, score in ranked_results:
+        chunk_doc_name = all_chunks[idx]["doc_name"]
+
+        # If doc_filter is provided, only keep chunks whose doc_name matches doc_filter
+        if doc_filter:
+            if chunk_doc_name == doc_filter.get("doc_name"):
+                results.append({
+                    "text": all_chunks[idx]["text"],
+                    "doc_name": chunk_doc_name,
+                    "score": score
+                })
+                if len(results) >= top_k:
+                    break
+        else:
+            # No doc_filter => allow any doc
+            results.append({
+                "text": all_chunks[idx]["text"],
+                "doc_name": chunk_doc_name,
+                "score": score
+            })
+            if len(results) >= top_k:
+                break
+
+    return results
 
 
 ###############################################################################
@@ -339,27 +357,23 @@ def refine_query_with_ner(query):
 ###############################################################################
 def hybrid_retrieve(query, bm25, all_chunks, embedding_model, collection, top_k=5, doc_filter=None):
     """
-    1) Refine the query with NER
-    2) Retrieve top_k with BM25
-    3) Retrieve top_k with embeddings
-    4) Merge results (unique by 'text')
+    1) Refine query with NER
+    2) Retrieve top_k with BM25 (filtered if doc_filter is set)
+    3) Retrieve top_k with embeddings (also filtered by doc_filter)
+    4) Merge results
     """
     refined_q = refine_query_with_ner(query)
 
-    if doc_filter and "doc_name" in doc_filter:
-        doc_name_filter = doc_filter["doc_name"]
-        filtered_chunks = [ch for ch in all_chunks if ch["doc_name"] == doc_name_filter]
-    else:
-        filtered_chunks = all_chunks
+    # BM25 retrieval (now respects doc_filter)
+    bm25_results = retrieve_documents_bm25(refined_q, bm25, all_chunks, top_k=top_k, doc_filter=doc_filter)
 
-
-    # BM25 retrieval
-    bm25_results = retrieve_documents_bm25(refined_q, bm25, all_chunks, top_k=top_k)
-
-    # Embedding-based retrieval
+    # Embedding-based retrieval (with doc_filter in Chroma)
     query_embedding = embedding_model.encode(refined_q).tolist()
-    results = collection.query(query_embeddings=[query_embedding], n_results=top_k, where=doc_filter)
-
+    results = collection.query(
+        query_embeddings=[query_embedding],
+        n_results=top_k,
+        where=doc_filter
+    )
     # Debug prints for embedding retrieval
     print("\nDEBUG - Embedding-based top-{} results (hybrid path):".format(top_k))
     for i, meta in enumerate(results["metadatas"][0]):
