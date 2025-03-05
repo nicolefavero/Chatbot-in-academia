@@ -7,11 +7,11 @@ import fitz  # PyMuPDF for PDF processing
 import torch
 import warnings
 from rapidfuzz import fuzz
-from Final_chat import load_llama_model  # ✅ Import the function, not the variables
+from debug import load_llama_instructor  # ✅ Import the function, not the variables
 from DOC_REGISTRY import DOC_REGISTRY
 
 # ✅ Load the Llama model, tokenizer, and device from Final_chat
-tokenizer, llama_model, device = load_llama_model()
+tokenizer, llama_model, device = load_llama_instructor()
 
 
 ################################################################################

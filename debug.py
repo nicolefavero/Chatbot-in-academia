@@ -1,15 +1,47 @@
 import torch
-from Final_chat import load_llama_model  # ✅ Load Llama model and tokenizer
-
-# ✅ Load the Llama model, tokenizer, and device
-tokenizer, llama_model, device = load_llama_model()
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 ################################################################################
-#  The Podcast System Prompt
+# 1. Load Llama-2 70B (Instruction-Finetuned or Chat Variant)
 ################################################################################
-SYSTEM_PROMPT = """[INST] <<SYS>>
+
+def load_llama_instructor():
+    """
+    Load a Llama-2 70B *instruction/chat* model from Hugging Face 
+    and distribute across 4 GPUs. 
+    Adjust 'model_name' if you want a different instruct-finetuned version.
+    """
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    dtype = torch.float16 if device == "cuda" else torch.float32
+
+    # Replace with your Hugging Face token that has permission for Llama 2
+    HF_TOKEN = "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"
+
+    # This is an example name for a chat/instruct-finetuned variant:
+    model_name = "meta-llama/Llama-3.3-70B-Instruct"
+
+    print(f"Loading model on {device} (4 GPUs)...")
+
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_name, 
+        use_auth_token=HF_TOKEN
+    )
+    model = AutoModelForCausalLM.from_pretrained(
+        model_name,
+        use_auth_token=HF_TOKEN,
+        torch_dtype=dtype,
+        device_map="auto"
+    )
+
+    return tokenizer, model, device
+
+################################################################################
+# 2. The Podcast System Prompt (Instruction)
+################################################################################
+
+SYSTEM_PROMPT = """
 You are a world-class podcast writer; you have worked as a ghost writer for 
-Joe Rogan, Lex Fridman, Ben Shapiro, and Tim Ferriss. 
+Joe Rogan, Lex Fridman, Ben Shapiro, and Tim Ferriss.
 
 We are in an alternate universe where you have been writing every line they say 
 and they just stream it into their brains. You have won multiple podcast awards 
@@ -43,11 +75,10 @@ ALWAYS START YOUR RESPONSE DIRECTLY WITH SPEAKER 1:
 DO NOT GIVE EPISODE TITLES SEPARATELY, LET SPEAKER 1 TITLE IT IN HER SPEECH.
 DO NOT GIVE CHAPTER TITLES.
 IT SHOULD STRICTLY BE THE DIALOGUES.
-<</SYS>> [/INST]
 """
 
 ################################################################################
-#  🔎 Test Input for Debugging (Instead of PDF)
+# 3. Test Input for Debugging
 ################################################################################
 
 TEST_INPUT_TEXT = """
@@ -58,47 +89,51 @@ explores real-world examples and the future of AI in the workplace.
 """
 
 ################################################################################
-#  Generate Podcast-Style Script
+# 4. Generate Podcast-Style Script
 ################################################################################
 
-def generate_podcast_from_text(input_text: str):
+def generate_podcast_from_text(tokenizer, model, device, input_text: str):
     """
-    Takes a text input and generates a podcast-style script.
+    Takes a text input and generates a podcast-style script using an 
+    instruction-finetuned or chat-finetuned Llama-2 70B model.
     """
 
-    # Step A: Manually format the chat input (since `apply_chat_template()` is unavailable)
-    user_prompt = f"[INST] Here is the topic that needs to be turned into a podcast:\n\n{input_text}\n\nNow, generate the podcast transcript in the style described above. [/INST]"
+    prompt = f"""{SYSTEM_PROMPT}
 
-    full_prompt = SYSTEM_PROMPT + user_prompt
+Now here's the conversation topic:
+{input_text}
 
-    # Step B: Tokenize and send to model
-    inputs = tokenizer(full_prompt, return_tensors="pt", truncation=True).to(device)
+Please write the podcast script now:
+"""
 
-    # Step C: Generate response using preloaded Llama model
+    # Tokenize and move to the model's device
+    inputs = tokenizer(prompt, return_tensors="pt", truncation=True).to(device)
+
     with torch.no_grad():
-        output = llama_model.generate(
+        output = model.generate(
             **inputs,
-            max_new_tokens=2048,  # ✅ Increased to allow full podcast
-            do_sample=True,
-            temperature=0.8,  # ✅ Balanced creativity
-            top_p=0.9,
-            repetition_penalty=1.1,  # ✅ Reduce looping issues
+            max_new_tokens=2048,       # Enough room for a full answer
+            do_sample=True,            # Sampling for creativity
+            temperature=0.8,           # Balanced creativity
+            top_p=0.9,                 # Typical nucleus sampling
+            repetition_penalty=1.1,    # Helps avoid looping
             eos_token_id=tokenizer.eos_token_id
         )
 
-    # Step D: Decode and return the generated text
+    # Decode output
     generated_text = tokenizer.decode(output[0], skip_special_tokens=True)
-
     return generated_text
 
-
 ################################################################################
-#  🚀 Run the Test (No User Input Required)
+# 5. Run the Test (No User Input Required)
 ################################################################################
 if __name__ == "__main__":
-    print("\n📢 Running Debug Test for Podcast Generation...\n")
+    print("\n📢 Running Debug Test for Podcast Generation with Llama-2 70B Instruct...\n")
 
-    # Run the debug test with the test input
-    podcast_script = generate_podcast_from_text(TEST_INPUT_TEXT)
-    
+    # Load the chat/instruction model
+    tokenizer, llama_model, device = load_llama_instructor()
+
+    # Generate the podcast script
+    podcast_script = generate_podcast_from_text(tokenizer, llama_model, device, TEST_INPUT_TEXT)
+
     print(f"\n🎙️ Podcast Script:\n{podcast_script}")
