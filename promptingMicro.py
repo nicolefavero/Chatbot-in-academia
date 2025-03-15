@@ -136,23 +136,65 @@ def process_all_pdfs(pdf_paths_with_idx):
 # -----------------------------------------------------------------------------
 # 3. LLM-Based Entity Extraction
 # -----------------------------------------------------------------------------
-def extract_elements_from_chunk(chunk, tokenizer, model):
-    debug("Extracting elements from a chunk.")
-    prompt = f"""
-You are an expert information extractor. Given the following text chunk, extract all graph elements.
+ENTITY_RELATIONSHIPS_GENERATION_JSON_PROMPT = """
+-Goal-
+Given a text document that is potentially relevant to this activity and a list of entity types, identify all entities of those types from the text and all relationships among the identified entities.
 
-First, list all entities as tuples in the format:
-  (EntityName, EntityType, EntityDescription)
+-Steps-
+1. Identify all entities. For each identified entity, extract the following information:
+- entity_name: Name of the entity, capitalized
+- entity_type: One of the following types: [{entity_types}]
+- entity_description: Comprehensive description of the entity's attributes and activities
 
-Then, list all relationships between these entities as tuples in the format:
-  (SourceEntity, TargetEntity, RelationshipDescription)
+Format each entity output as a JSON entry with the following format:
 
-Return the answer as a JSON object with keys "entities" and "relationships".
-If no entities or relationships are found, return empty lists.
+{{"name": <entity name>, "type": <type>, "description": <entity description>}}
 
-Text Chunk:
-\"\"\"{chunk}\"\"\"
+2. From the entities identified in step 1, identify all pairs of (source_entity, target_entity) that are *clearly related* to each other.
+For each pair of related entities, extract the following information:
+- source_entity: name of the source entity, as identified in step 1
+- target_entity: name of the target entity, as identified in step 1
+- relationship_description: explanation as to why you think the source entity and the target entity are related to each other
+- relationship_strength: an integer score between 1 to 10, indicating strength of the relationship between the source entity and target entity
+
+Format each relationship as a JSON entry with the following format:
+
+{{"source": <source_entity>, "target": <target_entity>, "relationship": <relationship_description>, "relationship_strength": <relationship_strength>}}
+
+3. Return output in {language} as a single list of all JSON entities and relationships identified in steps 1 and 2.
+
+######################
+-Examples-
+######################
+Example 1:
+Text:
+The Verdantis's Central Institution is scheduled to meet on Monday and Thursday, with the institution planning to release its latest policy decision on Thursday at 1:30 p.m. PDT, followed by a press conference where Central Institution Chair Martin Smith will take questions. Investors expect the Market Strategy Committee to hold its benchmark interest rate steady in a range of 3.5%-3.75%.
+######################
+Output:
+[
+  {{"name": "CENTRAL INSTITUTION", "type": "ORGANIZATION", "description": "The Central Institution is the Federal Reserve of Verdantis, which is setting interest rates on Monday and Thursday"}},
+  {{"name": "MARTIN SMITH", "type": "PERSON", "description": "Martin Smith is the chair of the Central Institution"}},
+  {{"name": "MARKET STRATEGY COMMITTEE", "type": "ORGANIZATION", "description": "The Central Institution committee makes key decisions about interest rates and the growth of Verdantis's money supply"}},
+  {{"source": "MARTIN SMITH", "target": "CENTRAL INSTITUTION", "relationship": "Martin Smith is the Chair of the Central Institution and will answer questions at a press conference", "relationship_strength": 9}}
+]
+######################
+-Real Data-
+######################
+entity_types: {entity_types}
+text: {input_text}
+######################
+Output:
 """
+
+def extract_elements_from_chunk(chunk, tokenizer, model):
+    debug("Extracting elements from a chunk using Microsoft prompting style.")
+    # Build the prompt using the Microsoft JSON prompt.
+    # You can adjust the default entity types and language as needed.
+    prompt = ENTITY_RELATIONSHIPS_GENERATION_JSON_PROMPT.format(
+        entity_types="ORGANIZATION, PERSON, GEO",
+        input_text=chunk,
+        language="English"
+    )
     inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=2048).to("cuda")
     outputs = model.generate(
         **inputs,
