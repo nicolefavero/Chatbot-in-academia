@@ -144,6 +144,8 @@ We are in an alternate universe where you have been writing every line they say
 and they just stream it into their brains. You have won multiple podcast awards 
 for your writing. 
 
+Speaker 1 name is Julie, Speaker 2 name is John.
+
 Your job is to write word by word, even “umm, hmmm, right” interruptions by the 
 second speaker based on the PDF upload. Keep it extremely engaging; the speakers 
 can get derailed now and then but should discuss the topic. 
@@ -169,7 +171,7 @@ ALWAYS START YOUR RESPONSE DIRECTLY WITH SPEAKER 1:
 DO NOT GIVE EPISODE TITLES SEPARATELY, LET SPEAKER 1 TITLE IT IN HER SPEECH.
 DO NOT GIVE CHAPTER TITLES.
 IT SHOULD STRICTLY BE THE DIALOGUES. 
-IT MUST END WITH THE SPEAKERS SAYING GOODBYE TO EACH OTHER 
+IT MUST END WITH THE SPEAKER 1 SAYING THANK YOU TO SPEAKER 2 AND GOODBYE. 
 """
 
 ################################################################################
@@ -234,4 +236,10 @@ if __name__ == "__main__":
             break
 
         podcast_script = generate_podcast_from_pdf(query, pdf_folder, tokenizer, llama_model, device)
-        print(f"\nPodcast Script:\n{podcast_script}")
+
+        # Save the generated script to a text file
+        with open("generated_podcast_script.txt", "w", encoding="utf-8") as f:
+            f.write(podcast_script)
+        
+        print(f"\nPodcast Script saved as: generated_podcast_script.txt")
+

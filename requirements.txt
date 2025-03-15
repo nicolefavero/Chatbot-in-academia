@@ -10,3 +10,5 @@ accelerate
 rank_bm25
 PyMuPDF
 rapidfuzz
+coqui-tts
+pydub
