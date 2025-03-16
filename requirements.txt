@@ -12,3 +12,4 @@ PyMuPDF
 rapidfuzz
 coqui-tts
 pydub
+langchain
