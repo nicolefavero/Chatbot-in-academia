@@ -26,7 +26,3 @@ pysolr>=3.9.0
 
 # Run also this in the terminal for spacy
 # python -m spacy download en_core_web_sm
-
-# Process to access BLINK Repository from Facebook
-# git clone https://github.com/facebookresearch/BLINK.git
-# ./download_blink_models.sh

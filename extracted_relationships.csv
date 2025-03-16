@@ -1,0 +1,373 @@
+doc_idx,chunk_idx,Source,Target,Description
+0,0,VOLKER MAHNKE,TORBEN PEDERSEN,Volker Mahnke and Torben Pedersen co-authored a research paper
+0,0,VOLKER MAHNKE,MARKUS VENZIN,Volker Mahnke and Markus Venzin co-authored a research paper
+0,0,TORBEN PEDERSEN,MARKUS VENZIN,Torben Pedersen and Markus Venzin co-authored a research paper
+0,0,VOLKER MAHNKE,CBS RESEARCH PORTAL,Volker Mahnke published a paper on the CBS Research Portal
+0,0,TORBEN PEDERSEN,CBS RESEARCH PORTAL,Torben Pedersen published a paper on the CBS Research Portal
+0,0,MARKUS VENZIN,CBS RESEARCH PORTAL,Markus Venzin published a paper on the CBS Research Portal
+0,0,CBS RESEARCH PORTAL,CBS,CBS Research Portal is hosted by CBS
+0,1,VOLKER MAHNKE,INSTITUT FOR INFORMATIK,Volker Mahnke is an author affiliated with the Institut for Informatik
+0,1,TORBEN PEDERSEN,INSTITUT FOR INFORMATIK,Torben Pedersen is an author affiliated with the Institut for Informatik
+0,1,MARKUS VENZIN,INSTITUT FOR INFORMATIK,Markus Venzin is an author affiliated with the Institut for Informatik
+0,1,INSTITUT FOR INFORMATIK,HANDELSHØJSKOLEN,Institut for Informatik is a department of the Copenhagen Business School
+0,1,HANDELSHØJSKOLEN,DENMARK,Copenhagen Business School is located in Denmark
+0,1,HANDELSHØJSKOLEN,FREDERIKSBERG,Copenhagen Business School is located in Frederiksberg
+0,1,HANDELSHØJSKOLEN,KØBENHAVN,Copenhagen Business School is located in København
+0,2,VOLKER MAHNKE,COPENHAGEN BUSINESS SCHOOL,Volker Mahnke is an Associate Professor at Copenhagen Business School
+0,2,TORBEN PEDERSEN,COPENHAGEN BUSINESS SCHOOL,Torben Pedersen is a Professor at Copenhagen Business School
+0,2,MARKUS VENZIN,COPENHAGEN BUSINESS SCHOOL,Markus Venzin is a researcher or professor at Copenhagen Business School
+0,2,COPENHAGEN BUSINESS SCHOOL,DENMARK,Copenhagen Business School is located in Denmark
+0,3,MARKUS VENZIN,COPENHAGEN BUSINESS SCHOOL,Markus Venzin is an Assistant Professor at Copenhagen Business School
+0,4,BOCCONI UNIVERSITY,ITALY,Bocconi University is located in Italy
+0,4,BOCCONI UNIVERSITY,MILANO,Bocconi University is located in Milano
+0,4,M VENZIN,BOCCONI UNIVERSITY,M Venzin is affiliated with Bocconi University
+0,6,EUROPEAN UNION,RUSSIAN DIRECT INVESTMENT FUND,The European Union has imposed sanctions on the Russian Direct Investment Fund
+0,6,EUROPEAN UNION,BELARUSIAN POTASH COMPANY,The European Union has imposed sanctions on the Belarusian Potash Company
+0,6,RUSSIAN DIRECT INVESTMENT FUND,GAZPROM,The Russian Direct Investment Fund has investments in Gazprom
+0,6,BELARUSIAN POTASH COMPANY,URALKALI,The Belarusian Potash Company has partnerships with Uralkali
+0,6,RUSSIA,UKRAINE,Russia's actions in Ukraine have led to EU sanctions
+0,6,BELARUS,RUSSIA,Belarus has supported Russia's actions in Ukraine
+0,6,EUROPEAN UNION,RUSSIA,The European Union has imposed sanctions on Russia
+0,6,EUROPEAN UNION,BELARUS,The European Union has imposed sanctions on Belarus
+0,9,LARRY PAGE,GOOGLE,Larry Page is the co-founder of Google
+0,9,GOOGLE,ALPHABET,Google is a subsidiary of Alphabet
+0,9,LARRY PAGE,ALPHABET,Larry Page is the co-founder of Google and CEO of Alphabet
+0,9,GOOGLE,CALIFORNIA,Google is headquartered in California
+0,13,MARK ZUCKERBERG,FACEBOOK,Mark Zuckerberg is the CEO of Facebook
+0,13,MARK ZUCKERBERG,CONGRESS,Mark Zuckerberg testified before Congress
+0,13,FACEBOOK,CONGRESS,Facebook's CEO Mark Zuckerberg testified before Congress
+0,14,KNOWLEDGE MANAGEMENT TOOLS,ABSORPTIVE CAPACITY,Knowledge management tools predict absorptive capacity
+0,14,ABSORPTIVE CAPACITY,BUSINESS PERFORMANCE,Absorptive capacity predicts business performance
+0,14,MANAGERIAL DISCRETION,ABSORPTIVE CAPACITY,Managerial discretion is used in the development of absorptive capacity
+0,15,STEVE JOBS,"UNIVERSITY OF CALIFORNIA, BERKELEY","Steve Jobs is an alumnus of the University of California, Berkeley"
+0,15,STEVE JOBS,APPLE,Steve Jobs co-founded Apple
+0,15,"UNIVERSITY OF CALIFORNIA, BERKELEY",BERKELEY,"The University of California, Berkeley is located in Berkeley"
+0,15,"UNIVERSITY OF CALIFORNIA, BERKELEY",CALIFORNIA,"The University of California, Berkeley is located in California"
+0,15,APPLE,STEVE JOBS,Steve Jobs co-founded Apple
+0,16,BARTLETT,MNC,Bartlett discussed the importance of knowledge flows between subsidiaries for MNC performance
+0,16,GHOSHAL,MNC,Ghoshal discussed the importance of knowledge flows between subsidiaries for MNC performance
+0,16,GUPTA,MNC,Gupta discussed the importance of knowledge flows between subsidiaries for MNC performance
+0,16,GOVINDARAJAN,MNC,Govindarajan discussed the importance of knowledge flows between subsidiaries for MNC performance
+0,16,BARTLETT,GHOSHAL,Bartlett and Ghoshal co-authored a paper on MNC performance
+0,16,GUPTA,GOVINDARAJAN,Gupta and Govindarajan co-authored a paper on MNC performance
+0,17,LYLES,SALK,Lyles and Salk collaborated on research about the effect of antecedence to knowledge sharing and learning in the external relations of the MNC
+0,17,LANE,LUBATKIN,Lane and Lubatkin collaborated on research about the effect of antecedence to knowledge sharing and learning in the external relations of the MNC
+0,17,LANE,LYLES,Lane and Lyles collaborated on research about the effect of antecedence to knowledge sharing and learning in the external relations of the MNC
+0,17,GUPTA,GOVINDARAJAN,Gupta and Govindarajan collaborated on research about the effect of antecedence to knowledge sharing and learning in the internal relations of the MNC
+0,17,HOLM,PEDERSEN,Holm and Pedersen collaborated on research about the effect of antecedence to knowledge sharing and learning in the internal relations of the MNC
+0,18,"UNIVERSITY OF CALIFORNIA, BERKELEY",STEVE JOBS,"Steve Jobs is a successful alumnus of the University of California, Berkeley"
+0,18,STEVE JOBS,APPLE,Steve Jobs is the co-founder of Apple
+0,18,"UNIVERSITY OF CALIFORNIA, BERKELEY",BERKELEY,"The University of California, Berkeley is located in Berkeley"
+0,18,BERKELEY,CALIFORNIA,Berkeley is a city in California
+0,21,GUPTA,MNC,Gupta wrote about knowledge flows in MNCs
+0,21,GOVINDARAJAN,MNC,Govindarajan wrote about knowledge flows in MNCs
+0,21,GUPTA,GOVINDARAJAN,Gupta and Govindarajan co-authored a study on knowledge flows in MNCs
+0,39,JOHN SMITH,HARVARD UNIVERSITY,John Smith is a researcher at Harvard University
+0,39,HARVARD UNIVERSITY,CAMBRIDGE,Harvard University is located in Cambridge
+0,39,CAMBRIDGE,MASSACHUSETTS,Cambridge is located in Massachusetts
+0,39,JOHN SMITH,CAMBRIDGE,John Smith works in Cambridge
+0,39,JOHN SMITH,MASSACHUSETTS,John Smith works in Massachusetts
+0,41,COHEN,LEVINTHAL,Cohen and Levinthal co-authored a paper on absorptive capacity
+0,42,LANE,LUBATKIN,Lane and Lubatkin collaborated on research in 1998
+0,42,LANE,SALK,Lane and Salk collaborated on research to extend their own work in 1998
+0,42,LUBATKIN,SALK,Lubatkin and Salk are both researchers who collaborated with Lane
+0,44,ZAHRA,GEORGE,Zahra and George co-authored a study in 2002
+0,45,MNC,SUBSIDIARIES,MNC utilizes knowledge from its subsidiaries
+0,47,MINBAEVA,IBM,Minbaeva's research is relevant to companies like IBM
+0,47,MINBAEVA,MICROSOFT,Minbaeva's research is relevant to companies like Microsoft
+0,47,IBM,NEW YORK,IBM operates in cities like New York
+0,47,MICROSOFT,NEW YORK,Microsoft operates in cities like New York
+0,47,IBM,LONDON,IBM operates in cities like London
+0,47,MICROSOFT,LONDON,Microsoft operates in cities like London
+0,48,SUBSIDIARY,MARCH,March has written about knowledge domains relevant to subsidiaries
+0,48,SUBSIDIARY,LEVINTHAL,Levinthal has written about knowledge domains relevant to subsidiaries
+0,48,MARCH,LEVINTHAL,March and Levinthal have co-authored research on knowledge domains
+0,49,GENERAL ELECTRIC,SCHENECTADY,General Electric has a subsidiary based in Schenectady
+0,49,GENERAL ELECTRIC,NEW YORK,General Electric has a subsidiary based in New York
+0,49,JOHN SMITH,GENERAL ELECTRIC,John Smith is the CEO of a subsidiary of General Electric
+0,49,JOHN SMITH,JANE DOE,John Smith is married to Jane Doe
+0,51,COHEN,LEVINTHAL,Cohen and Levinthal collaborated on a study of absorptive capacity in 1990
+0,51,ZAHRA,GEORGE,Zahra and George collaborated on a study of absorptive capacity in 2002
+0,52,"UNIVERSITY OF CALIFORNIA, BERKELEY",BERKELEY,"The University of California, Berkeley is located in Berkeley"
+0,52,"UNIVERSITY OF CALIFORNIA, BERKELEY",CALIFORNIA,"The University of California, Berkeley is located in California"
+0,52,"UNIVERSITY OF CALIFORNIA, BERKELEY",COLLEGE OF ENGINEERING,"The College of Engineering is one of the colleges at the University of California, Berkeley"
+0,52,"UNIVERSITY OF CALIFORNIA, BERKELEY",COLLEGE OF NATURAL RESOURCES,"The College of Natural Resources is one of the colleges at the University of California, Berkeley"
+0,52,"UNIVERSITY OF CALIFORNIA, BERKELEY",GRADUATE SCHOOL OF JOURNALISM,"The Graduate School of Journalism is one of the schools at the University of California, Berkeley"
+0,52,"UNIVERSITY OF CALIFORNIA, BERKELEY",APPLE,"Apple emerged from the University of California, Berkeley"
+0,52,"UNIVERSITY OF CALIFORNIA, BERKELEY",GOOGLE,"Google emerged from the University of California, Berkeley"
+0,55,HEIDELBERGER CEMENT,MNC,Heidelberger Cement is an example of a multinational corporation (MNC)
+0,57,MNC,MAHNKE,MNC is the subject of research by Mahnke
+0,57,MNC,VENZIN,MNC is the subject of research by Venzin
+0,57,MNC,KAUTZ,MNC is the subject of research by Kautz
+0,57,MAHNKE,VENZIN,Mahnke and Venzin are co-researchers
+0,57,MAHNKE,KAUTZ,Mahnke and Kautz are co-researchers
+0,57,VENZIN,KAUTZ,Venzin and Kautz are mentioned in the same context as researchers
+0,60,PARIS,EIFFEL TOWER,The Eiffel Tower is located in Paris
+0,60,PARIS,LOUVRE,The Louvre is located in Paris
+0,60,PARIS,ORSAY,The Orsay is located in Paris
+0,62,WENGER,HEIDELBERGER CEMENT,Wenger studied knowledge integration and creation in Heidelberger Cement
+0,62,SNYDER,HEIDELBERGER CEMENT,Snyder studied knowledge integration and creation in Heidelberger Cement
+0,62,WENGER,SNYDER,Wenger and Snyder collaborated on research about knowledge integration and creation in Heidelberger Cement
+0,66,OSTERLOH,FREY,Osterloh and Frey collaborated on research about knowledge sharing
+0,68,BROWN,DUGUID,Brown and Duguid collaborated on research about knowledge development in teams
+0,68,BOLAND,TENKASI,Boland and Tenkasi collaborated on research about knowledge development in teams
+0,69,SCHUMPETER,GALUNIC,Schumpeter and Galunic are authors who wrote about knowledge creation
+0,69,SCHUMPETER,RODAN,Schumpeter and Rodan are authors who wrote about knowledge creation
+0,69,GALUNIC,RODAN,Galunic and Rodan are co-authors who wrote about knowledge creation in 1998
+0,72,OSTERLOH,FREY,Osterloh and Frey co-authored a paper about motivation for exchanging knowledge between subsidiaries
+0,72,KROGH,WENGER,Krogh and Wenger co-authored papers about motivation for exchanging knowledge between subsidiaries
+0,72,BARTLETT,GHOSHAL,Bartlett and Ghoshal co-authored a paper about motivation for exchanging knowledge between subsidiaries
+0,72,OSTERLOH,KROGH,Osterloh and Krogh wrote about similar topics related to motivation for exchanging knowledge between subsidiaries
+0,72,FREY,WENGER,Frey and Wenger wrote about similar topics related to motivation for exchanging knowledge between subsidiaries
+0,72,SNYDER,GHOSHAL,Snyder and Ghoshal wrote about similar topics related to motivation for exchanging knowledge between subsidiaries
+0,72,OUCHE,BARTLETT,Ouche and Bartlett wrote about similar topics related to motivation for exchanging knowledge between subsidiaries
+0,79,OUCHI,OSTERLOH,Ouchi and Osterloh are researchers who studied horizontal knowledge flows between subsidiaries
+0,79,OUCHI,FREY,Ouchi and Frey are researchers who studied horizontal knowledge flows between subsidiaries
+0,79,OSTERLOH,FREY,Osterloh and Frey are researchers who studied horizontal knowledge flows between subsidiaries
+0,82,JOHN SMITH,NEW YORK,John Smith is leading the company's expansion efforts in New York
+0,82,XYZ INC,NEW YORK,XYZ Inc has a subsidiary company based in New York
+0,82,JOHN SMITH,XYZ INC,John Smith is the CEO of a subsidiary company of XYZ Inc
+0,83,FREY,FOSS,Frey and Foss are researchers who have collaborated on studies of motivation
+0,83,FREY,MAHNKE,Frey and Mahnke are researchers who have collaborated on studies of motivation
+0,83,FREY,LAURSEN,Frey and Laursen are researchers who have collaborated on studies of motivation
+0,83,FOSS,MAHNKE,Foss and Mahnke are researchers who have collaborated on studies of motivation
+0,83,FOSS,LAURSEN,Foss and Laursen are researchers who have collaborated on studies of motivation
+0,83,MAHNKE,LAURSEN,Mahnke and Laursen are researchers who have collaborated on studies of motivation
+0,85,LEARNING SYSTEM,ABSORPTIVE CAPACITY,Learning system influences absorptive capacity
+0,85,COMMUNITIES OF PRACTICE,ABSORPTIVE CAPACITY,Communities of practice influence absorptive capacity
+0,85,CORPORATE UNIVERSITY,ABSORPTIVE CAPACITY,Corporate university influences absorptive capacity
+0,85,BENCHMARKING,ABSORPTIVE CAPACITY,Benchmarking influences absorptive capacity
+0,85,REWARD-SYSTEMS,ABSORPTIVE CAPACITY,Reward-systems influence absorptive capacity
+0,86,NELSON,WINTER,Nelson and Winter collaborated on research about knowledge acquisition and assimilation in 1982
+0,86,NELSON,HEDLUND,Nelson and Hedlund both researched knowledge acquisition and assimilation
+0,86,NELSON,SZULANSKI,Nelson and Szulanski both researched knowledge acquisition and assimilation
+0,86,WINTER,HEDLUND,Winter and Hedlund both researched knowledge acquisition and assimilation
+0,86,WINTER,SZULANSKI,Winter and Szulanski both researched knowledge acquisition and assimilation
+0,86,HEDLUND,SZULANSKI,Hedlund and Szulanski both researched knowledge acquisition and assimilation
+0,87,NEW YORK,STATUE OF LIBERTY,The Statue of Liberty is located in New York
+0,87,NEW YORK,CENTRAL PARK,Central Park is located in New York
+0,87,NEW YORK,MANHATTAN,Manhattan is a neighborhood in New York
+0,87,NEW YORK,BROOKLYN,Brooklyn is a neighborhood in New York
+0,87,THE NEW YORK TIMES,NEW YORK,The New York Times is published in New York
+0,87,ERIC ADAMS,NEW YORK,Eric Adams is the mayor of New York
+0,87,ERIC ADAMS,THE NEW YORK TIMES,Eric Adams is a strong supporter of The New York Times
+0,92,NELSON,WINTER,Nelson and Winter are co-authors of a research paper
+0,92,NELSON & WINTER,NELSON,Nelson is a member of the research organization Nelson & Winter
+0,92,NELSON & WINTER,WINTER,Winter is a member of the research organization Nelson & Winter
+0,100,HEIDELBERGCENT,GERMANY,HeidelbergCement is a German company
+0,104,STEVE JOBS,APPLE,Steve Jobs co-founded Apple
+0,104,STEVE WOZNIAK,APPLE,Steve Wozniak co-founded Apple
+0,104,APPLE,CUPERTINO,Apple is headquartered in Cupertino
+0,104,APPLE,CALIFORNIA,Apple is headquartered in California
+0,109,LANE,LUBATKIN,Lane and Lubatkin co-authored a study in 1998
+0,109,GUPTA,GOVINDARAJAN,Gupta and Govindarajan co-authored a study in 2000
+0,111,JOHN SMITH,NEW YORK,John Smith is leading the company's expansion in New York
+0,111,JOHN SMITH,BROOKLYN,John Smith's company is working with a startup in Brooklyn
+0,119,JOHN SMITH,NEW YORK,John Smith is leading the company's expansion efforts in New York
+0,119,NEW YORK,LONDON,The company based in New York is a subsidiary of a corporation based in London
+0,125,LARRY PAGE,GOOGLE,Larry Page is a founder of Google
+0,125,SERGEY BRIN,GOOGLE,Sergey Brin is a founder of Google
+0,125,LARRY PAGE,SERGEY BRIN,Larry Page and Sergey Brin are friends
+0,127,JEFF BEZOS,AMAZON,Jeff Bezos is the founder of Amazon
+0,143,JOHN SMITH,NEW YORK,John Smith is leading the company's expansion efforts in New York
+0,143,XYZ INC,NEW YORK,XYZ Inc has a subsidiary company based in New York
+0,143,JOHN SMITH,XYZ INC,John Smith is the CEO of a subsidiary company of XYZ Inc
+0,143,XYZ INC,MANHATTAN,XYZ Inc has a subsidiary company with headquarters in Manhattan
+0,143,JOHN SMITH,MANHATTAN,John Smith is the CEO of a company with headquarters in Manhattan
+0,143,NEW YORK,MANHATTAN,Manhattan is a location within New York
+0,145,AMAZON,JEFF BEZOS,Jeff Bezos is the founder of Amazon
+0,145,AMAZON,SEATTLE,Amazon was founded in Seattle
+0,145,AMAZON,WASHINGTON,Amazon was founded in Washington
+0,152,"UNIVERSITY OF CALIFORNIA, BERKELEY",BERKELEY,"The University of California, Berkeley is located in Berkeley"
+0,152,"UNIVERSITY OF CALIFORNIA, BERKELEY",CALIFORNIA,"The University of California, Berkeley is located in California"
+0,152,"UNIVERSITY OF CALIFORNIA, BERKELEY",COLLEGE OF ENGINEERING,"The College of Engineering is one of the colleges in the University of California, Berkeley"
+0,152,"UNIVERSITY OF CALIFORNIA, BERKELEY",COLLEGE OF NATURAL RESOURCES,"The College of Natural Resources is one of the colleges in the University of California, Berkeley"
+0,152,"UNIVERSITY OF CALIFORNIA, BERKELEY",GRADUATE SCHOOL OF JOURNALISM,"The Graduate School of Journalism is one of the schools in the University of California, Berkeley"
+0,152,ROBERT REICH,"UNIVERSITY OF CALIFORNIA, BERKELEY","Robert Reich is a professor of public policy at the University of California, Berkeley"
+0,166,XYZ INC.,SAN FRANCISCO,XYZ Inc.'s headquarters is located in San Francisco
+0,166,XYZ INC.,CALIFORNIA,XYZ Inc.'s headquarters is located in California
+0,166,JANE SMITH,XYZ INC.,Jane Smith is the CEO of XYZ Inc.
+0,167,KOGUT,ZANDER,Kogut and Zander collaborated on research
+0,167,SZULANSKI,SIMONIN,Szulanski and Simonin are both researchers in the same field
+0,171,PARIS,FRANCE,Paris is the capital of France
+0,176,JOHN SMITH,XYZ INC,John Smith is the CEO of a subsidiary of XYZ Inc
+0,176,JANE DOE,XYZ INC,Jane Doe is the CFO of a subsidiary of XYZ Inc
+0,176,JOHN SMITH,JANE DOE,John Smith and Jane Doe are working together to ensure a smooth transition
+0,176,XYZ INC,NEW YORK,XYZ Inc has a subsidiary based in New York
+0,176,XYZ INC,LOS ANGELES,XYZ Inc has a subsidiary expanding operations in Los Angeles
+0,176,XYZ INC,CHICAGO,XYZ Inc has a subsidiary with an office in Chicago
+0,176,XYZ INC,HOUSTON,XYZ Inc has a subsidiary with an office in Houston
+0,182,AMAZON,ZAPPOS,Amazon acquired Zappos in 2009
+0,188,GOOGLE,LARRY PAGE,Larry Page is the co-founder of Google
+0,188,GOOGLE,SERGEY BRIN,Sergey Brin is the co-founder of Google
+0,188,GOOGLE,MOUNTAIN VIEW,Google is headquartered in Mountain View
+0,188,GOOGLE,CALIFORNIA,Google is headquartered in California
+0,188,LARRY PAGE,STANFORD UNIVERSITY,Larry Page was a Ph.D. student at Stanford University
+0,188,SERGEY BRIN,STANFORD UNIVERSITY,Sergey Brin was a Ph.D. student at Stanford University
+0,193,"UNIVERSITY OF CALIFORNIA, BERKELEY",BERKELEY,"The University of California, Berkeley is located in Berkeley"
+0,193,"UNIVERSITY OF CALIFORNIA, BERKELEY",CALIFORNIA,"The University of California, Berkeley is located in California"
+0,193,STEVE JOBS,"UNIVERSITY OF CALIFORNIA, BERKELEY","Steve Jobs is an alumnus of the University of California, Berkeley"
+0,193,MARK ZUCKERBERG,"UNIVERSITY OF CALIFORNIA, BERKELEY","Mark Zuckerberg is an alumnus of the University of California, Berkeley"
+0,201,UNITED STATES,CHINA,The United States and China are engaged in a trade war
+0,201,WORLD TRADE ORGANIZATION,UNITED STATES,The World Trade Organization is calling for calm and restraint in the trade war between the United States and China
+0,201,WORLD TRADE ORGANIZATION,CHINA,The World Trade Organization is calling for calm and restraint in the trade war between China and the United States
+0,201,INTERNATIONAL MONETARY FUND,UNITED STATES,The International Monetary Fund is warning of the dangers of a prolonged trade war between the United States and China
+0,201,INTERNATIONAL MONETARY FUND,CHINA,The International Monetary Fund is warning of the dangers of a prolonged trade war between China and the United States
+0,203,GROUP BENCHMARK REPORT,TABLE 1,Group benchmark report is shown in Table 1
+0,203,COMMUNITIES OF PRACTICE,TABLE 1,Communities of practice is shown in Table 1
+0,203,CORPORATE UNIVERSITY,TABLE 1,Corporate university is shown in Table 1
+0,205,JOHN SMITH,EUROPEAN UNION,John Smith's company has been working with the European Union to establish new trade agreements
+0,205,JOHN SMITH,NEW YORK,John Smith's company is based in New York
+0,205,EUROPEAN UNION,EUROPE,The European Union is an organization that operates in Europe
+0,205,JOHN SMITH,EUROPE,John Smith's company has been expanding its operations in Europe
+0,206,LARRY PAGE,GOOGLE,Larry Page is the co-founder of Google
+0,206,SERGEY BRIN,GOOGLE,Sergey Brin is the co-founder of Google
+0,206,LARRY PAGE,STANFORD UNIVERSITY,Larry Page was a Ph.D. student at Stanford University
+0,206,SERGEY BRIN,STANFORD UNIVERSITY,Sergey Brin was a Ph.D. student at Stanford University
+0,206,STANFORD UNIVERSITY,CALIFORNIA,Stanford University is located in California
+0,213,JOHN SMITH,NEW YORK,John Smith is leading the company's expansion efforts in New York
+0,213,XYZ INC,NEW YORK,XYZ Inc has a subsidiary company based in New York
+0,213,JOHN SMITH,XYZ INC,John Smith is the CEO of a subsidiary company of XYZ Inc
+0,219,GOOGLE,LARRY PAGE,Larry Page is a co-founder of Google
+0,219,GOOGLE,SERGEY BRIN,Sergey Brin is a co-founder of Google
+0,219,GOOGLE,MOUNTAIN VIEW,Google has its headquarters in Mountain View
+0,219,GOOGLE,CALIFORNIA,Google has its headquarters in California
+0,219,LARRY PAGE,SERGEY BRIN,Larry Page and Sergey Brin are co-founders of Google
+0,237,JOHN SMITH,HARVARD UNIVERSITY,John Smith works at Harvard University
+0,237,JOHN SMITH,CURRENT STUDY,John Smith conducted the current study
+0,237,NATIONAL SCIENCE FOUNDATION,CURRENT STUDY,The National Science Foundation funded the current study
+0,248,ANDERSSON,STRATEGIC MANAGEMENT JOURNAL,Andersson published a paper in the Strategic Management Journal
+0,248,FORSGREN,STRATEGIC MANAGEMENT JOURNAL,Forsgren published a paper in the Strategic Management Journal
+0,248,PEDERSEN,STRATEGIC MANAGEMENT JOURNAL,Pedersen published a paper in the Strategic Management Journal
+0,248,ANDERSSON,FORSGREN,Andersson and Forsgren co-authored a paper
+0,248,ANDERSSON,PEDERSEN,Andersson and Pedersen co-authored a paper
+0,248,FORSGREN,PEDERSEN,Forsgren and Pedersen co-authored a paper
+0,249,APPLE,STEVE JOBS,Steve Jobs co-founded Apple
+0,249,APPLE,STEVE WOZNIAK,Steve Wozniak co-founded Apple
+0,249,APPLE,CUPERTINO,Apple is based in Cupertino
+0,249,APPLE,CALIFORNIA,Apple is based in California
+0,249,STEVE JOBS,STEVE WOZNIAK,Steve Jobs and Steve Wozniak co-founded Apple together
+0,249,STEVE JOBS,CUPERTINO,Steve Jobs co-founded Apple which is based in Cupertino
+0,249,STEVE JOBS,CALIFORNIA,Steve Jobs co-founded Apple which is based in California
+0,249,STEVE WOZNIAK,CUPERTINO,Steve Wozniak co-founded Apple which is based in Cupertino
+0,249,STEVE WOZNIAK,CALIFORNIA,Steve Wozniak co-founded Apple which is based in California
+0,254,JOHN SMITH,NEW YORK,John Smith is the CEO of a company based in New York
+0,254,JOHN SMITH,LONDON,John Smith is the CEO of a company with a subsidiary in London
+0,254,NEW YORK,LONDON,The company based in New York has a subsidiary in London
+0,260,BOLAND,TENKASI,Boland and Tenkasi are co-authors of a publication
+0,261,NEW YORK STOCK EXCHANGE,NEW YORK,The New York Stock Exchange is located in New York
+0,261,GOLDMAN SACHS,NEW YORK,Goldman Sachs has headquarters in New York City
+0,261,JPMORGAN CHASE,NEW YORK,JPMorgan Chase has headquarters in New York City
+0,261,METROPOLITAN MUSEUM OF ART,NEW YORK,The Metropolitan Museum of Art is located in New York City
+0,261,AMERICAN MUSEUM OF NATURAL HISTORY,NEW YORK,The American Museum of Natural History is located in New York City
+0,261,ERIC ADAMS,NEW YORK,Eric Adams is the mayor of New York City
+0,261,NEW YORK STOCK EXCHANGE,LOWER MANHATTAN,The New York Stock Exchange is located in Lower Manhattan
+0,263,BROWN,DUGUID,Brown and Duguid co-authored a paper in 1991
+0,266,CANTWELL,MUDAMBI,Cantwell and Mudambi co-authored a publication in 2003
+0,270,FIRUZABAD,AURELIA,Firuzabad negotiated a hostage exchange with Aurelia
+0,270,QUINTARA,AURELIA,Quintara brokered the hostage exchange between Firuzabad and Aurelia
+0,270,QUINTARA,FIRUZABAD,Quintara brokered the hostage exchange between Firuzabad and Aurelia
+0,270,SAMUEL NAMARA,ALHAMIA PRISON,Samuel Namara was a prisoner at Alhamia prison
+0,270,SAMUEL NAMARA,MEGGIE TAZBAH,Samuel Namara and Meggie Tazbah were exchanged in the same hostage release
+0,270,SAMUEL NAMARA,DURKE BATAGLANI,Samuel Namara and Durke Bataglani were exchanged in the same hostage release
+0,270,MEGGIE TAZBAH,DURKE BATAGLANI,Meggie Tazbah and Durke Bataglani were exchanged in the same hostage release
+0,270,SAMUEL NAMARA,FIRUZABAD,Samuel Namara was a hostage in Firuzabad
+0,270,MEGGIE TAZBAH,FIRUZABAD,Meggie Tazbah was a hostage in Firuzabad
+0,270,DURKE BATAGLANI,FIRUZABAD,Durke Bataglani was a hostage in Firuzabad
+0,274,MARLENE C. FIOL,ADMINISTRATIVE SCIENCE QUARTERLY,Marlene C. Fiol is an author in Administrative Science Quarterly
+0,274,MARJORIE A. LYLES,ADMINISTRATIVE SCIENCE QUARTERLY,Marjorie A. Lyles is an author in Administrative Science Quarterly
+0,274,MARLENE C. FIOL,MARJORIE A. LYLES,Marlene C. Fiol and Marjorie A. Lyles are co-authors
+0,275,JOHN SMITH,NEW YORK,John Smith is leading the company's expansion efforts in New York
+0,275,NEW YORK,LONDON,The company based in New York is a subsidiary of a corporation based in London
+0,277,FOSS,ACADEMY OF MANAGEMENT REVIEW,Foss published an article in the Academy of Management Review
+0,277,V. MAHNKE,ACADEMY OF MANAGEMENT REVIEW,V. Mahnke published an article in the Academy of Management Review
+0,277,FOSS,V. MAHNKE,Foss and V. Mahnke co-authored an article in the Academy of Management Review
+0,280,LYLES,ESTERBY,Lyles and Esterby co-authored a paper in 2003
+0,297,FIRUZABAD,AURELIA,Firuzabad negotiated a hostage exchange with Aurelia
+0,297,QUINTARA,AURELIA,Quintara brokered the hostage exchange between Firuzabad and Aurelia
+0,297,QUINTARA,FIRUZABAD,Quintara brokered the hostage exchange between Firuzabad and Aurelia
+0,297,SAMUEL NAMARA,ALHAMIA PRISON,Samuel Namara was a prisoner at Alhamia prison
+0,297,SAMUEL NAMARA,MEGGIE TAZBAH,Samuel Namara and Meggie Tazbah were exchanged in the same hostage release
+0,297,SAMUEL NAMARA,DURKE BATAGLANI,Samuel Namara and Durke Bataglani were exchanged in the same hostage release
+0,297,MEGGIE TAZBAH,DURKE BATAGLANI,Meggie Tazbah and Durke Bataglani were exchanged in the same hostage release
+0,297,SAMUEL NAMARA,FIRUZABAD,Samuel Namara was a hostage in Firuzabad
+0,297,MEGGIE TAZBAH,FIRUZABAD,Meggie Tazbah was a hostage in Firuzabad
+0,297,DURKE BATAGLANI,FIRUZABAD,Durke Bataglani was a hostage in Firuzabad
+0,298,J. M. GERINGER,L. HEBERT,J. M. Geringer and L. Hebert co-authored a paper together
+0,299,EUROPEAN UNION,UNITED STATES,The European Union and the United States have agreed to a new trade agreement
+0,299,EUROPEAN COMMISSION,UNITED STATES,The European Commission negotiated a trade agreement with the United States
+0,299,OFFICE OF THE UNITED STATES TRADE REPRESENTATIVE,EUROPEAN UNION,The Office of the United States Trade Representative negotiated a trade agreement with the European Union
+0,299,URSULA VON DER LEYEN,EUROPEAN COMMISSION,Ursula von der Leyen is the leader of the European Commission
+0,299,KATHERINE TAI,OFFICE OF THE UNITED STATES TRADE REPRESENTATIVE,Katherine Tai is the leader of the Office of the United States Trade Representative
+0,299,EUROPEAN COMMISSION,EUROPEAN UNION,The European Commission is an organization of the European Union
+0,299,OFFICE OF THE UNITED STATES TRADE REPRESENTATIVE,UNITED STATES,The Office of the United States Trade Representative is an organization of the United States
+0,304,GUPTA,GOVINDARAJAN,Gupta and Govindarajan are co-authors of a publication
+0,307,"UNIVERSITY OF CALIFORNIA, BERKELEY",BERKELEY,"The University of California, Berkeley is located in Berkeley"
+0,307,"UNIVERSITY OF CALIFORNIA, BERKELEY",CALIFORNIA,"The University of California, Berkeley is located in California"
+0,307,CAROL CHRIST,"UNIVERSITY OF CALIFORNIA, BERKELEY","Carol Christ is the Chancellor of the University of California, Berkeley"
+0,320,ELON MUSK,TESLA,Elon Musk is the CEO of Tesla
+0,320,TESLA,EUROPE,Tesla is expanding its operations to Europe
+0,320,ELON MUSK,EUROPE,Elon Musk announced Tesla's expansion to Europe
+0,321,HOLMSTRÖM,MILGROM,Holmström and Milgrom co-authored a paper in 1991
+0,324,K. MAHNKE,V. MAHNKE,K. Mahnke and V. Mahnke are likely related as they share the same last name
+0,330,GOOGLE,ORGANIZATIONAL,Google is an example of an organization that benefits from organizational learning
+0,330,AMAZON,ORGANIZATIONAL,Amazon is an example of an organization that benefits from organizational learning
+0,330,INDIVIDUAL,ORGANIZATIONAL,Individual learning is linked to organizational learning
+0,330,GOOGLE,AMAZON,Google and Amazon are both companies that benefit from individual and organizational learning
+0,332,B KOGUT,U ZANDER,B Kogut and U Zander are co-authors of a publication
+0,335,B KOGUT,U ZANDER,B Kogut and U Zander are co-authors of a publication
+0,338,KROGH,OXFORD UNIVERSITY PRESS,Krogh is a co-author of a book published by Oxford University Press
+0,338,OCHIJO,OXFORD UNIVERSITY PRESS,Ochijo is a co-author of a book published by Oxford University Press
+0,338,NONAKA,OXFORD UNIVERSITY PRESS,Nonaka is a co-author of a book published by Oxford University Press
+0,338,KROGH,OCHIJO,Krogh and Ochijo are co-authors of the book Enabling Knowledge Creation
+0,338,KROGH,NONAKA,Krogh and Nonaka are co-authors of the book Enabling Knowledge Creation
+0,338,OCHIJO,NONAKA,Ochijo and Nonaka are co-authors of the book Enabling Knowledge Creation
+0,342,PETER LANE,STRATEGIC MANAGEMENT JOURNAL,Peter Lane is an author of an article in the Strategic Management Journal
+0,342,JANE E. SALK,STRATEGIC MANAGEMENT JOURNAL,Jane E. Salk is an author of an article in the Strategic Management Journal
+0,342,MARJORIE A. LYLES,STRATEGIC MANAGEMENT JOURNAL,Marjorie A. Lyles is an author of an article in the Strategic Management Journal
+0,342,PETER LANE,JANE E. SALK,Peter Lane and Jane E. Salk are co-authors of an article in the Strategic Management Journal
+0,342,PETER LANE,MARJORIE A. LYLES,Peter Lane and Marjorie A. Lyles are co-authors of an article in the Strategic Management Journal
+0,342,JANE E. SALK,MARJORIE A. LYLES,Jane E. Salk and Marjorie A. Lyles are co-authors of an article in the Strategic Management Journal
+0,343,APPLE,STEVE JOBS,Steve Jobs co-founded Apple
+0,343,APPLE,STEVE WOZNIAK,Steve Wozniak co-founded Apple
+0,343,APPLE,CUPERTINO,Apple is based in Cupertino
+0,343,APPLE,CALIFORNIA,Apple is based in California
+0,343,STEVE JOBS,STEVE WOZNIAK,Steve Jobs and Steve Wozniak co-founded Apple together
+0,343,STEVE JOBS,CUPERTINO,Steve Jobs co-founded Apple which is based in Cupertino
+0,343,STEVE JOBS,CALIFORNIA,Steve Jobs co-founded Apple which is based in California
+0,343,STEVE WOZNIAK,CUPERTINO,Steve Wozniak co-founded Apple which is based in Cupertino
+0,343,STEVE WOZNIAK,CALIFORNIA,Steve Wozniak co-founded Apple which is based in California
+0,346,LAURSEN K,V MAHNKE,Laursen K and V Mahnke co-authored a paper in 2001
+0,349,LEONARD-BARTON,SENSIPER,Leonard-Barton and Sensiper co-authored a publication in 1998
+0,350,TIM COOK,APPLE,Tim Cook is the CEO of Apple
+0,353,NEW YORK,STATUE OF LIBERTY,The Statue of Liberty is located in New York
+0,353,NEW YORK,CENTRAL PARK,Central Park is located in New York
+0,353,NEW YORK,MANHATTAN,Manhattan is a neighborhood in New York
+0,353,NEW YORK,BROOKLYN,Brooklyn is a neighborhood in New York
+0,353,NEW YORK CITY POLICE DEPARTMENT,NEW YORK,The New York City Police Department is responsible for maintaining law and order in New York
+0,353,JAMES O'NEILL,NEW YORK CITY POLICE DEPARTMENT,James O'Neill is the Commissioner of the New York City Police Department
+0,355,MARJORIE A. LYLES,JANE E. SALK,Marjorie A. Lyles and Jane E. Salk are co-authors of a publication
+0,357,MAHNKE,JOURNAL OF INTERNATIONAL BUSINESS STUDIES,Mahnke published an article in the Journal of International Business Studies
+0,357,VENZIN,JOURNAL OF INTERNATIONAL BUSINESS STUDIES,Venzin published an article in the Journal of International Business Studies
+0,357,MAHNKE,VENZIN,Mahnke and Venzin co-authored an article in the Journal of International Business Studies
+0,362,MICHAILOVA,K. HUSTED,Michailova and K. Husted co-authored a paper in 2003
+0,374,STEPHEN HAWKING,UNIVERSITY OF OXFORD,Stephen Hawking is a notable alumnus of the University of Oxford
+0,374,UNIVERSITY OF OXFORD,OXFORD,"The University of Oxford is located in Oxford, England"
+0,374,OXFORD,ENGLAND,Oxford is a location in England
+0,375,JOHN SMITH,NEW YORK,John Smith is leading the company's expansion efforts in New York
+0,375,NEW YORK,LONDON,The company based in New York is a subsidiary of a corporation based in London
+0,379,"UNIVERSITY OF CALIFORNIA, BERKELEY",COLLEGE OF ENGINEERING,"The College of Engineering is one of the colleges in the University of California, Berkeley"
+0,379,"UNIVERSITY OF CALIFORNIA, BERKELEY",COLLEGE OF NATURAL RESOURCES,"The College of Natural Resources is one of the colleges in the University of California, Berkeley"
+0,379,"UNIVERSITY OF CALIFORNIA, BERKELEY",GRADUATE SCHOOL OF JOURNALISM,"The Graduate School of Journalism is one of the schools in the University of California, Berkeley"
+0,379,"UNIVERSITY OF CALIFORNIA, BERKELEY",BERKELEY,"The University of California, Berkeley is located in Berkeley"
+0,379,"UNIVERSITY OF CALIFORNIA, BERKELEY",CALIFORNIA,"The University of California, Berkeley is located in California"
+0,388,THE UNIVERSITY OF CAMBRIDGE,CAMBRIDGE,The University of Cambridge is located in Cambridge
+0,388,CAMBRIDGE,ENGLAND,Cambridge is a city in England
+0,389,ELON MUSK,TESLA,Elon Musk is the CEO of Tesla
+0,389,TESLA,CHINA,Tesla is expanding its operations to China
+0,389,NEW YORK TIMES,TESLA,The New York Times reported on Tesla's expansion to China
+0,389,ELON MUSK,CHINA,Elon Musk announced Tesla's expansion to China
+0,392,"SPENCE, A. M.",JOURNAL OF INTERNATIONAL BUSINESS STUDIES,"Spence, A. M. published an article in the Journal of International Business Studies"
+0,400,W. TSAI,MANAGEMENT INTERNATIONAL REVIEW,W. Tsai has published in Management International Review
+0,400,S. GHOSHAL,MANAGEMENT INTERNATIONAL REVIEW,S. Ghoshal has published in Management International Review
+0,400,W. TSAI,S. GHOSHAL,W. Tsai and S. Ghoshal are co-authors

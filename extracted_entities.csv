@@ -1,0 +1,730 @@
+doc_idx,chunk_idx,Entity,Type,Description
+0,0,VOLKER MAHNKE,PERSON,Volker Mahnke is a researcher who published a paper on knowledge management in 2003
+0,0,TORBEN PEDERSEN,PERSON,Torben Pedersen is a researcher who published a paper on knowledge management in 2003
+0,0,MARKUS VENZIN,PERSON,Markus Venzin is a researcher who published a paper on knowledge management in 2003
+0,0,CBS RESEARCH PORTAL,ORGANIZATION,CBS Research Portal is a platform where research papers are published
+0,0,CBS,ORGANIZATION,CBS is an institution that hosts the CBS Research Portal
+0,1,VOLKER MAHNKE,PERSON,Author of the working paper
+0,1,TORBEN PEDERSEN,PERSON,Author of the working paper
+0,1,MARKUS VENZIN,PERSON,Author of the working paper
+0,1,INSTITUT FOR INFORMATIK,ORGANIZATION,Department of Informatics at the Copenhagen Business School
+0,1,HANDELSHØJSKOLEN,ORGANIZATION,Copenhagen Business School
+0,1,DENMARK,GEO,Country where the Copenhagen Business School is located
+0,1,FREDERIKSBERG,GEO,City where the Copenhagen Business School is located
+0,1,KØBENHAVN,GEO,City where the Copenhagen Business School is located
+0,2,VOLKER MAHNKE,PERSON,Associate Professor at Copenhagen Business School
+0,2,TORBEN PEDERSEN,PERSON,Professor at Copenhagen Business School
+0,2,MARKUS VENZIN,PERSON,Researcher or professor at Copenhagen Business School
+0,2,COPENHAGEN BUSINESS SCHOOL,ORGANIZATION,"Business school where Volker Mahnke, Torben Pedersen, and Markus Venzin work"
+0,2,DENMARK,GEO,Country where Copenhagen Business School is located
+0,3,COPENHAGEN BUSINESS SCHOOL,ORGANIZATION,Copenhagen Business School is an educational institution located in Denmark
+0,3,DENMARK,GEO,Denmark is a country where Copenhagen Business School is located
+0,3,MARKUS VENZIN,PERSON,Markus Venzin is an Assistant Professor at Copenhagen Business School
+0,4,BOCCONI UNIVERSITY,ORGANIZATION,"Bocconi University is an institution located in Milano, Italy"
+0,4,ITALY,GEO,Italy is the country where Bocconi University is located
+0,4,MILANO,GEO,Milano is the city where Bocconi University is located
+0,4,M VENZIN,PERSON,M Venzin is a person affiliated with Bocconi University
+0,5,MNC,ORGANIZATION,"MNC refers to a multinational corporation, which is a company that operates in multiple countries"
+0,6,EUROPEAN UNION,ORGANIZATION,The European Union is an organization that has imposed sanctions on several Russian and Belarusian individuals and entities
+0,6,RUSSIAN DIRECT INVESTMENT FUND,ORGANIZATION,"The Russian Direct Investment Fund is a sovereign wealth fund of the Russian Federation with investments in several companies, including Gazprom"
+0,6,BELARUSIAN POTASH COMPANY,ORGANIZATION,"The Belarusian Potash Company is a state-owned company in Belarus with partnerships with several companies, including Uralkali"
+0,6,GAZPROM,ORGANIZATION,Gazprom is a Russian energy company with investments from the Russian Direct Investment Fund
+0,6,URALKALI,ORGANIZATION,Uralkali is a Russian fertilizer company with partnerships with the Belarusian Potash Company
+0,6,RUSSIA,GEO,Russia is a country whose actions in Ukraine have led to EU sanctions
+0,6,BELARUS,GEO,Belarus is a country whose support for Russia's actions in Ukraine has led to EU sanctions
+0,6,UKRAINE,GEO,Ukraine is a country where Russia's actions have led to EU sanctions on Russia and Belarus
+0,7,KNOWLEDGE MANAGEMENT TOOLS,ORGANIZATION,Knowledge management tools are used to improve absorptive capacity and knowledge inflows
+0,8,MNC,ORGANIZATION,Multinational Corporation where knowledge flows are studied
+0,9,GOOGLE,ORGANIZATION,Google is a technology company
+0,9,ALPHABET,ORGANIZATION,Alphabet is the parent company of Google
+0,9,LARRY PAGE,PERSON,Larry Page is the co-founder of Google
+0,9,CALIFORNIA,GEO,California is the state where Google is headquartered
+0,10,HEIDELBERGER CEMENT,ORGANIZATION,Heidelberger Cement is a German MNC that applied knowledge management tools in subsidiaries to improve business performance
+0,10,GERMANY,GEO,Country where Heidelberger Cement is based
+0,11,COMMUNITIES OF PRACTICE,ORGANIZATION,Communities of practice are a type of knowledge management tool
+0,11,CORPORATE UNIVERSITY,ORGANIZATION,Corporate university is a type of knowledge management tool
+0,11,GROUP BENCHMARKING REPORT,ORGANIZATION,Group benchmarking report is a type of knowledge management tool
+0,11,LEARNING SYSTEM,ORGANIZATION,Learning system is a type of knowledge management tool
+0,11,REWARD SYSTEMS,ORGANIZATION,Reward systems are a type of knowledge management tool
+0,12,SUBSIDIARY,ORGANIZATION,A subsidiary is an organization that is owned or controlled by another company
+0,13,FACEBOOK,ORGANIZATION,Facebook's CEO Mark Zuckerberg testified before Congress
+0,13,MARK ZUCKERBERG,PERSON,Mark Zuckerberg is the CEO of Facebook who testified before Congress
+0,13,CONGRESS,ORGANIZATION,Congress is the legislative body where Mark Zuckerberg testified
+0,14,KNOWLEDGE MANAGEMENT TOOLS,ORGANIZATION,Knowledge management tools are used to predict absorptive capacity and knowledge inflow
+0,14,MANAGERIAL DISCRETION,ORGANIZATION,Managerial discretion is used in the development of a unit’s absorptive capacity
+0,14,ABSORPTIVE CAPACITY,ORGANIZATION,Absorptive capacity is an endogenous variable that predicts knowledge inflow and business performance
+0,14,BUSINESS PERFORMANCE,ORGANIZATION,Business performance is predicted by knowledge inflow on a subsidiary level
+0,15,"UNIVERSITY OF CALIFORNIA, BERKELEY",ORGANIZATION,"A public research university located in Berkeley, California, known for academic excellence and research opportunities"
+0,15,BERKELEY,GEO,"A city in California where the University of California, Berkeley is located"
+0,15,CALIFORNIA,GEO,"A state in the United States where the University of California, Berkeley is located"
+0,15,STEVE JOBS,PERSON,"A successful alumnus of the University of California, Berkeley, who co-founded Apple"
+0,15,APPLE,ORGANIZATION,A company co-founded by Steve Jobs
+0,16,MNC,ORGANIZATION,A modern multinational corporation with subsidiaries and knowledge flows
+0,16,BARTLETT,PERSON,Author who discussed the importance of knowledge flows between subsidiaries for MNC performance
+0,16,GHOSHAL,PERSON,Author who discussed the importance of knowledge flows between subsidiaries for MNC performance
+0,16,GUPTA,PERSON,Author who discussed the importance of knowledge flows between subsidiaries for MNC performance
+0,16,GOVINDARAJAN,PERSON,Author who discussed the importance of knowledge flows between subsidiaries for MNC performance
+0,17,LYLES,PERSON,Lyles is a researcher who studied the effect of antecedence to knowledge sharing and learning in the external relations of the MNC
+0,17,SALK,PERSON,Salk is a researcher who studied the effect of antecedence to knowledge sharing and learning in the external relations of the MNC
+0,17,LANE,PERSON,Lane is a researcher who studied the effect of antecedence to knowledge sharing and learning in the external relations of the MNC
+0,17,LUBATKIN,PERSON,Lubatkin is a researcher who studied the effect of antecedence to knowledge sharing and learning in the external relations of the MNC
+0,17,SIMONIN,PERSON,Simonin is a researcher who studied the effect of antecedence to knowledge sharing and learning in the external relations of the MNC
+0,17,GUPTA,PERSON,Gupta is a researcher who studied the effect of antecedence to knowledge sharing and learning in the internal relations of the MNC
+0,17,GOVINDARAJAN,PERSON,Govindarajan is a researcher who studied the effect of antecedence to knowledge sharing and learning in the internal relations of the MNC
+0,17,HANSEN,PERSON,Hansen is a researcher who studied the effect of antecedence to knowledge sharing and learning in the internal relations of the MNC
+0,17,HOLM,PERSON,Holm is a researcher who studied the effect of antecedence to knowledge sharing and learning in the internal relations of the MNC
+0,17,PEDERSEN,PERSON,Pedersen is a researcher who studied the effect of antecedence to knowledge sharing and learning in the internal relations of the MNC
+0,17,MINBAEVA,PERSON,Minbaeva is a researcher who studied the effect of antecedence to knowledge sharing and learning in the internal relations of the MNC
+0,18,"UNIVERSITY OF CALIFORNIA, BERKELEY",ORGANIZATION,"A public research university located in Berkeley, California, known for its academic excellence and research opportunities"
+0,18,BERKELEY,GEO,"A city in California where the University of California, Berkeley is located"
+0,18,CALIFORNIA,GEO,"A state in the United States where the University of California, Berkeley is located"
+0,18,STEVE JOBS,PERSON,"The co-founder of Apple and a successful alumnus of the University of California, Berkeley"
+0,18,APPLE,ORGANIZATION,A technology company co-founded by Steve Jobs
+0,19,ANDERSSON,PERSON,Andersson is a researcher who has studied the relation between knowledge flows and subsidiary performance
+0,20,MNC,ORGANIZATION,MNC refers to a multinational corporation
+0,21,MNC,ORGANIZATION,"Multinational Corporation, a company that operates in multiple countries"
+0,21,GUPTA,PERSON,Author who wrote about knowledge flows in MNCs
+0,21,GOVINDARAJAN,PERSON,Author who wrote about knowledge flows in MNCs
+0,24,ZAHRA,PERSON,Zahra is a researcher who has written about absorptive capacity
+0,24,GEORGE,PERSON,George is a researcher who has written about absorptive capacity
+0,25,FOSS,PERSON,Foss is a researcher who has studied absorptive capacity
+0,25,PEDERSEN,PERSON,Pedersen is a researcher who has studied absorptive capacity
+0,25,MINBAEVA,PERSON,Minbaeva is a researcher who has studied absorptive capacity
+0,26,KNOWLEDGE MANAGEMENT TOOLS,ORGANIZATION,Knowledge management tools are used to influence absorptive capacity and knowledge inflows and subsidiary performance
+0,27,CEO,PERSON,The CEO is the chief executive officer of an organization
+0,28,ORGANIZATION,ORGANIZATION,The organization is an entity with homogeneous perceptions on knowledge processes
+0,29,INDIVIDUAL,PERSON,"Individuals are the subjects of the data-set, providing perceptions of knowledge management tools, motivation, ability, knowledge inflows and subsidiary performance"
+0,30,SUBSIDIARY,ORGANIZATION,A subsidiary is a company whose majority of shares is held by another company
+0,31,HEIDELBERGCEMENT,ORGANIZATION,HeidelbergCement is a multinational corporation that is the subject of a study on knowledge inflows and absorptive capacity
+0,31,COHEN,PERSON,Cohen is a researcher who has studied absorptive capacity and knowledge inflows
+0,31,LEVINTHAL,PERSON,Levinthal is a researcher who has studied absorptive capacity and knowledge inflows
+0,34,MNC,ORGANIZATION,MNC refers to a multinational corporation
+0,36,SUBSIDIARY,ORGANIZATION,Subsidiary is an organization with employees that deal with knowledge inflows
+0,37,ABSORPTIVE CAPACITY,CONCEPT,Absorptive capacity is a concept that enables knowledge inflows
+0,38,SUBSIDIARY,ORGANIZATION,"A subsidiary is a company that is owned or controlled by another company, often referred to as the parent company or holding company"
+0,39,JOHN SMITH,PERSON,John Smith is a researcher
+0,39,HARVARD UNIVERSITY,ORGANIZATION,Harvard University is the institution where John Smith works
+0,39,CAMBRIDGE,GEO,Cambridge is the location of Harvard University
+0,39,MASSACHUSETTS,GEO,Massachusetts is the state where Cambridge is located
+0,41,COHEN,PERSON,Cohen is a researcher who wrote about absorptive capacity in 1990
+0,41,LEVINTHAL,PERSON,Levinthal is a researcher who wrote about absorptive capacity in 1990
+0,42,LANE,PERSON,Lane is a researcher who extended their own work in 1998 with Salk
+0,42,LUBATKIN,PERSON,Lubatkin is a researcher who worked with Lane in 1998
+0,42,SALK,PERSON,Salk is a researcher who worked with Lane to extend their own work in 1998
+0,43,LYLES,PERSON,Author of a study on knowledge acquisition in international joint ventures
+0,44,ZAHRA,PERSON,Zahra is a researcher who co-authored a study in 2002
+0,44,GEORGE,PERSON,George is a researcher who co-authored a study in 2002
+0,45,MNC,ORGANIZATION,Multinational Corporation that utilizes knowledge from external relations and subsidiaries
+0,46,ORGANIZATION,ORGANIZATION,The organization is the entity that receives and utilizes external knowledge
+0,46,PERSON,PERSON,The person is the individual who is part of the organization and is involved in the knowledge absorption process
+0,46,GEO,GEO,"The geographic location is not explicitly mentioned in the text, but it could refer to the location of the organization or the person"
+0,47,MINBAEVA,PERSON,Minbaeva is a researcher who studied absorptive capacity in subsidiaries
+0,47,IBM,ORGANIZATION,IBM is a company that benefits from internal knowledge flows
+0,47,MICROSOFT,ORGANIZATION,Microsoft is a company that benefits from internal knowledge flows
+0,47,NEW YORK,GEO,New York is a city where companies like IBM and Microsoft operate
+0,47,LONDON,GEO,London is a city where companies like IBM and Microsoft operate
+0,48,SUBSIDIARY,ORGANIZATION,A subsidiary is a company that is owned or controlled by another company
+0,48,MARCH,PERSON,March is a researcher who has written about knowledge domains
+0,48,LEVINTHAL,PERSON,Levinthal is a researcher who has written about knowledge domains
+0,49,GENERAL ELECTRIC,ORGANIZATION,General Electric is a multinational conglomerate
+0,49,SCHENECTADY,GEO,Schenectady is a city in New York
+0,49,NEW YORK,GEO,New York is a state in the United States
+0,49,JOHN SMITH,PERSON,John Smith is the CEO of the company and is married to Jane Doe
+0,49,JANE DOE,PERSON,Jane Doe is the wife of John Smith
+0,50,MICHAELIVA,PERSON,Michailova is a researcher who studied knowledge-hostility between subsidiaries
+0,50,HUSTED,PERSON,Husted is a researcher who studied knowledge-hostility between subsidiaries
+0,51,COHEN,PERSON,Cohen is a researcher who studied absorptive capacity in 1990
+0,51,LEVINTHAL,PERSON,Levinthal is a researcher who studied absorptive capacity in 1990
+0,51,ZAHRA,PERSON,Zahra is a researcher who studied absorptive capacity in 2002
+0,51,GEORGE,PERSON,George is a researcher who studied absorptive capacity in 2002
+0,52,"UNIVERSITY OF CALIFORNIA, BERKELEY",ORGANIZATION,"A public research university located in Berkeley, California, known for its academic excellence and research opportunities"
+0,52,BERKELEY,GEO,"A city in California where the University of California, Berkeley is located"
+0,52,CALIFORNIA,GEO,"A state in the United States where the University of California, Berkeley is located"
+0,52,COLLEGE OF ENGINEERING,ORGANIZATION,"One of the colleges at the University of California, Berkeley"
+0,52,COLLEGE OF NATURAL RESOURCES,ORGANIZATION,"One of the colleges at the University of California, Berkeley"
+0,52,GRADUATE SCHOOL OF JOURNALISM,ORGANIZATION,"One of the schools at the University of California, Berkeley"
+0,52,APPLE,ORGANIZATION,"A company that emerged from the University of California, Berkeley"
+0,52,GOOGLE,ORGANIZATION,"A company that emerged from the University of California, Berkeley"
+0,55,HEIDELBERGER CEMENT,ORGANIZATION,Heidelberger Cement is a multinational corporation that employs knowledge management tools to facilitate knowledge sharing among its subsidiaries
+0,55,MNC,ORGANIZATION,"MNC refers to a multinational corporation, in this case Heidelberger Cement"
+0,56,ARGOTE,PERSON,Author of research on knowledge management
+0,56,KROGH,PERSON,Author of research on knowledge management
+0,57,MNC,ORGANIZATION,MNC is a company with multiple units where employees can search for knowledge and partners
+0,57,MAHNKE,PERSON,Mahnke is a researcher who has written about knowledge management in MNCs
+0,57,VENZIN,PERSON,Venzin is a researcher who has written about knowledge management in MNCs
+0,57,KAUTZ,PERSON,Kautz is a researcher who has written about knowledge management in MNCs
+0,58,PEDERSEN,PERSON,Pedersen is a researcher who studied knowledge search and access
+0,59,HEIDELBERGER CEMENT,ORGANIZATION,Heidelberger Cement is a company that deployed an intranet solution to decrease transaction costs of knowledge inflows
+0,60,PARIS,GEO,Paris is a city known for its beautiful architecture and rich history
+0,60,EIFFEL TOWER,GEO,The Eiffel Tower is a famous landmark located in Paris
+0,60,LOUVRE,ORGANIZATION,The Louvre is a famous museum located in Paris
+0,60,ORSAY,ORGANIZATION,The Orsay is a famous museum located in Paris
+0,61,CORPORATE UNIVERSITY,ORGANIZATION,The corporate university is an organization that enables knowledge sharing through benchmarking reports and learning systems
+0,61,LEONARD-BARTON,PERSON,Leonard-Barton is a researcher who has studied knowledge sharing in communities and teams
+0,62,HEIDELBERGER CEMENT,ORGANIZATION,Heidelberger Cement is a company that uses communities of practice for knowledge integration and creation
+0,62,WENGER,PERSON,Wenger is a researcher who studied knowledge integration and creation in Heidelberger Cement
+0,62,SNYDER,PERSON,Snyder is a researcher who studied knowledge integration and creation in Heidelberger Cement
+0,63,GRANT,PERSON,Grant is a researcher who wrote about interdisciplinary teams in 1996
+0,63,MNC,ORGANIZATION,MNC is a type of organization that has interdisciplinary teams
+0,64,KOGUT,PERSON,Kogut is a researcher who studied interactive learning and community communication codes
+0,64,ZANDER,PERSON,Zander is a researcher who studied interactive learning and community communication codes
+0,64,MONTEVERDE,PERSON,Monteverde is a researcher who studied interactive learning and community communication codes
+0,66,OSTERLOH,PERSON,Osterloh is a researcher who studied knowledge sharing across subsidiaries
+0,66,FREY,PERSON,Frey is a researcher who studied knowledge sharing across subsidiaries
+0,67,COMMUNITY,ORGANIZATION,A group of people working together to share knowledge and enhance involvement and motivations
+0,68,BROWN,PERSON,Brown is a researcher who wrote about knowledge development in teams
+0,68,DUGUID,PERSON,Duguid is a researcher who wrote about knowledge development in teams
+0,68,BOLAND,PERSON,Boland is a researcher who wrote about knowledge development in teams
+0,68,TENKASI,PERSON,Tenkasi is a researcher who wrote about knowledge development in teams
+0,69,SCHUMPETER,PERSON,Schumpeter is an author who wrote about knowledge creation in 1934
+0,69,GALUNIC,PERSON,Galunic is an author who wrote about knowledge creation in 1998
+0,69,RODAN,PERSON,Rodan is an author who wrote about knowledge creation in 1998
+0,70,COMMUNITIES OF PRACTICE,ORGANIZATION,Communities of practice are groups that influence a subsidiary’s absorptive capacity through increasing the motivation and ability of subsidiary’s employee’s to share knowledge in social interaction
+0,71,SUBSIDIARY,ORGANIZATION,A subsidiary is a company that is owned or controlled by another company
+0,72,OSTERLOH,PERSON,Author who wrote about motivation for exchanging knowledge between subsidiaries
+0,72,FREY,PERSON,Author who wrote about motivation for exchanging knowledge between subsidiaries
+0,72,KROGH,PERSON,Author who wrote about motivation for exchanging knowledge between subsidiaries
+0,72,WENGER,PERSON,Author who wrote about motivation for exchanging knowledge between subsidiaries
+0,72,SNYDER,PERSON,Author who wrote about motivation for exchanging knowledge between subsidiaries
+0,72,BARTLETT,PERSON,Author who wrote about motivation for exchanging knowledge between subsidiaries
+0,72,GHOSHAL,PERSON,Author who wrote about motivation for exchanging knowledge between subsidiaries
+0,72,OUCHE,PERSON,Author who wrote about motivation for exchanging knowledge between subsidiaries
+0,73,OUCHI,PERSON,Ouchi is a researcher who wrote about explicit rewards in 1982
+0,74,SUBSIDIARY,ORGANIZATION,A subsidiary is an organization that is owned or controlled by a parent company
+0,75,SIMONIN,PERSON,Simonin is a researcher who wrote about knowledge-sharing processes in 1999
+0,76,OSTERLOH,PERSON,Osterloh is a researcher who studied the effects of explicit rewards on intrinsic motivation
+0,76,FREY,PERSON,Frey is a researcher who studied the effects of explicit rewards on intrinsic motivation
+0,77,HANSEN,PERSON,Hansen is a researcher who studied knowledge sharing behavior in 1999
+0,77,HOLMSTRÖM,PERSON,Holmström is a researcher who studied motivation to engage in complementary activities in 1991
+0,77,MILGROM,PERSON,Milgrom is a researcher who studied motivation to engage in complementary activities in 1991
+0,79,OUCHI,PERSON,Ouchi is a researcher who studied horizontal knowledge flows between subsidiaries
+0,79,OSTERLOH,PERSON,Osterloh is a researcher who studied horizontal knowledge flows between subsidiaries
+0,79,FREY,PERSON,Frey is a researcher who studied horizontal knowledge flows between subsidiaries
+0,80,SPENCE,PERSON,Spence is a researcher who wrote about signalling in 1972
+0,81,EMPLOYEES,PERSON,Employees are individuals who participate in knowledge sharing
+0,82,NEW YORK,GEO,City where the company is based and expanding its operations
+0,82,JOHN SMITH,PERSON,CEO of the company leading the expansion efforts
+0,82,XYZ INC,ORGANIZATION,Larger corporation that owns the company
+0,83,FREY,PERSON,Frey is a researcher who studied the effects of rewards on motivation
+0,83,FOSS,PERSON,Foss is a researcher who studied the effects of rewards on motivation
+0,83,MAHNKE,PERSON,Mahnke is a researcher who studied the effects of rewards on motivation
+0,83,LAURSEN,PERSON,Laursen is a researcher who studied the effects of rewards on motivation
+0,84,MAHNKE,PERSON,Mahnke is a researcher who studied knowledge sharing
+0,84,VENZIN,PERSON,Venzin is a researcher who studied knowledge sharing
+0,85,LEARNING SYSTEM,ORGANIZATION,A knowledge management tool that influences absorptive capacity
+0,85,COMMUNITIES OF PRACTICE,ORGANIZATION,A knowledge management tool that influences absorptive capacity
+0,85,CORPORATE UNIVERSITY,ORGANIZATION,A knowledge management tool that influences absorptive capacity
+0,85,BENCHMARKING,ORGANIZATION,A knowledge management tool that influences absorptive capacity
+0,85,REWARD-SYSTEMS,ORGANIZATION,A knowledge management tool that influences absorptive capacity
+0,86,NELSON,PERSON,Nelson is a researcher who wrote about knowledge acquisition and assimilation in 1982
+0,86,WINTER,PERSON,Winter is a researcher who wrote about knowledge acquisition and assimilation in 1982
+0,86,HEDLUND,PERSON,Hedlund is a researcher who wrote about knowledge acquisition and assimilation in 1994
+0,86,SZULANSKI,PERSON,Szulanski is a researcher who wrote about knowledge acquisition and assimilation in 2003
+0,87,NEW YORK,GEO,A city that is home to many famous landmarks and diverse neighborhoods
+0,87,STATUE OF LIBERTY,GEO,A famous landmark located in New York
+0,87,CENTRAL PARK,GEO,A famous landmark located in New York
+0,87,MANHATTAN,GEO,A neighborhood in New York
+0,87,BROOKLYN,GEO,A neighborhood in New York
+0,87,THE NEW YORK TIMES,ORGANIZATION,"A major newspaper published in New York, known for its in-depth reporting and editorial content"
+0,87,ERIC ADAMS,PERSON,"The mayor of New York, who is a strong supporter of The New York Times"
+0,88,SUBSIDIARY,ORGANIZATION,A subsidiary is a company that is owned or controlled by another company
+0,89,HEDLUND,PERSON,Hedlund is a researcher who wrote about knowledge adaptation in 1994
+0,91,NELSON,PERSON,Nelson is a researcher who studied knowledge sharing
+0,91,WINTER,PERSON,Winter is a researcher who studied knowledge sharing
+0,91,SZULANSKI,PERSON,Szulanski is a researcher who studied knowledge sharing
+0,92,NELSON & WINTER,ORGANIZATION,Nelson & Winter is a research organization that has published papers on intra-firm replication of processes and innovations
+0,92,NELSON,PERSON,Nelson is a researcher who has published papers on intra-firm replication of processes and innovations
+0,92,WINTER,PERSON,Winter is a researcher who has published papers on intra-firm replication of processes and innovations
+0,93,NONAKA,PERSON,Nonaka is a researcher who wrote about knowledge inflow
+0,93,TAKEUCHI,PERSON,Takeuchi is a researcher who wrote about knowledge inflow
+0,94,KIM,PERSON,Kim is a researcher who wrote about knowledge inflows in 1993
+0,96,FOSS,PERSON,Author who wrote about knowledge sharing and adaptation costs
+0,96,MAHNKE,PERSON,Author who wrote about knowledge sharing and adaptation costs
+0,96,GAMMELGAARD,PERSON,Author who wrote about opportunity costs in terms of expenditures and cognitive capacity
+0,96,PEDERSEN,PERSON,Author who wrote about opportunity costs in terms of expenditures and cognitive capacity
+0,99,H3,ORGANIZATION,H3 is a research hypothesis
+0,100,HEIDELBERGCENT,ORGANIZATION,HeidelbergCement is a German cement company
+0,100,GERMANY,GEO,Country where the research was conducted
+0,101,HEIDELBERGCEMENT,ORGANIZATION,"HeidelbergCement is one of the four largest cement manufacturers in the world with 1,500 subsidiaries in over 50 countries and 36,000 employees"
+0,101,WORLD,GEO,Global region where HeidelbergCement operates
+0,102,COMPANY,ORGANIZATION,The company is undergoing consolidation after rapid expansion
+0,103,HEIDELBERGCEMENT,ORGANIZATION,HeidelbergCement is a company that has grown significantly through acquisitions in less than 10 years
+0,104,APPLE,ORGANIZATION,Technology company founded by Steve Jobs and Steve Wozniak
+0,104,STEVE JOBS,PERSON,Co-founder of Apple
+0,104,STEVE WOZNIAK,PERSON,Co-founder of Apple
+0,104,CUPERTINO,GEO,City where Apple is headquartered
+0,104,CALIFORNIA,GEO,State where Apple is headquartered
+0,105,9,ORGANIZATION,9 is not a valid entity
+0,106,NO ENTITIES FOUND,NO ENTITIES FOUND,No entities of the specified types were found in the text
+0,107,TSI,PERSON,Tsai is a researcher who studied intra-firm networks
+0,107,GHOSHAL,PERSON,Ghoshal is a researcher who studied intra-firm networks
+0,108,COMPANY,ORGANIZATION,The company is the main subject of the survey
+0,109,LANE,PERSON,Lane is a researcher who co-authored a study with Lubatkin in 1998
+0,109,LUBATKIN,PERSON,Lubatkin is a researcher who co-authored a study with Lane in 1998
+0,109,GUPTA,PERSON,Gupta is a researcher who co-authored a study with Govindarajan in 2000
+0,109,GOVINDARAJAN,PERSON,Govindarajan is a researcher who co-authored a study with Gupta in 2000
+0,110,HEIDELBERGCEMENT,ORGANIZATION,HeidelbergCement is a company with 6 business units that was involved in a study
+0,111,NEW YORK,GEO,City where the company is based
+0,111,JOHN SMITH,PERSON,CEO of the company
+0,111,BROOKLYN,GEO,Location of a startup the company is working with
+0,112,SUBSIDIARY MANAGERS,ORGANIZATION,Managers of subsidiary companies
+0,114,HEIDELBERGCEMENT,ORGANIZATION,HeidelbergCement is a company with MNC units across different geographical business areas
+0,115,MNC,ORGANIZATION,The MNC is a company with a headquarter that fosters international knowledge management initiatives
+0,116,SECOND GROUP,ORGANIZATION,A group of 100 managers that have not been interviewed and did not participate in knowledge management workshops
+0,117,SUBSIDIARIES,ORGANIZATION,Subsidiaries are part of a larger organization and have engineers involved in international day-to-day knowledge transfer
+0,118,HEIDELBERGCEMENT,ORGANIZATION,HeidelbergCement is a company that has knowledge management initiatives and a CEO who supports surveys
+0,118,CEO,PERSON,The CEO of HeidelbergCement supports surveys
+0,119,NEW YORK,GEO,City where the company is based and expanding its operations
+0,119,JOHN SMITH,PERSON,CEO of the company leading the expansion efforts
+0,119,LONDON,GEO,City where the parent corporation of the company is based
+0,120,HEADQUARTER,ORGANIZATION,The headquarter's office managed the mailing process
+0,123,10,ORGANIZATION,10 is not a valid entity
+0,124,QUESTIONNAIRE,ORGANIZATION,The questionnaire is a tool used to collect data
+0,125,NEW YORK,GEO,New York is the location of the company
+0,125,GOOGLE,ORGANIZATION,Google is a company based in New York
+0,125,LARRY PAGE,PERSON,Larry Page is a founder of Google
+0,125,SERGEY BRIN,PERSON,Sergey Brin is a founder of Google
+0,127,AMAZON,ORGANIZATION,"Technology company with headquarters in Seattle, Washington and founded by Jeff Bezos"
+0,127,JEFF BEZOS,PERSON,Founder of Amazon
+0,127,SEATTLE,GEO,City in Washington where Amazon is headquartered
+0,127,WASHINGTON,GEO,State in the US where Seattle is located
+0,128,ANDERSSON,PERSON,Andersson is a researcher who has written about performance measures
+0,129,GERINGER,PERSON,Geringer is a researcher who has studied the correlation between perceptual and objective accounting-based measures
+0,129,HEBERT,PERSON,Hebert is a researcher who has studied the correlation between perceptual and objective accounting-based measures
+0,130,BUSINESS,ORGANIZATION,Business is an organization that captures many dimensions of performance including economic gains and product development
+0,131,HEIDELBERGCEMENT,ORGANIZATION,HeidelbergCement is a company that has applied knowledge management initiatives to improve business results
+0,135,HEIDELBERGCEMENT,ORGANIZATION,HeidelbergCement is a company that has units that share knowledge with each other
+0,140,RESPONDENTS,PERSON,People who were asked to assess statements about knowledge sharing
+0,143,NEW YORK,GEO,City where the company is based and expanding its operations
+0,143,JOHN SMITH,PERSON,CEO of the company leading the expansion efforts
+0,143,XYZ INC,ORGANIZATION,Larger corporation that owns the company
+0,143,MANHATTAN,GEO,Location of the company's headquarters
+0,145,AMAZON,ORGANIZATION,Amazon is a company founded by Jeff Bezos
+0,145,JEFF BEZOS,PERSON,Jeff Bezos is the founder of Amazon
+0,145,SEATTLE,GEO,Seattle is a city where Amazon was founded
+0,145,WASHINGTON,GEO,Washington is a state where Amazon was founded
+0,146,HEIDELBERGCEMENT,ORGANIZATION,HeidelbergCement is an organization that rewards individual knowledge activities
+0,147,REWARDING SYSTEM,ORGANIZATION,The rewarding system is a system that rewards efforts to create and share knowledge
+0,150,ORGANIZATION,ORGANIZATION,The organization is the entity where knowledge sharing and availability of needed knowledge is perceived
+0,152,"UNIVERSITY OF CALIFORNIA, BERKELEY",ORGANIZATION,"A public research university located in Berkeley, California, founded in 1868, known for academic excellence and innovative research"
+0,152,BERKELEY,GEO,"A city in California where the University of California, Berkeley is located"
+0,152,CALIFORNIA,GEO,"A state in the United States where the University of California, Berkeley is located"
+0,152,COLLEGE OF ENGINEERING,ORGANIZATION,"One of the colleges in the University of California, Berkeley"
+0,152,COLLEGE OF NATURAL RESOURCES,ORGANIZATION,"One of the colleges in the University of California, Berkeley"
+0,152,GRADUATE SCHOOL OF JOURNALISM,ORGANIZATION,"One of the schools in the University of California, Berkeley"
+0,152,ROBERT REICH,PERSON,"A professor of public policy at the University of California, Berkeley"
+0,153,CORPORATE UNIVERSITY,ORGANIZATION,A university that provides training and education to employees of a corporation
+0,154,HEIDELBERGCEMENT,ORGANIZATION,HeidelbergCement is a company that introduced a corporate university as a knowledge management tool
+0,155,RESPONDENTS,PERSON,The respondents were asked to assess the importance of various factors
+0,156,CORPORATE UNIVERSITY,ORGANIZATION,An organization that is being measured for significance
+0,157,GROUP,ORGANIZATION,The organization that created the benchmark report
+0,158,HEIDELBERGCEMENT,ORGANIZATION,HeidelbergCement introduced a knowledge management tool called group benchmark report
+0,161,GROUP,ORGANIZATION,Group is an organization that releases benchmark reports
+0,162,COMMUNITIES OF PRACTICE,ORGANIZATION,Communities of practice is an organization that focuses on knowledge sharing and learning
+0,163,HEIDELBERGCEMENT,ORGANIZATION,HeidelbergCement introduced a knowledge management tool called communities of practice
+0,164,RESPONDENTS,PERSON,The respondents were asked to assess the importance of various factors
+0,166,XYZ INC.,ORGANIZATION,Leading provider of software solutions
+0,166,SAN FRANCISCO,GEO,City where XYZ Inc.'s headquarters is located
+0,166,CALIFORNIA,GEO,State where XYZ Inc.'s headquarters is located
+0,166,JANE SMITH,PERSON,CEO of XYZ Inc. who has been leading the company's growth and recognized for philanthropic efforts
+0,167,KOGUT,PERSON,Kogut is a researcher who studied knowledge inflow
+0,167,ZANDER,PERSON,Zander is a researcher who studied knowledge inflow
+0,167,SZULANSKI,PERSON,Szulanski is a researcher who studied knowledge inflow
+0,167,SIMONIN,PERSON,Simonin is a researcher who studied knowledge inflow
+0,168,ORGANIZATIONAL KNOWLEDGE,ORGANIZATION,The knowledge that is represented in a codified vs. tacit form within an organization
+0,169,ORGANIZATIONAL KNOWLEDGE,ORGANIZATION,Knowledge that is represented in a unit and can be learned by new employees
+0,171,PARIS,GEO,City and capital of France
+0,171,FRANCE,GEO,Country with Paris as its capital
+0,172,HEIDELBERGCEMENT,ORGANIZATION,HeidelbergCement is a company that has multiple organizational units with knowledge that is formally acknowledged and adapted
+0,173,FOCAL UNIT,ORGANIZATION,The focal unit is a business entity that is expected to have a positive impact on business performance with formal acknowledgement of knowledge
+0,175,RESULTS TESTS OF HYPOTHESES,ORGANIZATION,Results Tests of Hypotheses is likely a research organization or academic paper
+0,176,NEW YORK,GEO,City where the company is based and has its headquarters
+0,176,LOS ANGELES,GEO,City where the company is expanding its operations and has an office
+0,176,CHICAGO,GEO,City where the company has an office
+0,176,HOUSTON,GEO,City where the company has an office
+0,176,JOHN SMITH,PERSON,CEO of the company leading the expansion efforts
+0,176,JANE DOE,PERSON,"CFO of the company, responsible for financial planning and has been with the company for over 10 years"
+0,176,XYZ INC,ORGANIZATION,Larger corporation that the company is a subsidiary of
+0,178,COMMUNITIES OF PRACTICE,ORGANIZATION,Communities of practice is an organization that provides a group benchmark report
+0,178,CORPORATE UNIVERSITY,ORGANIZATION,Corporate university is an organization that provides training and development programs
+0,180,BUSINESS,ORGANIZATION,Business performance is related to the inflow of knowledge
+0,182,AMAZON,ORGANIZATION,Amazon is a company that acquired Zappos
+0,182,ZAPPOS,ORGANIZATION,Zappos is a company that was acquired by Amazon
+0,188,GOOGLE,ORGANIZATION,A multinational corporation that specializes in Internet-related services and products
+0,188,LARRY PAGE,PERSON,Co-founder of Google
+0,188,SERGEY BRIN,PERSON,Co-founder of Google
+0,188,MOUNTAIN VIEW,GEO,City where Google is headquartered
+0,188,CALIFORNIA,GEO,State where Google is headquartered and where Stanford University is located
+0,188,STANFORD UNIVERSITY,ORGANIZATION,University where Larry Page and Sergey Brin were Ph.D. students
+0,193,"UNIVERSITY OF CALIFORNIA, BERKELEY",ORGANIZATION,"A public research university located in Berkeley, California, known for its academic excellence and research opportunities"
+0,193,BERKELEY,GEO,"A city in California where the University of California, Berkeley is located"
+0,193,CALIFORNIA,GEO,"A state in the United States where the University of California, Berkeley is located"
+0,193,STEVE JOBS,PERSON,"A successful alumnus of the University of California, Berkeley, co-founder of Apple"
+0,193,MARK ZUCKERBERG,PERSON,"A successful alumnus of the University of California, Berkeley, co-founder of Facebook"
+0,194,ORGANIZATION,ORGANIZATION,Organization is one of the entity types
+0,194,PERSON,PERSON,Person is one of the entity types
+0,194,GEO,GEO,Geo is one of the entity types
+0,197,CORPORATE UNIVERSITY,ORGANIZATION,A corporate university is an organization that provides training and development opportunities for employees
+0,197,COMMUNITIES OF PRACTICE,ORGANIZATION,Communities of practice are groups of people who share knowledge and expertise in a particular area
+0,197,GROUP BENCHMARK REPORT,ORGANIZATION,A group benchmark report is a document that compares the performance of different groups or organizations
+0,201,UNITED STATES,GEO,Country engaged in a trade war with China
+0,201,CHINA,GEO,Country engaged in a trade war with the United States
+0,201,WORLD TRADE ORGANIZATION,ORGANIZATION,International organization calling for calm and restraint in the trade war
+0,201,INTERNATIONAL MONETARY FUND,ORGANIZATION,International organization warning of the dangers of a prolonged trade war
+0,202,15,ORGANIZATION,15 is not a valid entity
+0,203,TABLE 1,ORGANIZATION,Table 1 is a report that shows the impact of knowledge management tools on absorptive capacity
+0,203,GROUP BENCHMARK REPORT,ORGANIZATION,Group benchmark report is a knowledge management tool that has a positive impact on absorptive capacity
+0,203,COMMUNITIES OF PRACTICE,ORGANIZATION,Communities of practice is a knowledge management tool that has a positive impact on absorptive capacity
+0,203,CORPORATE UNIVERSITY,ORGANIZATION,Corporate university is a knowledge management tool that has a positive impact on absorptive capacity
+0,205,NEW YORK,GEO,City where the company is based
+0,205,JOHN SMITH,PERSON,CEO of the company who has been instrumental in the company's expansion in Europe
+0,205,EUROPEAN UNION,ORGANIZATION,Organization that the company has been working with to establish new trade agreements
+0,205,EUROPE,GEO,Region where the company has been expanding its operations
+0,206,GOOGLE,ORGANIZATION,Multinational technology company that specializes in Internet-related services and products
+0,206,LARRY PAGE,PERSON,Co-founder of Google
+0,206,SERGEY BRIN,PERSON,Co-founder of Google
+0,206,STANFORD UNIVERSITY,ORGANIZATION,University where Larry Page and Sergey Brin were Ph.D. students
+0,206,CALIFORNIA,GEO,State where Stanford University is located
+0,207,CORPORATE UNIVERSITY,ORGANIZATION,A knowledge management tool that has a strong positive impact on absorptive capacity
+0,208,OSTERLOH,PERSON,Osterloh is a researcher who has written about intrinsic vs. extrinsic motivation in knowledge management
+0,208,FREY,PERSON,Frey is a researcher who has written about intrinsic vs. extrinsic motivation in knowledge management
+0,213,NEW YORK,GEO,City where the company is based and expanding its operations
+0,213,JOHN SMITH,PERSON,CEO of the company leading the expansion efforts
+0,213,XYZ INC,ORGANIZATION,Larger corporation that owns the company
+0,214,EMPIRICAL RESEARCH,ORGANIZATION,Empirical research is a field of study that investigates knowledge flows in firms
+0,215,KNOWLEDGE TRANSFER,ORGANIZATION,Knowledge transfer is a process that is costly and can be used to increase business performance
+0,215,KNOWLEDGE MANAGEMENT TOOLS,ORGANIZATION,Knowledge management tools are used to increase business performance
+0,216,MNC,ORGANIZATION,"MNC refers to a multinational corporation, which is a company that operates in multiple countries"
+0,217,SUBSIDIARY,ORGANIZATION,"A subsidiary is a company that is owned or controlled by another company, often referred to as the parent company or holding company"
+0,219,GOOGLE,ORGANIZATION,A technology company founded by Larry Page and Sergey Brin
+0,219,LARRY PAGE,PERSON,Co-founder of Google
+0,219,SERGEY BRIN,PERSON,Co-founder of Google
+0,219,MOUNTAIN VIEW,GEO,City where Google has its headquarters
+0,219,CALIFORNIA,GEO,State where Google has its headquarters
+0,220,MNC,ORGANIZATION,A multinational corporation that utilizes knowledge management tools to gain competitive advantage
+0,221,MODEL,ORGANIZATION,The model establishes a link between individual knowledge activities and business performance
+0,222,UNIT,ORGANIZATION,The unit is the level at which managerial action takes place to set up incentive structures and apply knowledge management tools
+0,222,BUSINESS,ORGANIZATION,The business is the level at which performance is measured as a result of managerial action on the unit level
+0,223,ABSORPTIVE CAPACITY,ORGANIZATION,"Absorptive capacity is the ability of an organization to recognize the value of new, external information, assimilate it, and apply it to commercial ends"
+0,224,DISCUSSION,ORGANIZATION,Discussion is a section of a document
+0,224,CONCLUSION,ORGANIZATION,Conclusion is a section of a document
+0,225,FUTURE RESEARCH,ORGANIZATION,Future research is a field of study that could distinguish between intra-firm and inter-firm sources of knowledge flows to assess their impact on business performance
+0,226,MNC,ORGANIZATION,MNC refers to a multinational corporation
+0,227,CANTWELL,PERSON,Cantwell is a researcher who has studied MNC research
+0,227,MUDAMBI,PERSON,Mudambi is a researcher who has studied MNC research
+0,229,SUBSIDIARY,ORGANIZATION,A subsidiary is a company that is owned or controlled by another company
+0,230,GUPTA,PERSON,Gupta is a researcher who studied knowledge sharing behavior
+0,230,GOVINDARAJAN,PERSON,Govindarajan is a researcher who studied knowledge sharing behavior
+0,231,MNC,ORGANIZATION,MNC refers to a multinational corporation
+0,232,PRESENT STUDY,ORGANIZATION,The present study is a research on absorptive capacity
+0,234,MNC,ORGANIZATION,"MNC refers to a multinational corporation, which is the context of the current study on intra-firm knowledge flows"
+0,235,MINBAEVA,PERSON,Minbaeva is a researcher who published a paper in 2003
+0,236,MNC,ORGANIZATION,Multinational Corporation
+0,237,CURRENT STUDY,ORGANIZATION,The current study is investigating knowledge flows on subsidiary performance
+0,237,JOHN SMITH,PERSON,John Smith is a researcher at Harvard University
+0,237,HARVARD UNIVERSITY,ORGANIZATION,Harvard University is the institution where John Smith works
+0,237,NATIONAL SCIENCE FOUNDATION,ORGANIZATION,The National Science Foundation funded the current study
+0,238,RESEARCHERS,PERSON,Researchers are individuals who should no longer treat performance of knowledge management as an assumption and black box
+0,239,KNOWLEDGE MANAGEMENT TOOLS,ORGANIZATION,Knowledge management tools are used to enable knowledge flows and impact business performance
+0,240,18,ORGANIZATION,18 is not a valid entity
+0,241,SUBSIDIARY,ORGANIZATION,A subsidiary is a company that is owned or controlled by another company
+0,242,PRESENT STUDY,ORGANIZATION,The present study is a research project that investigated the impact of knowledge management tools on absorptive capacity
+0,244,OSTERLOH,PERSON,Osterloh is a researcher who studied motivators
+0,244,FREY,PERSON,Frey is a researcher who studied motivators
+0,245,19,ORGANIZATION,19 is not a valid entity
+0,246,ANDERSSON,PERSON,Author of a reference in 2002
+0,246,FORSGREN,PERSON,Author of a reference in 2002
+0,246,HOLM,PERSON,Author of a reference in 2002
+0,247,MULTINATIONAL CORPORATION,ORGANIZATION,A corporation that operates in multiple countries
+0,248,STRATEGIC MANAGEMENT JOURNAL,ORGANIZATION,"A journal that published a paper by Andersson, Forsgren, and Pedersen"
+0,248,ANDERSSON,PERSON,Author of a paper published in the Strategic Management Journal
+0,248,FORSGREN,PERSON,Author of a paper published in the Strategic Management Journal
+0,248,PEDERSEN,PERSON,Author of a paper published in the Strategic Management Journal
+0,249,APPLE,ORGANIZATION,"Technology company based in Cupertino, California"
+0,249,STEVE JOBS,PERSON,Co-founder of Apple
+0,249,STEVE WOZNIAK,PERSON,Co-founder of Apple
+0,249,CUPERTINO,GEO,City in California where Apple is based
+0,249,CALIFORNIA,GEO,State where Apple is based
+0,250,SUBSIDIARY,ORGANIZATION,"A subsidiary is a company that is owned or controlled by another company, known as the parent company or holding company"
+0,250,MULTINATIONAL CORPORATIONS,ORGANIZATION,Multinational corporations are business entities that operate in multiple countries
+0,251,INTERNATIONAL BUSINESS REVIEW,ORGANIZATION,International Business Review is a publication that published a review on page 3-23
+0,254,NEW YORK,GEO,New York is a city where the company is based
+0,254,LONDON,GEO,London is a city where the company has a subsidiary
+0,254,JOHN SMITH,PERSON,John Smith is the CEO of the company
+0,255,BARTLETT,PERSON,Bartlett is a person mentioned in the text
+0,255,CHRISTOPHER,PERSON,Christopher is a person mentioned in the text
+0,255,SUMANTRA GHOSHAL,PERSON,Sumantra Ghoshal is a person mentioned in the text
+0,257,MANAGING ACROSS BORDERS,ORGANIZATION,Managing Across Borders is an organization that deals with international business
+0,258,BOSTON,GEO,Boston is a city
+0,259,HARVARD BUSINESS SCHOOL PRESS,ORGANIZATION,Harvard Business School Press is a publisher
+0,260,BOLAND,PERSON,Author of a publication in 1995
+0,260,TENKASI,PERSON,Author of a publication in 1995
+0,261,NEW YORK,GEO,"New York is a global hub for finance, entertainment, and culture"
+0,261,NEW YORK STOCK EXCHANGE,ORGANIZATION,The New York Stock Exchange is one of the largest stock exchanges in the world
+0,261,GOLDMAN SACHS,ORGANIZATION,Goldman Sachs is a major corporation with headquarters in New York City
+0,261,JPMORGAN CHASE,ORGANIZATION,JPMorgan Chase is a major corporation with headquarters in New York City
+0,261,METROPOLITAN MUSEUM OF ART,ORGANIZATION,The Metropolitan Museum of Art is a cultural institution in New York City
+0,261,AMERICAN MUSEUM OF NATURAL HISTORY,ORGANIZATION,The American Museum of Natural History is a cultural institution in New York City
+0,261,ERIC ADAMS,PERSON,Eric Adams is the mayor of New York City
+0,261,LOWER MANHATTAN,GEO,Lower Manhattan is a neighborhood in New York City where the New York Stock Exchange is located
+0,262,ORGANIZATION SCIENCE,ORGANIZATION,Organization Science is a publication
+0,263,BROWN,PERSON,Brown is a researcher who co-authored a paper in 1991
+0,263,DUGUID,PERSON,Duguid is a researcher who co-authored a paper in 1991
+0,264,ORGANIZATIONAL LEARNING,ORGANIZATION,Organizational learning is a field of study that focuses on how organizations learn and innovate
+0,264,COMMUNITIES-OF-PRACTICE,ORGANIZATION,Communities-of-practice is a concept that refers to groups of people who share a common interest or profession and work together to achieve a common goal
+0,265,ORGANIZATION SCIENCE,ORGANIZATION,Organization Science is a publication
+0,266,CANTWELL,PERSON,Author of a publication in 2003
+0,266,MUDAMBI,PERSON,Author of a publication in 2003
+0,267,MULTINATIONAL ENTERPRISES,ORGANIZATION,Multinational enterprises are organizations that operate in multiple countries
+0,268,MAHNKE,PERSON,Mahnke is an author of a book on international management research
+0,268,PEDERSEN,PERSON,Pedersen is an author of a book on international management research
+0,268,FRONTIERS IN INTERNATIONAL MANAGEMENT RESEARCH,ORGANIZATION,Frontiers in International Management Research is a publication series
+0,269,PALGRAVE MACMILLAN,ORGANIZATION,Palgrave Macmillan is a publisher
+0,270,FIRUZABAD,GEO,Firuzabad held Aurelians as hostages
+0,270,AURELIA,GEO,Country seeking to release hostages
+0,270,QUINTARA,GEO,Country that negotiated a swap of money in exchange for hostages
+0,270,TIRUZIA,GEO,Capital of Firuzabad where the Aurelians were being held
+0,270,KROHAARA,GEO,Capital city in Quintara
+0,270,CASHION,GEO,Capital city in Aurelia
+0,270,SAMUEL NAMARA,PERSON,Aurelian who spent time in Tiruzia's Alhamia Prison
+0,270,ALHAMIA PRISON,GEO,Prison in Tiruzia
+0,270,DURKE BATAGLANI,PERSON,Aurelian journalist who was held hostage
+0,270,MEGGIE TAZBAH,PERSON,Bratinas national and environmentalist who was held hostage
+0,271,WESLEY M. COHEN,PERSON,Wesley M. Cohen is a researcher
+0,271,DANIEL A. LEVINTHAL,PERSON,Daniel A. Levinthal is a researcher
+0,274,ADMINISTRATIVE SCIENCE QUARTERLY,ORGANIZATION,Administrative Science Quarterly is a publication
+0,274,MARLENE C. FIOL,PERSON,Marlene C. Fiol is an author
+0,274,MARJORIE A. LYLES,PERSON,Marjorie A. Lyles is an author
+0,275,NEW YORK,GEO,City where the company is based and expanding its operations
+0,275,JOHN SMITH,PERSON,CEO of the company leading the expansion efforts
+0,275,LONDON,GEO,City where the parent corporation of the company is based
+0,276,ORGANIZATIONAL LEARNING,ORGANIZATION,Organizational Learning is a field of study that focuses on how organizations learn and adapt to change
+0,277,ACADEMY OF MANAGEMENT REVIEW,ORGANIZATION,A journal that published an article by Foss and Mahnke
+0,277,FOSS,PERSON,Author of an article in the Academy of Management Review
+0,277,V. MAHNKE,PERSON,Author of an article in the Academy of Management Review
+0,279,ORGANIZATIONAL ECONOMICS,ORGANIZATION,Field of study that contributes to knowledge management
+0,280,LYLES,PERSON,Lyles is a researcher who co-authored a paper in 2003
+0,280,ESTERBY,PERSON,Esterby is a researcher who co-authored a paper in 2003
+0,281,HANDBOOK OF ORGANIZATIONAL LEARNING AND KNOWLEDGE MANAGEMENT,ORGANIZATION,A book that contains information about organizational learning and knowledge management
+0,282,BLACKWELL PUBLISHER,ORGANIZATION,Blackwell Publisher is a publishing company
+0,283,FOSS,PERSON,Foss is a person mentioned in the text
+0,283,NICOLAI,PERSON,Nicolai is a person mentioned in the text
+0,283,TORBEN PEDERSEN,PERSON,Torben Pedersen is a person mentioned in the text
+0,285,MNC,ORGANIZATION,Multinational Corporation
+0,286,JOURNAL OF INTERNATIONAL MANAGEMENT,ORGANIZATION,Journal of International Management is a publication that contains articles on international management
+0,289,PERSONAL THEORY OF MOTIVATION,ORGANIZATION,A Personal Theory of Motivation is a theory of motivation
+0,290,EDWARD ELGAR GALUNIC,PERSON,Author of a publication in 1998
+0,290,D. C.,PERSON,Author of a publication in 1998
+0,290,S. RODAN,PERSON,Author of a publication in 1998
+0,291,SCHUMPETERIAN,PERSON,"Schumpeterian refers to Joseph Schumpeter, an Austrian-American economist and political scientist who is best known for his theories on innovation and entrepreneurship"
+0,292,STRATEGIC MANAGEMENT JOURNAL,ORGANIZATION,A journal that published an article on pages 1193-1201
+0,293,GAMMELGARD,PERSON,Author of a publication in 2003
+0,293,U. HOLM,PERSON,Author of a publication in 2003
+0,293,T. PEDERSEN,PERSON,Author of a publication in 2003
+0,294,MNC,ORGANIZATION,MNC refers to a multinational corporation
+0,295,MAHNKE,PERSON,Mahnke is an author of a book on international management research
+0,295,PEDERSEN,PERSON,Pedersen is an author of a book on international management research
+0,295,FRONTIERS IN INTERNATIONAL MANAGEMENT RESEARCH,ORGANIZATION,Frontiers in International Management Research is a publication series
+0,296,PALGRAVE MACMILLAN,ORGANIZATION,Palgrave Macmillan is a publisher
+0,297,FIRUZABAD,GEO,Firuzabad held Aurelians as hostages
+0,297,AURELIA,GEO,Country seeking to release hostages
+0,297,QUINTARA,GEO,Country that negotiated a swap of money in exchange for hostages
+0,297,TIRUZIA,GEO,Capital of Firuzabad where the Aurelians were being held
+0,297,KROHAARA,GEO,Capital city in Quintara
+0,297,CASHION,GEO,Capital city in Aurelia
+0,297,SAMUEL NAMARA,PERSON,Aurelian who spent time in Tiruzia's Alhamia Prison
+0,297,ALHAMIA PRISON,GEO,Prison in Tiruzia
+0,297,DURKE BATAGLANI,PERSON,Aurelian journalist who was held hostage
+0,297,MEGGIE TAZBAH,PERSON,Bratinas national and environmentalist who was held hostage
+0,298,J. M. GERINGER,PERSON,J. M. Geringer is a researcher who co-authored a paper in 1991
+0,298,L. HEBERT,PERSON,L. Hebert is a researcher who co-authored a paper in 1991
+0,299,EUROPEAN UNION,ORGANIZATION,The European Union is a political and economic union of 27 member states located primarily in Europe
+0,299,UNITED STATES,GEO,The United States is a country located in North America
+0,299,EUROPEAN COMMISSION,ORGANIZATION,The European Commission is the organization that negotiated the trade agreement on behalf of the European Union and is led by Ursula von der Leyen
+0,299,OFFICE OF THE UNITED STATES TRADE REPRESENTATIVE,ORGANIZATION,The Office of the United States Trade Representative is the organization that negotiated the trade agreement on behalf of the United States and is led by Katherine Tai
+0,299,URSULA VON DER LEYEN,PERSON,Ursula von der Leyen is the leader of the European Commission
+0,299,KATHERINE TAI,PERSON,Katherine Tai is the leader of the Office of the United States Trade Representative
+0,300,JOURNAL OF INTERNATIONAL BUSINESS STUDIES,ORGANIZATION,Journal of International Business Studies is a publication that contains articles on international business
+0,301,GRANT,PERSON,Grant is the author of a publication in 1996
+0,302,KNOWLEDGE-BASED THEORY,ORGANIZATION,A theoretical framework for understanding the firm
+0,303,STRATEGIC MANAGEMENT JOURNAL,ORGANIZATION,A journal that published a special issue
+0,304,GUPTA,PERSON,Author of a publication in 1991
+0,304,GOVINDARAJAN,PERSON,Author of a publication in 1991
+0,305,MULTINATIONAL FIRMS,ORGANIZATION,Multinational firms are organizations with operations in multiple countries
+0,306,ACADEMY OF MANAGEMENT REVIEW,ORGANIZATION,A journal that published a paper
+0,307,"UNIVERSITY OF CALIFORNIA, BERKELEY",ORGANIZATION,"Public research university located in Berkeley, California"
+0,307,BERKELEY,GEO,"City where the University of California, Berkeley is located"
+0,307,CALIFORNIA,GEO,"State where the University of California, Berkeley is located"
+0,307,CAROL CHRIST,PERSON,"Chancellor of the University of California, Berkeley"
+0,308,MULTINATIONAL CORPORATIONS,ORGANIZATION,Multinational corporations are companies that operate in multiple countries and have knowledge flows within them
+0,309,STRATEGIC MANAGEMENT JOURNAL,ORGANIZATION,A journal that published a paper on strategic management
+0,311,ORGANIZATIONAL SUBUNITS,ORGANIZATION,Organizational subunits are groups within an organization that share knowledge
+0,311,WEAK TIES,ORGANIZATION,Weak ties are connections between people that facilitate knowledge sharing across organizational subunits
+0,312,ADMINISTRATIVE SCIENCE QUARTERLY,ORGANIZATION,Administrative Science Quarterly is a publication
+0,313,NO ENTITIES FOUND,NO ENTITIES FOUND,No entities of the specified types were found in the text
+0,315,N-FORM CORPORATION,ORGANIZATION,A corporation that is a model of knowledge management
+0,316,STRATEGIC MANAGEMENT JOURNAL,ORGANIZATION,A journal that published an article on pages 73-90
+0,317,HOLM,PERSON,"Holm is a person mentioned in the text, likely an author or researcher"
+0,317,ULF,PERSON,"Ulf is a person mentioned in the text, likely an author or researcher"
+0,317,TORBEN PEDERSEN,PERSON,"Torben Pedersen is a person mentioned in the text, likely an author or researcher"
+0,319,MNC CENTRES OF EXCELLENCE,ORGANIZATION,MNC Centres of Excellence are organizations that specialize in research and development
+0,320,TESLA,ORGANIZATION,Tesla is a company expanding its operations to Europe
+0,320,ELON MUSK,PERSON,Elon Musk is the CEO of Tesla who announced the company's expansion to Europe
+0,320,EUROPE,GEO,Europe is the continent where Tesla is expanding its operations
+0,321,HOLMSTRÖM,PERSON,Holmström is a researcher who co-authored a paper in 1991
+0,321,MILGROM,PERSON,Milgrom is a researcher who co-authored a paper in 1991
+0,322,"JOURNAL OF LAW, ECONOMICS, AND ORGANIZATION",ORGANIZATION,Journal that published an article on principal-agent analyses
+0,322,MULTITASK PRINCIPAL-AGENT ANALYSES,ORGANIZATION,"Article published in the Journal of Law, Economics, and Organization"
+0,323,KAUTZ,PERSON,Kautz is a person
+0,324,K. MAHNKE,PERSON,K. Mahnke is a person mentioned in the text
+0,324,V. MAHNKE,PERSON,V. Mahnke is a person mentioned in the text
+0,326,VALUE CREATION,ORGANIZATION,Value Creation is an organization that supports IT-supported Knowledge Management
+0,327,KNOWLEDGE MANAGEMENT SYSTEM,ORGANIZATION,A system used for managing knowledge in a global consulting company
+0,328,INFORMING SCIENCE,ORGANIZATION,Informing Science is a publication that published a paper on pages 75-88
+0,330,INDIVIDUAL,PERSON,An individual is a person who learns and grows
+0,330,ORGANIZATIONAL,ORGANIZATION,An organization is a group of people who work together to achieve a common goal
+0,330,GOOGLE,ORGANIZATION,Google is a company that benefits from individual and organizational learning
+0,330,AMAZON,ORGANIZATION,Amazon is a company that benefits from individual and organizational learning
+0,331,SLOAN MANAGEMENT REVIEW,ORGANIZATION,Sloan Management Review is a publication
+0,332,B KOGUT,PERSON,Author of a publication in 1993
+0,332,U ZANDER,PERSON,Author of a publication in 1993
+0,333,THE FIRM,ORGANIZATION,The firm is an organization that is being studied in the context of the evolutionary theory of the multinational corporation
+0,334,JOURNAL OF INTERNATIONAL BUSINESS STUDIES,ORGANIZATION,Journal of International Business Studies is a publication
+0,335,B KOGUT,PERSON,Author of a publication in 1992
+0,335,U ZANDER,PERSON,Author of a publication in 1992
+0,336,FIRM,ORGANIZATION,The firm is an organization that has knowledge and combinative capabilities
+0,337,ORGANIZATION SCIENCE,ORGANIZATION,Organization Science is a publication
+0,338,KROGH,PERSON,Krogh is a co-author of the book Enabling Knowledge Creation
+0,338,OCHIJO,PERSON,Ochijo is a co-author of the book Enabling Knowledge Creation
+0,338,NONAKA,PERSON,Nonaka is a co-author of the book Enabling Knowledge Creation
+0,338,OXFORD UNIVERSITY PRESS,ORGANIZATION,Oxford University Press is the publisher of the book Enabling Knowledge Creation
+0,339,PETER LANE,PERSON,Peter Lane is a person mentioned in the text
+0,339,MICHAEL LUBATKIN,PERSON,Michael Lubatkin is a person mentioned in the text
+0,342,STRATEGIC MANAGEMENT JOURNAL,ORGANIZATION,"A journal that published an article by Peter Lane, Jane E. Salk, and Marjorie A. Lyles"
+0,342,PETER LANE,PERSON,Author of an article in the Strategic Management Journal
+0,342,JANE E. SALK,PERSON,Author of an article in the Strategic Management Journal
+0,342,MARJORIE A. LYLES,PERSON,Author of an article in the Strategic Management Journal
+0,343,APPLE,ORGANIZATION,"Technology company based in Cupertino, California"
+0,343,STEVE JOBS,PERSON,Co-founder of Apple
+0,343,STEVE WOZNIAK,PERSON,Co-founder of Apple
+0,343,CUPERTINO,GEO,City in California where Apple is based
+0,343,CALIFORNIA,GEO,State where Apple is based
+0,344,ABSORPTIVE CAPACITY,ORGANIZATION,Absorptive Capacity is a concept related to learning and performance in International Joint Ventures
+0,345,STRATEGIC MANAGEMENT JOURNAL,ORGANIZATION,A journal that published a paper with the volume and issue number 22(12): 1139-1161
+0,346,LAURSEN K,PERSON,Laursen K is a researcher who co-authored a paper in 2001
+0,346,V MAHNKE,PERSON,V Mahnke is a researcher who co-authored a paper in 2001
+0,347,KNOWLEDGE STRATEGIES,ORGANIZATION,Knowledge strategies is an organization that focuses on innovative capacity and complementarity in human resource practices
+0,348,JOURNAL OF MANAGEMENT AND GOVERNANCE,ORGANIZATION,Journal of Management and Governance is a publication
+0,349,LEONARD-BARTON,PERSON,Author of a publication in 1998
+0,349,SENSIPER,PERSON,Author of a publication in 1998
+0,350,TIM COOK,PERSON,Tim Cook is the CEO of Apple
+0,350,APPLE,ORGANIZATION,Apple is a company where Tim Cook is the CEO
+0,351,CALIFORNIA MANAGEMENT REVIEW,ORGANIZATION,"A publication that released a volume 40, issue 3"
+0,351,CALIFORNIA,GEO,A state in the United States
+0,352,LEVENTHAL,PERSON,Author of a publication in 1993
+0,352,MARCH,PERSON,Author of a publication in 1993
+0,353,NEW YORK,GEO,A city that is home to many famous landmarks and diverse neighborhoods
+0,353,STATUE OF LIBERTY,GEO,A famous landmark located in New York
+0,353,CENTRAL PARK,GEO,A famous landmark located in New York
+0,353,MANHATTAN,GEO,A neighborhood in New York
+0,353,BROOKLYN,GEO,A neighborhood in New York
+0,353,NEW YORK CITY POLICE DEPARTMENT,ORGANIZATION,The police department responsible for maintaining law and order in New York
+0,353,JAMES O'NEILL,PERSON,The Commissioner of the New York City Police Department
+0,354,STRATEGIC MANAGEMENT JOURNAL,ORGANIZATION,A journal that published an article on pages 95-113
+0,355,MARJORIE A. LYLES,PERSON,Author of a publication in 1996
+0,355,JANE E. SALK,PERSON,Author of a publication in 1996
+0,356,INTERNATIONAL JOINT VENTURES,ORGANIZATION,International Joint Ventures is an organization that acquires knowledge from foreign partners
+0,356,FOREIGN PARTNERS,ORGANIZATION,Foreign Partners is an organization that provides knowledge to International Joint Ventures
+0,357,JOURNAL OF INTERNATIONAL BUSINESS STUDIES,ORGANIZATION,Journal of International Business Studies is a publication that published an article by Mahnke and Venzin
+0,357,MAHNKE,PERSON,Mahnke is an author of an article published in the Journal of International Business Studies
+0,357,VENZIN,PERSON,Venzin is an author of an article published in the Journal of International Business Studies
+0,358,MNC,ORGANIZATION,MNC is a company with governing knowledge teams
+0,359,MANAGEMENT INTERNATIONAL REVIEW,ORGANIZATION,Management International Review is a publication that will feature an article by J. G. in March 1991
+0,359,J. G.,PERSON,J. G. is an author who will have an article published in Management International Review in March 1991
+0,360,ORGANIZATIONAL LEARNING,ORGANIZATION,Organizational learning is a process of exploration and exploitation
+0,361,ORGANIZATION SCIENCE,ORGANIZATION,Organization Science is a publication
+0,362,MICHAILOVA,PERSON,Michailova is a researcher who co-authored a paper in 2003
+0,362,K. HUSTED,PERSON,K. Husted is a researcher who co-authored a paper in 2003
+0,363,RUSSIA,GEO,Country where firms are experiencing knowledge-sharing hostility
+0,364,CALIFORNIA MANAGEMENT REVIEW,ORGANIZATION,California Management Review is a management journal
+0,365,BERKELEY,GEO,Berkeley is a location
+0,366,MINBAEVA,PERSON,Author of a publication
+0,366,T. PEDERSEN,PERSON,Author of a publication
+0,366,I. BJÖRKMAN,PERSON,Author of a publication
+0,366,C. FEY,PERSON,Author of a publication
+0,366,H.J. PARK,PERSON,Author of a publication
+0,367,MNC KNOWLEDGE TRANSFER,ORGANIZATION,MNC Knowledge Transfer is an organization that deals with knowledge transfer and HRM
+0,368,JOURNAL OF INTERNATIONAL BUSINESS STUDIES,ORGANIZATION,Journal of International Business Studies is a publication that is forthcoming
+0,369,MONTEVERDE,PERSON,Author of a publication in 1995
+0,370,MANAGEMENT SCIENCE,ORGANIZATION,Management Science is a publication that published an article about technological dialog as incentive for vertical integration in the semi conductor industry
+0,370,SEMICONDUCTOR INDUSTRY,ORGANIZATION,The semiconductor industry is the field of study in the article published in Management Science
+0,372,NO ENTITIES FOUND,NO ENTITIES FOUND,No entities of the specified types were found in the text
+0,373,CAMBRIDGE,GEO,Cambridge is a city in Massachusetts
+0,373,BELKNAP PRESS,ORGANIZATION,"The Belknap Press is a publisher based in Cambridge, MA"
+0,374,UNIVERSITY OF OXFORD,ORGANIZATION,"The University of Oxford is a research university located in Oxford, England, known for its academic excellence"
+0,374,OXFORD,GEO,Oxford is a location in England where the University of Oxford is situated
+0,374,ENGLAND,GEO,England is a country in the United Kingdom where the University of Oxford is located
+0,374,STEPHEN HAWKING,PERSON,"Stephen Hawking is a renowned physicist and cosmologist, and a notable alumnus of the University of Oxford"
+0,375,NEW YORK,GEO,City where the company is based and expanding its operations
+0,375,JOHN SMITH,PERSON,CEO of the company leading the expansion efforts
+0,375,LONDON,GEO,City where the parent corporation of the company is based
+0,376,THE KNOWLEDGE CREATING COMPANY,ORGANIZATION,The company creates knowledge
+0,377,OXFORD UNIVERSITY PRESS,ORGANIZATION,Oxford University Press is a publishing company
+0,378,OSTERLOH,PERSON,Osterloh is a person mentioned in the text
+0,379,"UNIVERSITY OF CALIFORNIA, BERKELEY",ORGANIZATION,"A public research university located in Berkeley, California, founded in 1868, known for academic excellence and innovative research"
+0,379,COLLEGE OF ENGINEERING,ORGANIZATION,"One of the colleges in the University of California, Berkeley"
+0,379,COLLEGE OF NATURAL RESOURCES,ORGANIZATION,"One of the colleges in the University of California, Berkeley"
+0,379,GRADUATE SCHOOL OF JOURNALISM,ORGANIZATION,"One of the schools in the University of California, Berkeley"
+0,379,BERKELEY,GEO,"A city in California where the University of California, Berkeley is located"
+0,379,CALIFORNIA,GEO,"A state in the United States where the University of California, Berkeley is located"
+0,380,ORGANIZATIONAL FORMS,ORGANIZATION,Organizational forms are the structure and design of an organization
+0,381,ORGANIZATION SCIENCE,ORGANIZATION,Organization Science is a publication
+0,383,ADMINISTRATIVE SCIENCE QUARTERLY,ORGANIZATION,"Administrative Science Quarterly is a publication that published an article titled Markets, Bureaucracies, and Clans"
+0,383,"MARKETS, BUREAUCRACIES, AND CLANS",ORGANIZATION,"Markets, Bureaucracies, and Clans is an article published in Administrative Science Quarterly"
+0,384,PEDERSEN,PERSON,Author of a publication in 2003
+0,384,PETERSEN,PERSON,Author of a publication in 2003
+0,384,DEO SHARMA,PERSON,Author of a publication in 2003
+0,385,MULTINATIONAL COMPANIES,ORGANIZATION,Multinational companies are organizations that operate in multiple countries and are involved in knowledge transfer
+0,386,MANAGEMENT INTERNATIONAL REVIEW,ORGANIZATION,Management International Review is a publication
+0,387,SCHUMPETER,PERSON,Schumpeter is an author who published in 1934
+0,388,THE UNIVERSITY OF CAMBRIDGE,ORGANIZATION,The University of Cambridge is a university
+0,388,CAMBRIDGE,GEO,Cambridge is a city in England
+0,388,ENGLAND,GEO,England is a country
+0,389,NEW YORK TIMES,ORGANIZATION,The New York Times is a news organization that reported on Tesla's expansion to China
+0,389,TESLA,ORGANIZATION,Tesla is a company that is expanding its operations to China
+0,389,ELON MUSK,PERSON,Elon Musk is the CEO of Tesla who announced the company's expansion to China
+0,389,CHINA,GEO,China is the country where Tesla is expanding its operations
+0,390,SIMONIN,PERSON,"Simonin is a person with the full name Simonin, Bernard L."
+0,391,MARKETING KNOW-HOW,ORGANIZATION,Marketing Know-How is a concept related to the transfer of knowledge in international strategic alliances
+0,391,INTERNATIONAL STRATEGIC ALLIANCES,ORGANIZATION,International Strategic Alliances is a concept related to the transfer of knowledge and marketing know-how
+0,391,KNOWLEDGE AMBIGUITY,ORGANIZATION,Knowledge Ambiguity is a concept related to the transfer of knowledge in international strategic alliances
+0,392,JOURNAL OF INTERNATIONAL BUSINESS STUDIES,ORGANIZATION,"Journal of International Business Studies is a publication that published an article by Spence, A. M. in 1972"
+0,392,"SPENCE, A. M.",PERSON,"Spence, A. M. is an author who published an article in the Journal of International Business Studies in 1972"
+0,393,JOB MARKET,ORGANIZATION,The job market is a system that matches workers with employers
+0,394,QUARTERLY JOURNAL OF ECONOMICS,ORGANIZATION,The Quarterly Journal of Economics is a publication that contains articles on economics
+0,395,SZULANSKI,PERSON,Gabriel Szulanski is an author
+0,396,FIRM,ORGANIZATION,The firm is an organization that is trying to transfer best practices
+0,397,STRATEGIC MANAGEMENT JOURNAL,ORGANIZATION,A journal that published an article on page 27-43
+0,399,NO OUTPUT,NO OUTPUT,No entities or relationships found in the text
+0,400,MANAGEMENT INTERNATIONAL REVIEW,ORGANIZATION,Management International Review is a publication that has published works by Tsai and Ghoshal
+0,400,W. TSAI,PERSON,W. Tsai is an author who has published in Management International Review
+0,400,S. GHOSHAL,PERSON,S. Ghoshal is an author who has published in Management International Review
+0,402,SOCIAL CAPITAL,ORGANIZATION,Social capital refers to the networks and relationships within and among organizations that enable value creation
+0,402,INTRA-FIRM NETWORKS,ORGANIZATION,Intra-firm networks are the internal networks within an organization that facilitate collaboration and knowledge sharing
+0,403,ACADEMY OF MANAGEMENT JOURNAL,ORGANIZATION,A journal that publishes articles on management
+0,404,WENGER E.,PERSON,Wenger E. is a researcher or author
+0,404,SNYDER W.,PERSON,Snyder W. is a researcher or author
+0,405,HARVARD BUSINESS REVIEW,ORGANIZATION,Harvard Business Review is a publication that published the article 'Communities of Practice: The Organizational Frontier'
+0,405,COMMUNITIES OF PRACTICE,ORGANIZATION,Communities of Practice is an article published in the Harvard Business Review
+0,406,ZAHRA,PERSON,Zahra is a person who co-authored a publication in 2002
+0,406,SHAKER A,PERSON,Shaker A is a person who co-authored a publication in 2002
+0,406,GERARD GEORGE,PERSON,Gerard George is a person who co-authored a publication in 2002
+0,408,ACADEMY OF MANAGEMENT REVIEW,ORGANIZATION,"A journal that published a paper with volume 27, issue 2, and pages 185-203"
+0,411,CORPORATE UNIVERSITY,ORGANIZATION,"Corporate University is an organization that is related to absorptive capacity, codification of knowledge, and inflow of knowledge"
+0,412,ORGANIZATION,ORGANIZATION,The organization is not clearly defined in the text
+0,412,PERSON,PERSON,There is no person mentioned in the text
+0,412,GEO,GEO,There is no geographic location mentioned in the text
+0,413,ORGANIZATION,ORGANIZATION,The organization is the entity that is being analyzed for business performance
+0,413,PERSON,PERSON,The person is the individual who is analyzing the business performance
+0,413,GEO,GEO,The geographic location is where the business is being performed
+0,414,DEV,ORGANIZATION,Dev is an organization that is associated with statistical data

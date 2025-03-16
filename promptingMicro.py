@@ -26,8 +26,6 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from sklearn.metrics.pairwise import cosine_similarity
 from collections import defaultdict
-import ipywidgets as widgets
-from IPython.display import display
 
 # Debug flag
 DEBUG = True
@@ -45,16 +43,6 @@ COMMUNITY_SUMMARIES_PKL = "community_summaries.pkl"
 # -----------------------------------------------------------------------------
 # 1. Load Models
 # -----------------------------------------------------------------------------
-def load_extraction_model():
-    debug("Loading extraction model...")
-    extraction_tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf")
-    extraction_model = AutoModelForCausalLM.from_pretrained(
-        "meta-llama/Llama-2-7b-chat-hf",
-        torch_dtype=torch.float16,
-        device_map="auto"
-    )
-    debug("Extraction model loaded.")
-    return extraction_tokenizer, extraction_model
 
 def load_summarization_model():
     debug("Loading summarization model...")
@@ -178,6 +166,57 @@ Output:
   {{"source": "MARTIN SMITH", "target": "CENTRAL INSTITUTION", "relationship": "Martin Smith is the Chair of the Central Institution and will answer questions at a press conference", "relationship_strength": 9}}
 ]
 ######################
+Example 2:
+Text:
+TechGlobal's (TG) stock skyrocketed in its opening day on the Global Exchange Thursday. But IPO experts warn that the semiconductor corporation's debut on the public markets isn't indicative of how other newly listed companies may perform.
+
+TechGlobal, a formerly public company, was taken private by Vision Holdings in 2014. The well-established chip designer says it powers 85% of premium smartphones.
+######################
+Output:
+[
+  {{"name": "TECHGLOBAL", "type": "ORGANIZATION", "description": "TechGlobal is a stock now listed on the Global Exchange which powers 85% of premium smartphones"}},
+  {{"name": "VISION HOLDINGS", "type": "ORGANIZATION", "description": "Vision Holdings is a firm that previously owned TechGlobal"}},
+  {{"source": "TECHGLOBAL", "target": "VISION HOLDINGS", "relationship": "Vision Holdings formerly owned TechGlobal from 2014 until present", "relationship_strength": 5}}
+]
+
+######################
+Example 3:
+Text:
+Five Aurelians jailed for 8 years in Firuzabad and widely regarded as hostages are on their way home to Aurelia.
+
+The swap orchestrated by Quintara was finalized when $8bn of Firuzi funds were transferred to financial institutions in Krohaara, the capital of Quintara.
+
+The exchange initiated in Firuzabad's capital, Tiruzia, led to the four men and one woman, who are also Firuzi nationals, boarding a chartered flight to Krohaara.
+
+They were welcomed by senior Aurelian officials and are now on their way to Aurelia's capital, Cashion.
+
+The Aurelians include 39-year-old businessman Samuel Namara, who has been held in Tiruzia's Alhamia Prison, as well as journalist Durke Bataglani, 59, and environmentalist Meggie Tazbah, 53, who also holds Bratinas nationality.
+######################
+Output:
+[
+  {{"name": "FIRUZABAD", "type": "GEO", "description": "Firuzabad held Aurelians as hostages"}},
+  {{"name": "AURELIA", "type": "GEO", "description": "Country seeking to release hostages"}},
+  {{"name": "QUINTARA", "type": "GEO", "description": "Country that negotiated a swap of money in exchange for hostages"}},
+  {{"name": "TIRUZIA", "type": "GEO", "description": "Capital of Firuzabad where the Aurelians were being held"}},
+  {{"name": "KROHAARA", "type": "GEO", "description": "Capital city in Quintara"}},
+  {{"name": "CASHION", "type": "GEO", "description": "Capital city in Aurelia"}},
+  {{"name": "SAMUEL NAMARA", "type": "PERSON", "description": "Aurelian who spent time in Tiruzia's Alhamia Prison"}},
+  {{"name": "ALHAMIA PRISON", "type": "GEO", "description": "Prison in Tiruzia"}},
+  {{"name": "DURKE BATAGLANI", "type": "PERSON", "description": "Aurelian journalist who was held hostage"}},
+  {{"name": "MEGGIE TAZBAH", "type": "PERSON", "description": "Bratinas national and environmentalist who was held hostage"}},
+  {{"source": "FIRUZABAD", "target": "AURELIA", "relationship": "Firuzabad negotiated a hostage exchange with Aurelia", "relationship_strength": 2}},
+  {{"source": "QUINTARA", "target": "AURELIA", "relationship": "Quintara brokered the hostage exchange between Firuzabad and Aurelia", "relationship_strength": 2}},
+  {{"source": "QUINTARA", "target": "FIRUZABAD", "relationship": "Quintara brokered the hostage exchange between Firuzabad and Aurelia", "relationship_strength": 2}},
+  {{"source": "SAMUEL NAMARA", "target": "ALHAMIA PRISON", "relationship": "Samuel Namara was a prisoner at Alhamia prison", "relationship_strength": 8}},
+  {{"source": "SAMUEL NAMARA", "target": "MEGGIE TAZBAH", "relationship": "Samuel Namara and Meggie Tazbah were exchanged in the same hostage release", "relationship_strength": 2}},
+  {{"source": "SAMUEL NAMARA", "target": "DURKE BATAGLANI", "relationship": "Samuel Namara and Durke Bataglani were exchanged in the same hostage release", "relationship_strength": 2}},
+  {{"source": "MEGGIE TAZBAH", "target": "DURKE BATAGLANI", "relationship": "Meggie Tazbah and Durke Bataglani were exchanged in the same hostage release", "relationship_strength": 2}},
+  {{"source": "SAMUEL NAMARA", "target": "FIRUZABAD", "relationship": "Samuel Namara was a hostage in Firuzabad", "relationship_strength": 2}},
+  {{"source": "MEGGIE TAZBAH", "target": "FIRUZABAD", "relationship": "Meggie Tazbah was a hostage in Firuzabad", "relationship_strength": 2}},
+  {{"source": "DURKE BATAGLANI", "target": "FIRUZABAD", "relationship": "Durke Bataglani was a hostage in Firuzabad", "relationship_strength": 2}}
+]
+
+######################
 -Real Data-
 ######################
 entity_types: {entity_types}
@@ -188,8 +227,6 @@ Output:
 
 def extract_elements_from_chunk(chunk, tokenizer, model):
     debug("Extracting elements from a chunk using Microsoft prompting style.")
-    # Build the prompt using the Microsoft JSON prompt.
-    # You can adjust the default entity types and language as needed.
     prompt = ENTITY_RELATIONSHIPS_GENERATION_JSON_PROMPT.format(
         entity_types="ORGANIZATION, PERSON, GEO",
         input_text=chunk,
@@ -200,17 +237,39 @@ def extract_elements_from_chunk(chunk, tokenizer, model):
         **inputs,
         max_new_tokens=1024,
         pad_token_id=tokenizer.eos_token_id,
-        do_sample=False
+        do_sample=False  
     )
     text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    print("RAW OUTPUT:", text, flush=True)
+    
+    # Use regex to extract the JSON array following the last "Output:" marker
+    import re
+    matches = re.findall(r'Output:\s*(\[[\s\S]*?\])', text)
+    if matches:
+        json_text = matches[-1]
+    else:
+        json_text = text
+    
     try:
-        data = json.loads(text)
+        data = json.loads(json_text)
     except Exception as e:
         debug(f"JSON parsing error: {e}")
         data = {"entities": [], "relationships": []}
+    
+    # If the data is a list, separate items into entities and relationships.
+    if isinstance(data, list):
+        entities = []
+        relationships = []
+        for item in data:
+            if isinstance(item, dict) and "source" in item and "target" in item:
+                relationships.append(item)
+            else:
+                entities.append(item)
+        data = {"entities": entities, "relationships": relationships}
+    
     return data
 
-def extract_graph_elements(all_chunks, extraction_tokenizer, extraction_model):
+def extract_graph_elements(all_chunks, summ_tokenizer, summ_model):
     debug("Beginning extraction over all chunks.")
     entity_rows = defaultdict(list)
     relationship_rows = defaultdict(list)
@@ -218,21 +277,30 @@ def extract_graph_elements(all_chunks, extraction_tokenizer, extraction_model):
     for doc_idx, chunks in enumerate(all_chunks):
         debug(f"Extracting from document {doc_idx} with {len(chunks)} chunks.")
         for chunk_idx, chunk in enumerate(chunks):
-            data = extract_elements_from_chunk(chunk, extraction_tokenizer, extraction_model)
+            data = extract_elements_from_chunk(chunk, summ_tokenizer, summ_model)
+            # Process entities
             for ent in data.get("entities", []):
-                if len(ent) >= 3:
+                # Now we assume ent is a dict with keys: "name", "type", "description"
+                name = ent.get("name", "").strip()
+                typ = ent.get("type", "").strip()
+                desc = ent.get("description", "").strip()
+                if name and typ and desc:
                     entity_rows["doc_idx"].append(doc_idx)
                     entity_rows["chunk_idx"].append(chunk_idx)
-                    entity_rows["Entity"].append(ent[0])
-                    entity_rows["Type"].append(ent[1])
-                    entity_rows["Description"].append(ent[2])
+                    entity_rows["Entity"].append(name)
+                    entity_rows["Type"].append(typ)
+                    entity_rows["Description"].append(desc)
+            # Process relationships
             for rel in data.get("relationships", []):
-                if len(rel) >= 3:
+                source = rel.get("source", "").strip()
+                target = rel.get("target", "").strip()
+                description = rel.get("relationship", "").strip()
+                if source and target and description:
                     relationship_rows["doc_idx"].append(doc_idx)
                     relationship_rows["chunk_idx"].append(chunk_idx)
-                    relationship_rows["Source"].append(rel[0])
-                    relationship_rows["Target"].append(rel[1])
-                    relationship_rows["Description"].append(rel[2])
+                    relationship_rows["Source"].append(source)
+                    relationship_rows["Target"].append(target)
+                    relationship_rows["Description"].append(description)
     
     df_entities = pd.DataFrame(entity_rows)
     df_relationships = pd.DataFrame(relationship_rows)
@@ -456,7 +524,6 @@ def graph_rag_query_map_reduce(question, community_summaries, summ_tokenizer, su
 # -----------------------------------------------------------------------------
 def main():
     debug("Loading models...")
-    extraction_tokenizer, extraction_model = load_extraction_model()
     summ_tokenizer, summ_model = load_summarization_model()
 
     from sentence_transformers import SentenceTransformer
@@ -471,16 +538,7 @@ def main():
     embedding_model.load_adapter("allenai/specter2", source="hf", load_as="specter2", set_active=True)
 
     pdf_paths = [
-        "/work/Chatbot-in-academia/papers-testing/6495.pdf",
-        "/work/Chatbot-in-academia/papers-testing/7294.pdf",
-        "/work/Chatbot-in-academia/papers-testing/QMOD_ICQSS_2014_CEM_and_business_performance.pdf",
-        "/work/Chatbot-in-academia/papers-testing/Wieland_wallenburg_supply_chain_risk_management.pdf",
-        "/work/Chatbot-in-academia/papers-testing/allan_hansen_the_purposes_of_performance_management_systems_and_processes_acceptedversion.pdf",
-        "/work/Chatbot-in-academia/papers-testing/cbs_forskningsindberetning_smg_30.pdf",
-        "/work/Chatbot-in-academia/papers-testing/jan_mouritsen_et_al_performance_risk_and_overflows_acceptedversion.pdf",
-        "/work/Chatbot-in-academia/papers-testing/katrine_schr_der_hansen_et_al_performance_management_trends_acceptedversion.pdf",
-        "/work/Chatbot-in-academia/papers-testing/linkwp01_27.pdf",
-        "/work/Chatbot-in-academia/papers-testing/smg_wp_2008_08.pdf"
+        "/work/Chatbot-in-academia/papers-testing/6495.pdf"
     ]
     pdf_paths_with_idx = [(i, path) for i, path in enumerate(pdf_paths)]
     
@@ -494,7 +552,7 @@ def main():
         df_relationships = pd.read_csv(RELATIONSHIPS_CSV)
     else:
         debug("Extracting graph elements using the lightweight model...")
-        df_entities, df_relationships = extract_graph_elements(all_chunks, extraction_tokenizer, extraction_model)
+        df_entities, df_relationships = extract_graph_elements(all_chunks, summ_tokenizer, summ_model)
         df_entities.to_csv(ENTITIES_CSV, index=False)
         df_relationships.to_csv(RELATIONSHIPS_CSV, index=False)
     debug(f"Extracted {df_entities.shape[0]} entities and {df_relationships.shape[0]} relationships.")
@@ -530,32 +588,18 @@ def main():
         community_summaries = build_community_summaries(G_merged, partition, all_chunks, summ_tokenizer, summ_model)
         with open(COMMUNITY_SUMMARIES_PKL, "wb") as f:
             pickle.dump(community_summaries, f)
-    
-    # --- Interactive Query Interface via ipywidgets ---
-    input_box = widgets.Text(
-        value='Explain Python?',
-        placeholder='Type your question here',
-        description='Question:',
-        disabled=False
-    )
-    output_area = widgets.Output()
 
-    def on_button_click(b):
-        with output_area:
-            output_area.clear_output()
-            question = input_box.value
-            answer = graph_rag_query_map_reduce(question, community_summaries, summ_tokenizer, summ_model, sent_transformer)
-            print(answer)
+    # --- Command-line chatbot loop ---
+    print("\nChatbot is ready! Type 'exit' to quit.")
+    while True:
+        query = input("\nUser: ")
+        if query.lower() == "exit":
+            print("Exiting. Goodbye.")
+            break
 
-    button = widgets.Button(
-        description='Ask',
-        disabled=False,
-        button_style='',
-        tooltip='Ask the question',
-        icon='check'
-    )
-    button.on_click(on_button_click)
-    display(input_box, button, output_area)
+        # Process the query using Graph-RAG
+        answer = graph_rag_query_map_reduce(query, community_summaries, summ_tokenizer, summ_model, sent_transformer)
+        print("\nBot:", answer)
 
 if __name__ == "__main__":
     main()
