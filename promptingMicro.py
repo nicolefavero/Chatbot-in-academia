@@ -35,10 +35,10 @@ def debug(msg):
         print("DEBUG:", msg)
 
 # File paths for caching intermediate outputs
-ENTITIES_CSV = "extracted_entities.csv"
-RELATIONSHIPS_CSV = "extracted_relationships.csv"
-GRAPH_PKL = "knowledge_graph.pkl"
-COMMUNITY_SUMMARIES_PKL = "community_summaries.pkl"
+ENTITIES_CSV = "/work/Chatbot-in-academia/extracted_entities.csv"
+RELATIONSHIPS_CSV = "/work/Chatbot-in-academia/extracted_relationships.csv"
+GRAPH_PKL = "/work/Chatbot-in-academia/knowledge_graph.pkl"
+COMMUNITY_SUMMARIES_PKL = "/work/Chatbot-in-academia/community_summaries.pkl"
 
 # -----------------------------------------------------------------------------
 # 1. Load Models
@@ -581,13 +581,32 @@ def main():
     # --- Community Summaries ---
     if os.path.exists(COMMUNITY_SUMMARIES_PKL):
         debug("Loading cached community summaries.")
-        with open(COMMUNITY_SUMMARIES_PKL, "rb") as f:
-            community_summaries = pickle.load(f)
-    else:
+    with open(COMMUNITY_SUMMARIES_PKL, "rb") as f:
+        community_summaries = pickle.load(f)
+    
+    # 🚀 Debugging: Print the first few community summaries to ensure they exist
+    debug(f"Total community summaries loaded: {len(community_summaries)}")
+    
+    # Print first 5 summaries (trimmed to 300 chars for readability)
+    for cid, summary in list(community_summaries.items())[:5]:
+        debug(f"\nCommunity {cid} Summary:\n{summary[:300]}...\n")
+    
+    # If no summaries are found, force regeneration
+    if len(community_summaries) == 0:
+        debug("No community summaries found in cache. Rebuilding...")
+        os.remove(COMMUNITY_SUMMARIES_PKL)
+
+    if not os.path.exists(COMMUNITY_SUMMARIES_PKL):
         debug("Building community summaries using Llama 3.3...")
         community_summaries = build_community_summaries(G_merged, partition, all_chunks, summ_tokenizer, summ_model)
-        with open(COMMUNITY_SUMMARIES_PKL, "wb") as f:
-            pickle.dump(community_summaries, f)
+
+    # 🚀 Debugging: Print newly generated summaries
+    debug(f"Total community summaries generated: {len(community_summaries)}")
+    for cid, summary in list(community_summaries.items())[:5]:
+        debug(f"\nCommunity {cid} Summary:\n{summary[:300]}...\n")
+
+    with open(COMMUNITY_SUMMARIES_PKL, "wb") as f:
+        pickle.dump(community_summaries, f)
 
     # --- Command-line chatbot loop ---
     print("\nChatbot is ready! Type 'exit' to quit.")

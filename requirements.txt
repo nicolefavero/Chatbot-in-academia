@@ -23,6 +23,8 @@ faiss-cpu>=1.6.1
 accelerate>=0.26.0
 pytorch-transformers==1.2.0 
 pysolr>=3.9.0
+igraph>=0.10.8
+leidenalg>=0.9.0
 
 # Run also this in the terminal for spacy
 # python -m spacy download en_core_web_sm
