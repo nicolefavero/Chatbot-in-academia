@@ -38,9 +38,9 @@ def load_llama_model():
     print(f"Loading model on {device} (4 GPUs)...")
     HF_TOKEN = "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"
 
-    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-70B", token=HF_TOKEN)
+    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-3.3-70B-Instruct", token=HF_TOKEN)
     model = AutoModelForCausalLM.from_pretrained(
-        "meta-llama/Meta-Llama-3-70B",
+        "meta-llama/Llama-3.3-70B-Instruct",
         token=HF_TOKEN,
         torch_dtype=dtype,
         device_map="auto"
@@ -58,7 +58,21 @@ def preprocess_text(text: str) -> str:
     Clean whitespace and normalize text.
     """
     text = text.strip()
+    # Remove inline citations like [1], (Doe et al., 2020)
+    text = re.sub(r"\[\d+\]|\(\w+ et al\., \d+\)", "", text)
+
+    # Remove figure references like (see Fig. 3)
+    text = re.sub(r"\(see Fig\.\s?\d+\)", "", text)
+
+    # Remove special characters (common in PDF noise)
+    text = re.sub(r"[*_#]", "", text)
+
+    # Fix awkward line breaks in PDFs (like "word-\nnextword")
+    text = re.sub(r"-\n", "", text)
+
+    # Normalize spacing
     text = " ".join(text.split())
+
     return text
 
 def split_into_sentences(text: str):
@@ -208,7 +222,7 @@ def process_all_pdfs(folder_path):
 
     return all_chunks
 
-def detect_target_doc(query: str, registry: dict, threshold=80):
+def detect_target_doc(query: str, registry: dict, threshold=90):
     """
     Use fuzzy matching on all doc aliases in registry to find the best match.
     Returns the doc_name (key in registry) if the highest match is above threshold,
@@ -249,7 +263,7 @@ def get_or_create_embedding_collection(folder_path, embedding_model):
     client = chromadb.PersistentClient(path="db")
     collection = client.get_or_create_collection(
         name="academic_papers",
-        metadata={"hnsw:space": "cosine"}
+        metadata={"hnsw:space": "cosine", "hnsw:M": 32}
     )
 
     # If it already has vectors, skip creation
@@ -438,7 +452,8 @@ def retrieve_documents(query, embedding_model, collection, n_results=5, doc_filt
     results = collection.query(
         query_embeddings=[query_embedding],
         n_results=n_results,
-        where=doc_filter
+        where=doc_filter,
+        ef=300
     )
     return results
 
@@ -471,7 +486,7 @@ def generate_response(query, tokenizer, model, embedding_model, collection, devi
     """
 
         # (A) Detect if user refers to a specific PDF from the registry
-    matched_doc_name = detect_target_doc(query, DOC_REGISTRY, threshold=80)
+    matched_doc_name = detect_target_doc(query, DOC_REGISTRY, threshold=90)
     if matched_doc_name:
         doc_filter = {"doc_name": matched_doc_name}
         print(f"DEBUG: Matched doc => {matched_doc_name} (score above threshold)")
@@ -521,16 +536,41 @@ def generate_response(query, tokenizer, model, embedding_model, collection, devi
     all_sources_str = ", ".join(sorted(doc_names_used))
 
     system_instruction = f"""\
-You are an expert academic research assistant, who must help university professors by answering their questions. 
-You must provide **clear and structured expository answers** using the retrieved context.
-Don't copy paste the context but use it to find the answer and then reformulate your answer in a natual way.
+You are an expert academic research assistant specializing in supporting professors in business school research. 
+Your expertise lies in analyzing and synthesizing complex information from academic papers, particularly in areas like 
+management, strategy, finance, marketing, and organizational behavior.
 
-Follow these rules:
-1. Use ONLY the text in the 'Context' below to answer the question.
-3. DO NOT copy exact sentences; **rephrase and explain naturally**.
-4. Summarize the retrieved information **without redundancy**.
-5. If the answer is not in the context, respond: "I don’t have information in my database to answer this question."
-6. Do NOT add outside knowledge.
+Your role is to provide insightful, clear, and well-structured explanations, within the token limit, that align with the expectations of business academia. 
+Professors may ask questions that require drawing insights from multiple sources, connecting key ideas, and interpreting nuanced academic content.
+
+### Response Guidelines:
+1. **Synthesize Information Thoughtfully:**
+   - Combine insights from multiple retrieved passages to construct a coherent and structured answer.
+   - Identify key themes, underlying frameworks, and implications relevant to the query.
+   - End your response with: "**If you have any more questions, I'm here to help**"  
+
+2. **Use an Academic Yet Business-Oriented Tone:**
+   - Frame responses with clarity, precision, and relevance to business research.
+   - Where appropriate, connect insights to practical business applications, theoretical frameworks, or real-world implications.
+   - Use concise language while ensuring key terms, frameworks, or methodologies are well-defined.
+
+4. **Rephrase and Summarize Naturally:**
+   - DO NOT copy exact sentences; instead, reformulate the retrieved information in your own words.
+   - Focus on delivering insights without excessive detail or redundancy.
+   - Summarize what’s available in a **concise conclusion**.
+
+5. **Clarify Ambiguities or Missing Information:**
+   - If the retrieved content lacks a direct answer, attempt to infer insights from related information.
+   - If no reasonable inference can be made, respond: 
+     "I don’t have information in my database to answer this question."
+
+6. **No Unverified Knowledge:**
+   - DO NOT add outside knowledge unless explicitly provided in the retrieved context.
+
+### Key Principles for Excellence:
+✅ Combine insights from multiple chunks when needed.
+✅ Align responses with a business school mindset, including frameworks, models, and strategic insights.
+✅ Maintain a clear, academic tone that resonates with university professors.
 """
 
     prompt = f"""
@@ -551,7 +591,7 @@ Answer:
     with torch.no_grad():
         output = model.generate(
             **inputs,
-            max_new_tokens=256,
+            max_new_tokens=700,
             do_sample=False,
             stopping_criteria=stopping_criteria
         )
