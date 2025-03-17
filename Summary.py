@@ -9,7 +9,7 @@ import warnings
 import re
 from rapidfuzz import fuzz
 from DOC_REGISTRY import DOC_REGISTRY
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, StoppingCriteria, StoppingCriteriaList
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 def load_llama_instructor():
@@ -69,7 +69,7 @@ def read_pdf_full_text(pdf_path: str) -> str:
 
     return "\n".join(all_text)
 
-def chunk_text(text, chunk_size=2500, chunk_overlap=200):
+def chunk_text(text, chunk_size=4000, chunk_overlap=100):
     """
     Splits text into smaller, coherent chunks while preserving sentence structure.
     """
@@ -105,17 +105,43 @@ def detect_target_doc(query: str, registry: dict, threshold=80):
     else:
         return None
 
+###############################################################################
+# 5. Stopping Criteria
+###############################################################################
+class StopOnTokens(StoppingCriteria):
+    """
+    If model tries to generate certain tokens, stop.
+    """
+    def __init__(self, stop_strings, tokenizer):
+        self.stop_ids = [tokenizer.encode(s, add_special_tokens=False) for s in stop_strings]
+
+    def __call__(self, input_ids, scores):
+        for stop_id_seq in self.stop_ids:
+            if len(input_ids[0]) >= len(stop_id_seq):
+                if list(input_ids[0][-len(stop_id_seq):]) == stop_id_seq:
+                    return True
+        return False
+
+
 ################################################################################
 # 3. Chunk Summarization Prompt
 ################################################################################
 
 CHUNK_SUMMARY_PROMPT = """
-Here is an excerpt from an academic paper. Summarize it in a continuous text format that condenses the key information into approximately 350 tokens. 
-Focus on clarity and coherence, maintaining the essential arguments and insights. Avoid listing points or dividing the text into sections. 
-End with a natural conclusion.
+Here is an excerpt from an academic paper. Summarize it in a continuous text format that condenses the key information in max 50 tokens, it is fine if it's less. 
+Focus on clarity and coherence, maintaining the essential arguments and insights. Avoid listing points or dividing the text into sections. Avoid repetition of the same concept.
+End with a self-contained sentence.
+
+DON'T ADD NOTES
+DON'T WRITE MORE THEN ONE SUMMARY
+END WITH THE END OF THE FIRST SUMMARY YOU GENERATE
+DON'T GO OVER THE 50 TOKENS IN THE SUMMARY, Summaries longer than 200 tokens will be cut off, so you must wrap up before reaching that limit. 
+
 
 Text:
 {chunk_text}
+
+Summary:
 """
 
 def summarize_chunk(chunk, model, tokenizer, device, chunk_idx, total_chunks):
@@ -127,11 +153,16 @@ def summarize_chunk(chunk, model, tokenizer, device, chunk_idx, total_chunks):
     prompt = CHUNK_SUMMARY_PROMPT.format(chunk_text=chunk)
     inputs = tokenizer(prompt, return_tensors="pt").to(device)
 
+    stop_strings = ["Summary:", "Text:"]  # Prevents prompt leakage
+    stopping_criteria = StoppingCriteriaList([StopOnTokens(stop_strings, tokenizer)])
+
+
     output = model.generate(
         **inputs,
-        max_new_tokens=350,
+        max_new_tokens=200,
         do_sample=False,
-        temperature=0.7
+        temperature=0.7,
+        stopping_criteria=stopping_criteria
     )
 
     summary = tokenizer.decode(output[0], skip_special_tokens=True).strip()
@@ -199,7 +230,7 @@ def summarize_paper(user_query: str, pdf_folder_path: str, tokenizer, llama_mode
         return f"PDF '{pdf_name}' not found in '{pdf_folder_path}'."
 
     pdf_text = read_pdf_full_text(pdf_path)
-    pdf_chunks = chunk_text(pdf_text, chunk_size=2500, chunk_overlap=200)
+    pdf_chunks = chunk_text(pdf_text, chunk_size=4000, chunk_overlap=100)
 
     print(f"\n🧩 Total Chunks to Process: {len(pdf_chunks)}\n{'='*60}")
 
