@@ -248,7 +248,7 @@ def summarize_paper(user_query: str, pdf_folder_path: str, tokenizer, llama_mode
 ################################################################################
 
 if __name__ == "__main__":
-    pdf_folder = "papers-testing"
+    pdf_folder = "papers-cleaned" 
 
     # Load model & tokenizer
     tokenizer, llama_model, device = load_llama_instructor()
