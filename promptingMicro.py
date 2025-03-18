@@ -502,7 +502,7 @@ def filter_relevant_communities(question, community_summaries, sent_transformer)
     sim_scores = cosine_similarity([query_embedding], community_embeddings)[0]
     selected_communities = {}
     for idx, (cid, summary) in enumerate(community_summaries.items()):
-        if sim_scores[idx] > 0.75:
+        if sim_scores[idx] > 0.35:
             selected_communities[cid] = summary
     debug(f"Filtered down to {len(selected_communities)} communities.")
     return selected_communities
@@ -589,7 +589,7 @@ def main():
     
     # Print first 5 summaries (trimmed to 300 chars for readability)
     for cid, summary in list(community_summaries.items())[:5]:
-        debug(f"\nCommunity {cid} Summary:\n{summary[:300]}...\n")
+        debug(f"\nCommunity {cid} Summary:\n{summary}\n")
     
     # If no summaries are found, force regeneration
     if len(community_summaries) == 0:
