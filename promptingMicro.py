@@ -579,34 +579,39 @@ def main():
     partition = detect_communities(G_merged)
     
     # --- Community Summaries ---
+    community_summaries = None 
+
     if os.path.exists(COMMUNITY_SUMMARIES_PKL):
         debug("Loading cached community summaries.")
-    with open(COMMUNITY_SUMMARIES_PKL, "rb") as f:
-        community_summaries = pickle.load(f)
-    
-    # 🚀 Debugging: Print the first few community summaries to ensure they exist
-    debug(f"Total community summaries loaded: {len(community_summaries)}")
-    
-    # Print first 5 summaries (trimmed to 300 chars for readability)
-    for cid, summary in list(community_summaries.items())[:5]:
-        debug(f"\nCommunity {cid} Summary:\n{summary}\n")
-    
-    # If no summaries are found, force regeneration
-    if len(community_summaries) == 0:
-        debug("No community summaries found in cache. Rebuilding...")
-        os.remove(COMMUNITY_SUMMARIES_PKL)
+        with open(COMMUNITY_SUMMARIES_PKL, "rb") as f:
+            community_summaries = pickle.load(f)
 
-    if not os.path.exists(COMMUNITY_SUMMARIES_PKL):
+    # Only print debug info if community_summaries is not None
+    if community_summaries is not None:
+        debug(f"Total community summaries loaded: {len(community_summaries)}")
+
+        # Only print summaries if there are any
+        if len(community_summaries) > 0:
+            for cid, summary in list(community_summaries.items())[:5]:
+                debug(f"\nCommunity {cid} Summary:\n{summary[:300]}...\n")
+        else:
+            debug("No community summaries found in cache. Rebuilding...")
+            os.remove(COMMUNITY_SUMMARIES_PKL)  # Only delete if it's valid
+
+    # If file was missing OR summaries were empty, generate new ones
+    if community_summaries is None or len(community_summaries) == 0:
         debug("Building community summaries using Llama 3.3...")
         community_summaries = build_community_summaries(G_merged, partition, all_chunks, summ_tokenizer, summ_model)
 
-    # 🚀 Debugging: Print newly generated summaries
-    debug(f"Total community summaries generated: {len(community_summaries)}")
-    for cid, summary in list(community_summaries.items())[:5]:
-        debug(f"\nCommunity {cid} Summary:\n{summary[:300]}...\n")
+        # Print debug info for new summaries
+        debug(f"Total community summaries generated: {len(community_summaries)}")
+        for cid, summary in list(community_summaries.items())[:5]:
+            debug(f"\nCommunity {cid} Summary:\n{summary[:300]}...\n")
 
-    with open(COMMUNITY_SUMMARIES_PKL, "wb") as f:
-        pickle.dump(community_summaries, f)
+        # Save the newly generated summaries
+        with open(COMMUNITY_SUMMARIES_PKL, "wb") as f:
+            pickle.dump(community_summaries, f)
+        debug("New community summaries saved.")
 
     # --- Command-line chatbot loop ---
     print("\nChatbot is ready! Type 'exit' to quit.")
