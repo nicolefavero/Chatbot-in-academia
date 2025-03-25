@@ -41,6 +41,84 @@ RELATIONSHIPS_CSV = "/work/Chatbot-in-academia/extracted_relationships.csv"
 GRAPH_PKL = "/work/Chatbot-in-academia/knowledge_graph.pkl"
 COMMUNITY_SUMMARIES_PKL = "/work/Chatbot-in-academia/community_summaries.pkl"
 
+def extract_and_fix_json(text):
+    """
+    Extract JSON from text and fix common JSON formatting issues.
+    Returns parsed data or empty lists for entities and relationships.
+    """
+    import re
+    import json
+    
+    debug("Attempting to extract and fix JSON")
+    
+    # Try to find a JSON array in the text
+    json_pattern = r'\[\s*\{.*?\}\s*\]'
+    matches = re.findall(json_pattern, text, re.DOTALL)
+    
+    if not matches:
+        debug("No JSON array found in response, printing raw output")
+        debug(f"Raw output first 500 chars: {text[:500]}")
+        return {"entities": [], "relationships": []}
+    
+    # Try each match until we find valid JSON
+    for json_str in matches:
+        try:
+            # Try to parse the JSON directly
+            data = json.loads(json_str)
+            debug(f"Successfully parsed JSON with {len(data)} items")
+            
+            # Separate entities and relationships
+            entities = []
+            relationships = []
+            
+            for item in data:
+                if isinstance(item, dict):
+                    if "source" in item and "target" in item:
+                        relationships.append(item)
+                    elif "name" in item and "type" in item:
+                        entities.append(item)
+            
+            return {"entities": entities, "relationships": relationships}
+            
+        except json.JSONDecodeError as e:
+            debug(f"JSON parse error: {e}")
+            try:
+                # Fix common JSON errors
+                fixed_str = json_str
+                
+                # 1. Fix trailing commas
+                fixed_str = re.sub(r',\s*}', '}', fixed_str)
+                fixed_str = re.sub(r',\s*\]', ']', fixed_str)
+                
+                # 2. Fix missing quotes around keys
+                fixed_str = re.sub(r'(\w+)(?=\s*:)', r'"\1"', fixed_str)
+                
+                # 3. Replace single quotes with double quotes
+                fixed_str = fixed_str.replace("'", '"')
+                
+                # Try parsing again
+                data = json.loads(fixed_str)
+                debug(f"Successfully parsed fixed JSON with {len(data)} items")
+                
+                # Separate entities and relationships
+                entities = []
+                relationships = []
+                
+                for item in data:
+                    if isinstance(item, dict):
+                        if "source" in item and "target" in item:
+                            relationships.append(item)
+                        elif "name" in item and "type" in item:
+                            entities.append(item)
+                
+                return {"entities": entities, "relationships": relationships}
+                
+            except Exception as e2:
+                debug(f"Failed to fix JSON: {e2}")
+    
+    debug("All JSON extraction attempts failed")
+    return {"entities": [], "relationships": []}
+
 # -----------------------------------------------------------------------------
 # 1. Load Models
 # -----------------------------------------------------------------------------
@@ -126,72 +204,116 @@ def process_all_pdfs(pdf_paths_with_idx):
 # 3. LLM-Based Entity Extraction with Multi-Round "Gleanings"
 # -----------------------------------------------------------------------------
 
-ACADEMIC_ENTITY_EXTRACTION_PROMPT = """
+# STAGE 1: Entity Extraction Prompt - Focuses ONLY on entity extraction
+ENTITY_EXTRACTION_PROMPT = r"""
 -Goal-
-Given an academic text, identify all relevant academic entities and their relationships.
+Extract ONLY academic entities that are EXPLICITLY present in the INPUT TEXT provided below. 
+DO NOT extract any relationships between entities at this stage - focus solely on identifying entities.
 
--Steps-
-1. Identify all academic entities. For each entity, extract:
-- entity_name: Name of the entity, using standard academic terminology (capitalized)
-- entity_type: One of the following types: [{entity_types}]
-- entity_description: Precise academic definition or explanation
+-Extraction Instructions-
+1. First, carefully read the INPUT TEXT at the bottom of this prompt.
+2. Identify academic entities that are ACTUALLY present in the INPUT TEXT (not from examples).
 
-Format each entity as a JSON entry:
-{{"name": <entity name>, "type": <type>, "description": <entity description>}}
+-Expected Output Format-
+For each entity found in the INPUT TEXT, extract:
+- entity_name: Academic term as it appears in the text (capitalized)
+- entity_type: Categorize as one of: {entity_types}
+- entity_description: Brief definition based ONLY on how it's described in the INPUT TEXT
 
-2. From the identified entities, determine all pairs of entities that have a clear academic relationship.
-For each relationship, extract:
-- source_entity: First entity in the relationship
-- target_entity: Second entity in the relationship
-- relationship_description: Explanation of how these academic concepts relate (builds on, measures, contradicts, etc.)
-- relationship_strength: Score from 1-10 indicating relationship strength (higher for direct, explicit relationships)
+Format each entity as:
+{{"name": "ENTITY_NAME", "type": "ENTITY_TYPE", "description": "DESCRIPTION_FROM_TEXT"}}
 
-Format each relationship as:
-{{"source": <source_entity>, "target": <target_entity>, "relationship": <relationship_description>, "relationship_strength": <relationship_strength>}}
+-CRITICAL INSTRUCTION-
+YOU MUST ONLY extract entities that are EXPLICITLY mentioned in the INPUT TEXT below. 
+DO NOT copy entities from format examples unless they genuinely appear in the actual input text.
+DO NOT extract relationships between entities at this stage - that will be done separately.
 
-3. Return all entities and relationships in a single JSON list.
+-JSON Output Format Requirements-
+- Use ONLY double quotes (") for strings, never single quotes (')
+- Do not include trailing commas
+- Ensure all brackets and braces are properly closed
+- Output ONLY a JSON array with entities, like: [{{"name": "ENTITY1", "type": "TYPE1", "description": "DESC1"}}, {{"name": "ENTITY2", "type": "TYPE2", "description": "DESC2"}}]
 
-IMPORTANT: Focus ONLY on entities explicitly present in THIS text, using precise academic terminology.
+-Domain Specific Examples-
+These brief examples show the expected format, but DO NOT EXTRACT THESE ENTITIES unless they appear in your INPUT TEXT:
 
-######################
--Examples-
-######################
-Example:
-Text:
-The study examined patterns of biodiversity loss in marine ecosystems affected by climate change. Researchers found that rising ocean temperatures correlated with decreased species richness in coral reef ecosystems. Statistical modeling indicated a 0.8% decline in biodiversity for each 0.1°C increase in average water temperature.
-######################
-Output:
+Example 1:
+Input: "Machine learning algorithms like neural networks require large datasets for training."
 [
-  {{"name": "BIODIVERSITY LOSS", "type": "RESEARCH_CONCEPT", "description": "The decrease in variety and variability of living organisms in marine ecosystems"}},
-  {{"name": "OCEAN TEMPERATURE RISE", "type": "VARIABLE", "description": "The increase in average water temperature in oceans due to climate change"}},
-  {{"name": "SPECIES RICHNESS", "type": "VARIABLE", "description": "A measure of biodiversity representing the number of different species in coral reef ecosystems"}},
-  {{"name": "STATISTICAL MODELING", "type": "METHODOLOGY", "description": "Mathematical approach used to quantify the relationship between temperature and biodiversity"}},
-  {{"name": "CORAL REEF ECOSYSTEMS", "type": "RESEARCH_CONCEPT", "description": "Marine habitats formed by coral colonies that support high biodiversity"}},
-  {{"source": "OCEAN TEMPERATURE RISE", "target": "BIODIVERSITY LOSS", "relationship": "Rising ocean temperatures cause biodiversity loss in marine ecosystems", "relationship_strength": 9}},
-  {{"source": "OCEAN TEMPERATURE RISE", "target": "SPECIES RICHNESS", "relationship": "Rising temperatures correlate with decreased species richness", "relationship_strength": 8}},
-  {{"source": "STATISTICAL MODELING", "target": "BIODIVERSITY LOSS", "relationship": "Statistical modeling quantified the rate of biodiversity decline per temperature increase", "relationship_strength": 6}}
+  {{"name": "MACHINE LEARNING", "type": "RESEARCH_CONCEPT", "description": "Algorithms that can learn from data"}},
+  {{"name": "NEURAL NETWORKS", "type": "METHODOLOGY", "description": "A type of machine learning algorithm"}},
+  {{"name": "LARGE DATASETS", "type": "RESEARCH_CONCEPT", "description": "Collections of data required for training machine learning algorithms"}}
 ]
 
-######################
--Input Text-
-######################
+-INPUT TEXT TO ANALYZE-
 entity_types: {entity_types}
 text: {input_text}
-######################
-Output:
+
+-OUTPUT (only entities from THIS input text)-
+"""
+
+# STAGE 2: Relationship Extraction Prompt - Takes entities from Stage 1 as input
+RELATIONSHIP_EXTRACTION_PROMPT = r"""
+-Goal-
+This is the SECOND STAGE of knowledge extraction. Given the INPUT TEXT and a list of ALREADY IDENTIFIED ENTITIES from the first stage, 
+determine all relationships between these entities that are EXPLICITLY stated in the text.
+
+-Extraction Instructions-
+1. Review both the INPUT TEXT and the IDENTIFIED ENTITIES from the first stage.
+2. For each pair of entities, determine if they have a clear relationship in the text.
+3. ONLY create relationships between entities in the provided list.
+
+-Expected Output Format-
+For each relationship between entities, extract:
+- source_entity: Name of the source entity (must match one of the IDENTIFIED ENTITIES exactly)
+- target_entity: Name of the target entity (must match one of the IDENTIFIED ENTITIES exactly)
+- relationship_description: How these concepts relate according to the INPUT TEXT
+- relationship_strength: Score from 1-10 based on how explicitly the relationship is stated
+
+Format each relationship as:
+{{"source": "SOURCE_ENTITY", "target": "TARGET_ENTITY", "relationship": "RELATIONSHIP_DESCRIPTION", "relationship_strength": NUMBER}}
+
+-CRITICAL INSTRUCTION-
+ONLY create relationships between entities that are in the provided IDENTIFIED ENTITIES list.
+ONLY identify relationships that are EXPLICITLY stated in the INPUT TEXT.
+DO NOT create new entities that weren't identified in the first stage.
+
+-JSON Output Format Requirements-
+- Use ONLY double quotes (") for strings, never single quotes (')
+- Do not include trailing commas
+- Ensure all brackets and braces are properly closed
+- Output ONLY a JSON array with relationships, like: [{{"source": "ENTITY1", "target": "ENTITY2", "relationship": "DESC", "relationship_strength": 7}}]
+
+-Domain Specific Examples-
+These brief examples show the expected format, but DO NOT EXTRACT THESE RELATIONSHIPS unless they appear in your INPUT TEXT:
+
+Example 1:
+Input: "Machine learning algorithms like neural networks require large datasets for training."
+Identified Entities: ["MACHINE LEARNING", "NEURAL NETWORKS", "LARGE DATASETS"]
+[
+  {{"source": "NEURAL NETWORKS", "target": "LARGE DATASETS", "relationship": "Neural networks require large datasets for training", "relationship_strength": 9}}
+]
+
+-INPUT TEXT TO ANALYZE-
+text: {input_text}
+
+-IDENTIFIED ENTITIES FROM FIRST STAGE-
+{identified_entities}
+
+-OUTPUT (only relationships from THIS input text between the identified entities)-
 """
 
 # Gleaning assessment prompt to determine if more entities need to be extracted
 GLEANING_ASSESSMENT_PROMPT = """
 -Goal-
-Determine if there are additional academic entities or relationships that should be extracted from the text.
+Determine if there are additional academic entities that should be extracted from the text.
 
 -Input-
 1. Original academic text
-2. Entities and relationships already extracted
+2. Entities already extracted
 
 -Question-
-Are there ADDITIONAL entities or relationships in the text that haven't been extracted yet? 
+Are there ADDITIONAL entities in the text that haven't been extracted yet? 
 Answer with ONLY "YES" or "NO".
 
 ######################
@@ -206,12 +328,19 @@ Already Extracted:
 # Gleaning extraction prompt to find missed entities
 GLEANING_EXTRACTION_PROMPT = """
 -Goal-
-MANY entities and relationships were missed in the previous extraction. Identify ADDITIONAL academic entities and relationships that weren't captured in the first round.
+MANY entities were missed in the previous extraction. Identify ADDITIONAL academic entities that weren't captured in the first round.
+Focus ONLY on identifying entities, NOT relationships between them.
 
 -Instructions-
 1. Review the original text and already extracted items
-2. Focus ONLY on identifying NEW entities and relationships not in the previous extraction
+2. Focus ONLY on identifying NEW entities not in the previous extraction
 3. Format output as a JSON list using the same format as before
+
+-Expected Output Format-
+For each NEW entity found in the INPUT TEXT, extract:
+- entity_name: Academic term as it appears in the text (capitalized)
+- entity_type: Categorize as one of: {entity_types}
+- entity_description: Brief definition based ONLY on how it's described in the INPUT TEXT
 
 ######################
 Original Text:
@@ -219,20 +348,22 @@ Original Text:
 
 Already Extracted:
 {extracted_items}
+
+entity_types: {entity_types}
 ######################
 Output:
 """
 
-def extract_elements_with_gleanings(chunk, tokenizer, model, max_gleanings=2):
+def extract_entities_with_gleanings(chunk, tokenizer, model, entity_types, max_gleanings=2):
     """
-    Extract academic entities and relationships with multiple rounds of "gleanings"
-    to improve recall, as described in the paper.
+    Extract academic entities with multiple rounds of "gleanings" to improve recall.
+    This is the first stage of the Microsoft GraphRAG approach, focusing ONLY on entity extraction.
     """
-    debug("Extracting elements with multi-round gleanings approach")
+    debug("Extracting entities with multi-round gleanings approach (Stage 1)")
     
     # Initial extraction
-    prompt = ACADEMIC_ENTITY_EXTRACTION_PROMPT.format(
-        entity_types="RESEARCH_CONCEPT, METHODOLOGY, VARIABLE, FINDING, ORGANIZATION",
+    prompt = ENTITY_EXTRACTION_PROMPT.format(
+        entity_types=entity_types,
         input_text=chunk
     )
     
@@ -245,68 +376,42 @@ def extract_elements_with_gleanings(chunk, tokenizer, model, max_gleanings=2):
         temperature=0.3  # Lower temperature for more precise extraction
     )
     text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+    # Use robust JSON extraction function
+    parsed_data = extract_and_fix_json(text)
+    entities = parsed_data["entities"]
     
-    # Process extraction results
-    import re
-    import json
-    
-    # Extract JSON from result
-    json_pattern = r'\[\s*\{.*?\}\s*\]'
-    match = re.search(json_pattern, text, re.DOTALL)
-    
-    if not match:
-        debug("No JSON found in initial extraction")
-        return {"entities": [], "relationships": []}
-    
-    try:
-        initial_data = json.loads(match.group(0))
-        debug(f"Initial extraction found {len(initial_data)} items")
-    except json.JSONDecodeError:
-        debug("Failed to decode initial JSON")
-        return {"entities": [], "relationships": []}
-    
-    # Separate into entities and relationships
-    entities = []
-    relationships = []
-    
-    for item in initial_data:
-        if "source" in item and "target" in item:
-            relationships.append(item)
-        elif "name" in item and "type" in item:
-            entities.append(item)
-    
-    debug(f"Initial extraction: {len(entities)} entities, {len(relationships)} relationships")
+    debug(f"Initial entity extraction: {len(entities)} entities")
     
     # Multiple rounds of gleanings
     gleaning_round = 0
     
     while gleaning_round < max_gleanings:
-        # Ask if more entities/relationships need to be extracted
-        extracted_json = json.dumps(initial_data, indent=2)
+        # Construct the assessment prompt with the entities we've already extracted
+        extracted_json = json.dumps(entities, indent=2)
         assessment_prompt = GLEANING_ASSESSMENT_PROMPT.format(
             input_text=chunk,
             extracted_items=extracted_json
         )
         
-        # Force yes/no decision with logit bias
+        # Force yes/no decision 
         inputs = tokenizer(assessment_prompt, return_tensors="pt", truncation=True, max_length=2048).to("cuda")
-        
+
         # Create token_ids for "YES" and "NO"
         yes_token_id = tokenizer.encode(" YES")[0]  # Using space prefix to get token
         no_token_id = tokenizer.encode(" NO")[0]    # Using space prefix to get token
-        
-        # Set up logit bias for yes/no decision
-        logit_bias = {}
-        for i in range(tokenizer.vocab_size):
-            if i not in [yes_token_id, no_token_id]:
-                logit_bias[i] = -100  # Discourage all other tokens
-        
+
+        # All tokens except YES, NO, and EOS
+        allowed_tokens = [yes_token_id, no_token_id, tokenizer.eos_token_id]
+        suppress_tokens = [i for i in range(tokenizer.vocab_size) if i not in allowed_tokens]
+
         outputs = model.generate(
             **inputs,
             max_new_tokens=5,
             pad_token_id=tokenizer.eos_token_id,
-            do_sample=False,
-            logits_processor=logit_bias
+            do_sample=True,  # Need to set this to true for temperature
+            temperature=0.7,
+            suppress_tokens=suppress_tokens  # This suppresses all tokens except YES/NO/EOS
         )
         
         assessment = tokenizer.decode(outputs[0], skip_special_tokens=True)
@@ -318,7 +423,8 @@ def extract_elements_with_gleanings(chunk, tokenizer, model, max_gleanings=2):
             # Extract additional entities
             gleaning_prompt = GLEANING_EXTRACTION_PROMPT.format(
                 input_text=chunk,
-                extracted_items=extracted_json
+                extracted_items=extracted_json,
+                entity_types=entity_types
             )
             
             inputs = tokenizer(gleaning_prompt, return_tensors="pt", truncation=True, max_length=2048).to("cuda")
@@ -333,59 +439,81 @@ def extract_elements_with_gleanings(chunk, tokenizer, model, max_gleanings=2):
             gleaning_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
             
             # Extract JSON from gleaning result
-            match = re.search(json_pattern, gleaning_text, re.DOTALL)
-            
-            if match:
-                try:
-                    additional_data = json.loads(match.group(0))
+            additional_data_dict = extract_and_fix_json(gleaning_text)
+            additional_entities = additional_data_dict["entities"]
+
+            if additional_entities:
+                # Add new entities
+                for item in additional_entities:
+                    # Check if this entity is new
+                    is_new = True
+                    for existing in entities:
+                        if item["name"] == existing["name"]:
+                            is_new = False
+                            break
                     
-                    # Add new entities and relationships
-                    for item in additional_data:
-                        if "source" in item and "target" in item:
-                            # Check if this relationship is new
-                            is_new = True
-                            for existing in relationships:
-                                if (item["source"] == existing["source"] and 
-                                    item["target"] == existing["target"]):
-                                    is_new = False
-                                    break
-                            
-                            if is_new:
-                                relationships.append(item)
-                        
-                        elif "name" in item and "type" in item:
-                            # Check if this entity is new
-                            is_new = True
-                            for existing in entities:
-                                if item["name"] == existing["name"]:
-                                    is_new = False
-                                    break
-                            
-                            if is_new:
-                                entities.append(item)
-                    
-                    # Update initial data for next gleaning round
-                    initial_data = entities + relationships
-                    
-                    debug(f"After gleaning {gleaning_round+1}: {len(entities)} entities, {len(relationships)} relationships")
-                    
-                except json.JSONDecodeError:
-                    debug(f"Failed to decode JSON in gleaning round {gleaning_round+1}")
+                    if is_new:
+                        entities.append(item)
+                
+                debug(f"After gleaning {gleaning_round+1}: {len(entities)} entities")
             
             gleaning_round += 1
         else:
             debug("No more entities to extract")
             break
     
-    return {"entities": entities, "relationships": relationships}
+    return entities
+
+def extract_relationships(chunk, entities, tokenizer, model):
+    """
+    Extract relationships between identified entities.
+    This is the second stage of the Microsoft GraphRAG approach, focused exclusively on relationship extraction
+    between the entities identified in the first stage.
+    """
+    debug(f"Extracting relationships between {len(entities)} entities (Stage 2)")
+    
+    if not entities:
+        debug("No entities to extract relationships for")
+        return []
+    
+    # Format entities as a list of entity names for the prompt
+    entity_names = [entity["name"] for entity in entities]
+    entities_formatted = json.dumps(entity_names)
+    
+    # Relationship extraction
+    prompt = RELATIONSHIP_EXTRACTION_PROMPT.format(
+        input_text=chunk,
+        identified_entities=entities_formatted
+    )
+    
+    inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=2048).to("cuda")
+    outputs = model.generate(
+        **inputs,
+        max_new_tokens=1024,
+        pad_token_id=tokenizer.eos_token_id,
+        do_sample=True,
+        temperature=0.3
+    )
+    text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    
+    # Parse relationships
+    parsed_data = extract_and_fix_json(text)
+    relationships = parsed_data["relationships"]
+    
+    debug(f"Extracted {len(relationships)} relationships")
+    return relationships
 
 def extract_graph_elements_improved(all_chunks, summ_tokenizer, summ_model, max_chunks=None):
     """
-    Extract graph elements from all chunks with improved multi-round gleaning approach.
+    Extract graph elements from all chunks with improved two-stage approach.
+    First extract entities, then extract relationships between those entities.
+    This follows Microsoft's GraphRAG approach with clear separation between the stages.
     """
-    debug("Beginning extraction over all chunks with gleaning approach")
+    debug("Beginning extraction over all chunks with Microsoft-style two-stage approach")
     entity_rows = defaultdict(list)
     relationship_rows = defaultdict(list)
+    
+    entity_types = "RESEARCH_CONCEPT, METHODOLOGY, VARIABLE, FINDING, ORGANIZATION"
     
     for doc_idx, chunks in enumerate(all_chunks):
         debug(f"Extracting from document {doc_idx} with {len(chunks)} chunks")
@@ -397,11 +525,11 @@ def extract_graph_elements_improved(all_chunks, summ_tokenizer, summ_model, max_
         for chunk_idx, chunk in enumerate(processed_chunks):
             debug(f"Processing chunk {chunk_idx+1}/{chunk_count}")
             
-            # Extract with gleanings approach
-            data = extract_elements_with_gleanings(chunk, summ_tokenizer, summ_model)
+            # STAGE 1: Extract entities with gleanings approach
+            entities = extract_entities_with_gleanings(chunk, summ_tokenizer, summ_model, entity_types)
             
-            # Process entities
-            for ent in data.get("entities", []):
+            # Process extracted entities
+            for ent in entities:
                 name = ent.get("name", "").strip()
                 typ = ent.get("type", "").strip()
                 desc = ent.get("description", "").strip()
@@ -413,21 +541,27 @@ def extract_graph_elements_improved(all_chunks, summ_tokenizer, summ_model, max_
                     entity_rows["Type"].append(typ)
                     entity_rows["Description"].append(desc)
             
-            # Process relationships
-            for rel in data.get("relationships", []):
-                source = rel.get("source", "").strip()
-                target = rel.get("target", "").strip()
-                description = rel.get("relationship", "").strip()
-                strength = rel.get("relationship_strength", 5)
+            # STAGE 2: Extract relationships between identified entities
+            # Only proceed if we have entities to work with
+            if entities:
+                relationships = extract_relationships(chunk, entities, summ_tokenizer, summ_model)
                 
-                if source and target and description:
-                    relationship_rows["doc_idx"].append(doc_idx)
-                    relationship_rows["chunk_idx"].append(chunk_idx)
-                    relationship_rows["Source"].append(source)
-                    relationship_rows["Target"].append(target)
-                    relationship_rows["Description"].append(description)
-                    relationship_rows["Strength"].append(strength)
+                # Process relationships
+                for rel in relationships:
+                    source = rel.get("source", "").strip()
+                    target = rel.get("target", "").strip()
+                    description = rel.get("relationship", "").strip()
+                    strength = rel.get("relationship_strength", 5)
+                    
+                    if source and target and description:
+                        relationship_rows["doc_idx"].append(doc_idx)
+                        relationship_rows["chunk_idx"].append(chunk_idx)
+                        relationship_rows["Source"].append(source)
+                        relationship_rows["Target"].append(target)
+                        relationship_rows["Description"].append(description)
+                        relationship_rows["Strength"].append(strength)
     
+    # Create dataframes
     df_entities = pd.DataFrame(entity_rows)
     df_relationships = pd.DataFrame(relationship_rows)
     
@@ -437,7 +571,11 @@ def extract_graph_elements_improved(all_chunks, summ_tokenizer, summ_model, max_
         debug(f"Extracted {df_entities.shape[0]} total entities with {unique_entities} unique names")
         
         if unique_entities < 5 and df_entities.shape[0] > 10:
-            debug("WARNING: Very low entity diversity. Extraction may still have issues.")
+            debug("WARNING: Very low entity diversity. Extraction may have issues.")
+    
+    # Check if we have relationships but no entities - this shouldn't happen with the two-stage approach
+    if df_entities.empty and not df_relationships.empty:
+        debug("WARNING: Found relationships but no entities. This is unexpected with the two-stage approach.")
     
     return df_entities, df_relationships
 
@@ -1565,13 +1703,13 @@ def main():
     debug("Processing PDFs into text chunks...")
     all_chunks, doc_citations = process_all_pdfs(pdf_paths_with_idx)
     
-    # --- Extraction Phase with Multi-Round Gleanings ---
+    # --- Extraction Phase with Microsoft-style Two-Stage Approach ---
     if os.path.exists(ENTITIES_CSV) and os.path.exists(RELATIONSHIPS_CSV):
         debug("Loading cached extracted entities and relationships.")
         df_entities = pd.read_csv(ENTITIES_CSV)
         df_relationships = pd.read_csv(RELATIONSHIPS_CSV)
     else:
-        debug("Extracting graph elements with multi-round gleanings approach...")
+        debug("Extracting graph elements with Microsoft-style two-stage approach...")
         df_entities, df_relationships = extract_graph_elements_improved(all_chunks, summ_tokenizer, summ_model)
         df_entities.to_csv(ENTITIES_CSV, index=False)
         df_relationships.to_csv(RELATIONSHIPS_CSV, index=False)
@@ -1634,6 +1772,7 @@ def main():
     # --- Interactive Query Interface ---
     print("\nEnhanced Graph RAG Chatbot is ready! Type 'exit' to quit.")
     print("This implementation includes:")
+    print("- Microsoft-style two-stage approach: entities first, then relationships")
     print("- Multi-round gleanings for improved entity extraction")
     print("- Element summarization before community summarization")
     print("- Hierarchical community detection and utilization")
