@@ -1,0 +1,246 @@
+name,type,description,doc_idx,chunk_idx
+ABSORPTIVE CAPACITY,RESEARCH_CONCEPT,A subsidiary's ability to recognize assimilate and apply knowledge from other units in the MNC through employees' ability and motivation to learn,0,3
+KNOWLEDGE MANAGEMENT TOOLS,RESEARCH_CONCEPT,Organizational mechanisms and systems designed to facilitate knowledge sharing and utilization across subsidiaries including corporate university communities of practice group benchmarking learning systems and rewards,0,1
+KNOWLEDGE INFLOWS,RESEARCH_CONCEPT,The transfer of knowledge from one subsidiary to another within the multinational corporation network which influences the receiving unit's behavior and performance,0,8
+SUBSIDIARY PERFORMANCE,VARIABLE,Multi-dimensional business outcomes including cost savings additional revenue process improvements product improvements and new product development that result from knowledge management initiatives,0,11
+COMMUNITIES OF PRACTICE,METHODOLOGY,Groups that facilitate tacit knowledge exchange between employees across subsidiary boundaries creating common communication codes and increasing motivation to share knowledge,0,6
+CORPORATE UNIVERSITY,METHODOLOGY,A knowledge management tool that facilitates explicit knowledge sharing and development of employees' abilities across the multinational corporation,0,6
+GROUP BENCHMARKING,METHODOLOGY,A process where expert teams identify leading practices in specific knowledge domains and document them so other subsidiaries can improve performance,0,6
+LEARNING SYSTEM,METHODOLOGY,Intranet-based solutions that decrease transaction costs of knowledge search by helping employees identify valuable knowledge and knowledgeable partners across the organization,0,6
+REWARD SYSTEMS,METHODOLOGY,Both formal and informal incentives designed to motivate employees to participate in knowledge sharing activities across subsidiaries,0,7
+ABILITY TO LEARN,VARIABLE,A component of absorptive capacity that reflects employees' cognitive capacity to understand and acquire new knowledge from other units,0,4
+MOTIVATION TO LEARN,VARIABLE,A component of absorptive capacity that reflects employees' willingness to engage with and utilize knowledge flows from other units,0,4
+HEIDELBERGER CEMENT,ORGANIZATION,A large German multinational corporation in the cement industry with around 1500 subsidiaries in over 50 countries and 36000 employees that served as the research site,0,9
+MNC,RESEARCH_CONCEPT,Multinational Corporation which operates as a differentiated network where knowledge flows between subsidiaries are crucial for overall performance,0,2
+FORMAL ACKNOWLEDGEMENT,VARIABLE,The extent to which a subsidiary's knowledge is recognized by other organizational units which may positively impact business performance,0,12
+KNOWLEDGE ADAPTATION,VARIABLE,The extent to which knowledge from other units must be modified to fit the local context of the receiving subsidiary,0,12
+INTRINSIC MOTIVATION,RESEARCH_CONCEPT,Internal drivers for knowledge sharing behavior based on common goals and personal satisfaction rather than external rewards,0,7
+EXTRINSIC MOTIVATION,RESEARCH_CONCEPT,External drivers for knowledge sharing behavior based on formal rewards and incentives provided by the organization,0,7
+DIFFERENTIATED NETWORK,RESEARCH_CONCEPT,A perspective that views the MNC as an interconnected system of geographically dispersed and goal-disparate units with varying strategic roles and capabilities,0,2
+EMPIRICAL STUDIES,METHODOLOGY,Research investigations that test theoretical relationships through the collection and analysis of data rather than purely conceptual reasoning,0,3
+TACIT KNOWLEDGE,RESEARCH_CONCEPT,Knowledge that is difficult to codify or express in explicit form and is often embedded in individuals' experiences and mental models,0,6
+EXPLICIT KNOWLEDGE,RESEARCH_CONCEPT,Knowledge that can be easily codified documented and transferred through formal systematic language,0,6
+INTRANET SOLUTION,METHODOLOGY,Web-based platform designed for internal organizational use to facilitate communication information sharing and knowledge exchange,0,6
+KNOWLEDGE SEARCH,RESEARCH_CONCEPT,The process of locating and identifying valuable knowledge resources within an organization's knowledge repositories or expert networks,0,6
+TRANSACTION COSTS,RESEARCH_CONCEPT,The costs associated with participating in knowledge exchange including time effort and cognitive resources required to search for access and utilize knowledge,0,6
+EXPERT TEAMS,METHODOLOGY,Groups of specialists assembled to identify document and share leading practices in specific knowledge domains across the organization,0,6
+LEADING PRACTICES,RESEARCH_CONCEPT,Superior methods processes or approaches identified in high-performing subsidiaries that can be shared to improve performance in other units,0,6
+COMBINATIVE CAPABILITIES,RESEARCH_CONCEPT,The ability to synthesize and apply knowledge from various sources creating new combinations that enhance organizational capabilities,0,6
+COMMUNITY-SPECIFIC CODES,RESEARCH_CONCEPT,Specialized language expressions and shared understandings that develop within communities of practice facilitating knowledge exchange,0,6
+INTERDISCIPLINARY TEAMS,METHODOLOGY,Work groups that bring together individuals with different functional backgrounds to integrate diverse knowledge bases,0,6
+KNOWLEDGE CREATION,RESEARCH_CONCEPT,The development of new insights understandings and capabilities that did not previously exist in the organization,0,6
+KNOWLEDGE HOSTILITY,RESEARCH_CONCEPT,Attitudes and behaviors that impede knowledge sharing between subsidiaries including not-invented-here syndrome and territorial protectiveness,0,5
+POTENTIAL ABSORPTIVE CAPACITY,RESEARCH_CONCEPT,The ability to recognize and assimilate external knowledge without necessarily applying it to commercial ends,0,4
+REALIZED ABSORPTIVE CAPACITY,RESEARCH_CONCEPT,The ability to transform and exploit knowledge that has been recognized and assimilated for commercial purposes,0,4
+KNOWLEDGE SHARING BEHAVIOR,RESEARCH_CONCEPT,Actions taken by individuals to exchange information expertise and insights with colleagues across organizational boundaries,0,7
+NOT-INVENTED-HERE SYNDROME,RESEARCH_CONCEPT,A negative attitude toward knowledge developed outside one's own group leading to rejection of external ideas regardless of their potential value,0,5
+SOCIAL INTERACTION,RESEARCH_CONCEPT,The interpersonal exchanges and relationships that facilitate or impede knowledge flows between individuals and units in an organization,0,5
+CAUSAL AMBIGUITY,RESEARCH_CONCEPT,Uncertainty about the causes and effects in knowledge transfer processes making it difficult to specify incentives and measure performance,0,7
+MEASUREMENT BASE,RESEARCH_CONCEPT,The set of metrics and indicators used to evaluate knowledge sharing behaviors and determine appropriate rewards,0,7
+ARBITRARY INCENTIVES,RESEARCH_CONCEPT,Rewards that lack clear connection to performance or contribution creating perceptions of unfairness and potentially crowding out intrinsic motivation,0,7
+INFORMAL ACKNOWLEDGEMENT,METHODOLOGY,Recognition and appreciation expressed through non-monetary means such as public recognition and positive feedback,0,7
+SIGNALING,RESEARCH_CONCEPT,The communication of organizational support and priorities through visible leadership actions and recognition systems,0,7
+COMMON GOALS,RESEARCH_CONCEPT,Shared objectives that align individual and group interests facilitating cooperation and knowledge sharing across organizational boundaries,0,7
+KNOWING-DOING GAP,RESEARCH_CONCEPT,The discrepancy between what organizational members know and what they actually implement in practice,0,8
+ROUTINE ADAPTATION,RESEARCH_CONCEPT,The process of modifying established patterns of action to incorporate new knowledge and improve performance,0,8
+ROUTINE REPLICATION,RESEARCH_CONCEPT,The transfer of well-understood processes from one organizational unit to another,0,8
+NEW COMBINATION OF ROUTINES,RESEARCH_CONCEPT,The reconfiguration of existing procedures and processes to create novel approaches and innovations,0,8
+COGNITIVE CAPACITY,RESEARCH_CONCEPT,The mental resources available for processing understanding and applying new knowledge,0,5
+SPECIALIZED KNOWLEDGE DOMAIN,RESEARCH_CONCEPT,A focused area of expertise with its own vocabulary concepts and frameworks,0,5
+PERCEPTUAL MEASURES,METHODOLOGY,Assessment techniques that capture individuals' subjective evaluations of performance and other organizational phenomena,0,11
+OBJECTIVE PERFORMANCE MEASURES,METHODOLOGY,Quantitative indicators of organizational outcomes based on accounting and other formal record-keeping systems,0,11
+COST SAVINGS,VARIABLE,Reductions in expenses resulting from improved efficiency and knowledge application,0,11
+ADDITIONAL REVENUE,VARIABLE,Increases in income generated through the application of knowledge to create new or improved products and services,0,11
+PROCESS IMPROVEMENTS,VARIABLE,Enhancements to operational procedures and workflows resulting from the application of knowledge,0,11
+PRODUCT IMPROVEMENTS,VARIABLE,Enhancements to existing offerings resulting from the application of knowledge,0,11
+NEW PRODUCTS AND PROCESSES,VARIABLE,Novel offerings and procedures developed through the application of knowledge,0,11
+SURVEY METHODOLOGY,METHODOLOGY,Research approach involving the systematic collection of data from respondents through questionnaires,0,9
+LIKERT SCALE,METHODOLOGY,A psychometric scale used in questionnaires to measure respondents' attitudes by asking them to indicate their level of agreement with statements,0,11
+MULTI-ITEM CONSTRUCT,METHODOLOGY,A research measure that combines multiple related questionnaire items to capture a complex theoretical concept,0,11
+THREE-STAGE LEAST SQUARES,METHODOLOGY,An econometric technique used to analyze systems of simultaneous equations with endogenous variables,0,14
+ENDOGENOUS CONSTRUCT,RESEARCH_CONCEPT,A variable that is explained or caused by other variables within a theoretical model,0,3
+EXOGENOUS CONSTRUCT,RESEARCH_CONCEPT,A variable that influences other variables but is not itself explained by the model,0,3
+KNOWLEDGE TRANSFER PERFORMANCE,VARIABLE,The effectiveness and efficiency with which knowledge is moved from source to recipient and utilized to improve operations,0,3
+ACQUISITION INTEGRATION,RESEARCH_CONCEPT,The process of combining and aligning the structures systems and cultures of acquired companies with the parent organization,0,9
+MULTINATIONAL EXPANSION,RESEARCH_CONCEPT,Growth strategy involving geographic diversification across national borders,0,9
+MULTI-SITE SAMPLING,METHODOLOGY,Research approach that collects data from multiple organizational locations to increase generalizability,0,9
+SINGLE-SITE SAMPLING,METHODOLOGY,Research approach that focuses on a single organization to control for contextual factors,0,9
+CONTEXTUAL FACTORS,RESEARCH_CONCEPT,Environmental and organizational conditions that influence knowledge management processes and outcomes,0,9
+INDUSTRY-SPECIFIC FACTORS,RESEARCH_CONCEPT,Characteristics of a business sector that shape knowledge management practices and their effectiveness,0,9
+FIRM-SPECIFIC FACTORS,RESEARCH_CONCEPT,Unique organizational attributes that influence knowledge management practices and their effectiveness,0,9
+INTRA-FIRM NETWORKS,RESEARCH_CONCEPT,Relationships and connections between units within a single organization that facilitate resource exchange and combination,0,9
+BUSINESS UNITS,RESEARCH_CONCEPT,Semi-autonomous organizational divisions responsible for specific product lines geographic regions or customer segments,0,9
+FACE VALIDITY,METHODOLOGY,The extent to which a research instrument appears to measure what it claims to measure based on subjective assessment,0,10
+RESPONSE RATE,METHODOLOGY,The percentage of invited participants who complete and return a survey,0,10
+ALPHA RELIABILITY,METHODOLOGY,A statistical measure of the internal consistency of items in a multi-item scale,0,11
+CORRELATION MATRIX,METHODOLOGY,A table showing the correlations between multiple variables used to check for potential multicollinearity,0,14
+MULTICOLLINEARITY,RESEARCH_CONCEPT,A statistical phenomenon in which two or more predictor variables are highly correlated making it difficult to isolate their individual effects,0,14
+R-SQUARE,METHODOLOGY,A statistical measure indicating the proportion of variance in a dependent variable explained by independent variables,0,15
+HYPOTHESIS TESTING,METHODOLOGY,The process of evaluating theoretical predictions against empirical evidence,0,15
+SIGNIFICANCE LEVEL,METHODOLOGY,The probability threshold below which a statistical result is considered unlikely to have occurred by chance,0,15
+STANDARD ERRORS,METHODOLOGY,Statistical measures of the precision of parameter estimates,0,15
+INTRA-FIRM KNOWLEDGE FLOWS,RESEARCH_CONCEPT,The movement of information expertise and insights between different units within the same organization,0,2
+INTER-FIRM KNOWLEDGE FLOWS,RESEARCH_CONCEPT,The movement of information expertise and insights between different organizations,0,18
+SIMULTANEOUS EQUATION MODEL,METHODOLOGY,A system of equations in which variables are determined jointly rather than sequentially,0,14
+INSTRUMENT VARIABLES,METHODOLOGY,Variables used in statistical analysis to address endogeneity concerns,0,14
+HIERARCHICAL KNOWLEDGE FLOWS,RESEARCH_CONCEPT,The transfer of information and insights between different levels of an organizational hierarchy,0,2
+LATERAL KNOWLEDGE FLOWS,RESEARCH_CONCEPT,The transfer of information and insights between units at the same hierarchical level,0,2
+KNOWLEDGE REPLICATION,RESEARCH_CONCEPT,The reproduction of existing knowledge and practices in new contexts,0,8
+KNOWLEDGE RECOMBINATION,RESEARCH_CONCEPT,The integration of previously separate knowledge elements to create new knowledge,0,8
+LEARNING CULTURE,RESEARCH_CONCEPT,Organizational values norms and practices that support continuous learning and knowledge sharing,0,6
+CAUSAL IMPACT,RESEARCH_CONCEPT,The direct influence of one variable on another in a cause-and-effect relationship,0,17
+EMPIRICAL CORROBORATION,METHODOLOGY,The process of substantiating theoretical predictions through systematic observation and analysis of data,0,3
+STRATEGIC ROLES,RESEARCH_CONCEPT,The distinct functions and responsibilities assigned to different subsidiaries within the MNC network,0,2
+KNOWLEDGE EXCHANGE RELATION,RESEARCH_CONCEPT,The interaction patterns through which information and insights flow between organizational units,0,7
+OPPORTUNITY COSTS,RESEARCH_CONCEPT,The value of alternative uses of resources that are foregone when those resources are dedicated to knowledge management,0,8
+COGNITIVE FOCUS,RESEARCH_CONCEPT,The concentration of attention and processing capacity on specific knowledge domains or problems,0,5
+STANDARDIZATION,RESEARCH_CONCEPT,The process of establishing consistent formats procedures and metrics to facilitate coordination and comparison,0,7
+CODIFICATION OF KNOWLEDGE,VARIABLE,The extent to which organizational knowledge is documented structured and accessible in explicit form,0,12
+SUBSIDIARY MANAGERS,ORGANIZATION,Leaders responsible for operations and performance in specific geographic or business units of the MNC,0,10
+SENIOR MANAGERS,ORGANIZATION,High-level executives who participated in interviews providing insights on knowledge management practices,0,10
+ENGINEERS,ORGANIZATION,Technical specialists directly involved in day-to-day knowledge transfer activities in the subsidiaries,0,10
+INTERNATIONAL KNOWLEDGE MANAGEMENT INITIATIVE,METHODOLOGY,Coordinated program to enhance knowledge sharing and utilization across the multinational organization,0,10
+MNC PERFORMANCE,VARIABLE,The overall effectiveness and efficiency of the multinational corporation in achieving its strategic objectives,0,2
+ACADEMIC ENTITY,RESEARCH_CONCEPT,A concept theory or methodology from scholarly literature that contributes to understanding knowledge management phenomena,0,3
+EMPIRICAL STUDY ON KNOWLEDGE FLOWS,RESEARCH_CONCEPT,Research investigation examining the movement and impact of knowledge between organizational units,0,3
+EXTERNAL KNOWLEDGE ACQUISITION,RESEARCH_CONCEPT,The process of obtaining information insights and capabilities from sources outside the organization,0,4
+INDIVIDUAL PERCEPTION,RESEARCH_CONCEPT,Personal interpretations and assessments of organizational phenomena and practices,0,11
+HOMOGENEOUS PERCEPTIONS,RESEARCH_CONCEPT,Consistent interpretations and assessments across different organizational members,0,3
+METHODOLOGICAL ASSUMPTION,RESEARCH_CONCEPT,Underlying premise about research methods that shapes data collection and analysis approaches,0,3
+OPEN COMMUNICATION CHANNELS,METHODOLOGY,Systems and practices that facilitate the free flow of information and ideas across organizational boundaries,0,6
+SUBSIDIARIZATION,RESEARCH_CONCEPT,The process of establishing semi-autonomous organizational units in different geographic locations,0,9
+RESEARCH GENERALIZABILITY,RESEARCH_CONCEPT,The extent to which findings from a specific study context can be applied to other settings and populations,0,9
+MANAGERIAL DISCRETION,RESEARCH_CONCEPT,The freedom and authority of managers to make decisions regarding knowledge management tools and practices,0,15
+KNOWLEDGE MANAGEMENT INVESTMENT,RESEARCH_CONCEPT,The allocation of resources to systems tools and practices designed to enhance knowledge flows and utilization,0,17
+VALUE CREATION,RESEARCH_CONCEPT,The generation of benefits that exceed the costs of knowledge sharing and management activities,0,8
+COST-BENEFIT ANALYSIS,METHODOLOGY,Systematic approach to evaluating the financial implications of knowledge management initiatives,0,8
+RESEARCH CONTRIBUTION,RESEARCH_CONCEPT,Novel insights and understanding that advance knowledge in a field of study,0,3
+LITERATURE REVIEW,METHODOLOGY,Systematic examination of existing research and theory on a topic to identify gaps and establish the foundation for new investigation,0,10
+CONTROL VARIABLE,METHODOLOGY,A factor included in statistical analysis to isolate the effects of the main variables of interest,0,12
+CONCEPTUALIZATION,METHODOLOGY,The process of defining and operationalizing theoretical constructs for empirical investigation,0,4
+OPERATIONALIZATION,METHODOLOGY,The translation of abstract theoretical concepts into measurable variables for empirical research,0,4
+ON-SITE INTERVIEWS,METHODOLOGY,Direct conversations with organizational members in their work environment to gather rich qualitative data,0,10
+PILOT TESTING,METHODOLOGY,Preliminary administration of a research instrument to a small sample to identify and address potential problems,0,10
+QUESTION PHRASING,METHODOLOGY,The specific wording used in survey items to elicit desired information from respondents,0,10
+FACE-TO-FACE INTERVIEWS,METHODOLOGY,In-person conversations with research participants allowing for detailed exploration of topics and clarification of responses,0,10
+INTERVIEW DURATION,VARIABLE,The length of time spent in direct conversation with research participants ranging from 1 to 4 hours in this study,0,10
+INFORMANT SELECTION,METHODOLOGY,The process of identifying and recruiting appropriate organizational members to provide data for research,0,10
+CEO SUPPORT,METHODOLOGY,Endorsement and encouragement from the chief executive officer that enhances survey participation and response rates,0,10
+HEADQUARTERS OFFICE,ORGANIZATION,The central administrative unit of HeidelbergCement that managed the survey distribution process,0,10
+THEORETICAL MODEL,RESEARCH_CONCEPT,A structured representation of relationships between concepts that guides empirical investigation,0,4
+MODERATING VARIABLES,RESEARCH_CONCEPT,Factors that influence the strength or direction of relationships between other variables in a theoretical model,0,14
+MEDIATING VARIABLES,RESEARCH_CONCEPT,Factors that explain the mechanism through which one variable affects another in a theoretical model,0,3
+R&D INTENSITY,VARIABLE,The level of investment in research and development activities often used as a proxy for absorptive capacity in previous studies,0,4
+POTENTIAL MEASURES,METHODOLOGY,Possible indicators and scales for operationalizing theoretical constructs in empirical research,0,4
+COGNITIVE DISTANCE,RESEARCH_CONCEPT,The gap in knowledge frames and understanding between individuals or units that can impede effective knowledge transfer,0,5
+COMPETITIVE ADVANTAGE,RESEARCH_CONCEPT,Superior performance relative to rivals resulting from effective knowledge management and other strategic capabilities,0,17
+COST EFFICIENCY,VARIABLE,The ratio of outputs to inputs reflecting the organization's ability to minimize resource use while maintaining performance,0,8
+INNOVATION CAPACITY,VARIABLE,The ability to develop and implement new products processes and business models,0,8
+GLOBALIZATION,RESEARCH_CONCEPT,The increasing integration and interdependence of business activities across national boundaries,0,2
+TRANSNATIONAL ORGANIZATIONS,RESEARCH_CONCEPT,Enterprises that operate across national boundaries with integrated global strategies and locally responsive operations,0,2
+THEORETICAL IMPLICATIONS,RESEARCH_CONCEPT,The consequences of research findings for understanding and advancing knowledge in a field,0,17
+PRACTICAL IMPLICATIONS,RESEARCH_CONCEPT,The consequences of research findings for improving organizational practices and performance,0,17
+FUTURE RESEARCH DIRECTIONS,RESEARCH_CONCEPT,Promising avenues for subsequent investigation identified based on current findings and limitations,0,18
+METHODOLOGICAL LIMITATIONS,RESEARCH_CONCEPT,Constraints and weaknesses in research design data collection and analysis that may affect the validity or generalizability of findings,0,18
+LONGITUDINAL RESEARCH,METHODOLOGY,Studies that collect data at multiple points in time to examine changes and causal relationships,0,18
+CROSS-SECTIONAL RESEARCH,METHODOLOGY,Studies that collect data at a single point in time providing a snapshot of relationships,0,10
+KNOWLEDGE TRANSFER COSTS,RESEARCH_CONCEPT,Resources required to move information and capabilities from source to recipient including time effort and infrastructure,0,8
+INFRASTRUCTURE INVESTMENTS,RESEARCH_CONCEPT,Capital expenditures on systems and technologies that support knowledge management processes,0,8
+ENERGY EFFICIENCY,RESEARCH_CONCEPT,A knowledge domain focused on minimizing energy consumption in cement production and related operations,0,6
+NEW CONCRETE APPLICATIONS,RESEARCH_CONCEPT,A knowledge domain focused on innovative uses and formulations of concrete products,0,6
+LOGISTICS,RESEARCH_CONCEPT,A knowledge domain focused on optimizing the movement and storage of materials and products,0,6
+CONSOLIDATION PHASE,RESEARCH_CONCEPT,A period of organizational development focused on integrating and streamlining operations following expansion,0,9
+RAPID EXPANSION,RESEARCH_CONCEPT,Accelerated organizational growth through acquisitions and other means,0,9
+GRADUAL INTEGRATION,RESEARCH_CONCEPT,The phased incorporation of newly acquired companies into the parent organization's systems and practices,0,9
+SEVEN-POINT SCALE,METHODOLOGY,A measurement approach that captures respondent attitudes on a continuum from 1 to 7,0,11
+RESEARCH DESIGN TRADE-OFFS,RESEARCH_CONCEPT,The necessary compromises between competing methodological considerations in empirical investigation,0,9
+THEORETICAL CONTRIBUTION,RESEARCH_CONCEPT,The advancement of conceptual understanding resulting from empirical research findings,0,3
+DESCRIPTIVE STATISTICS,METHODOLOGY,Numerical summaries of research variables including means standard deviations and ranges,0,14
+MODEL SPECIFICATION,METHODOLOGY,The formal definition of relationships between variables to be tested in empirical analysis,0,14
+PROXY MEASURES,METHODOLOGY,Indirect indicators used to represent theoretical constructs that cannot be directly observed or measured,0,4
+THEORETICAL LENS,RESEARCH_CONCEPT,The conceptual perspective through which phenomena are interpreted and explained,0,2
+COGNITIVE BARRIERS,RESEARCH_CONCEPT,Mental factors that impede the absorption and utilization of knowledge from external sources,0,5
+MOTIVATIONAL BARRIERS,RESEARCH_CONCEPT,Psychological factors that reduce willingness to engage in knowledge sharing and utilization,0,5
+STRUCTURAL BARRIERS,RESEARCH_CONCEPT,Organizational arrangements that impede the flow and utilization of knowledge across units,0,5
+KNOWLEDGE GOVERNANCE,RESEARCH_CONCEPT,The formal and informal mechanisms used to influence knowledge processes within organizations,0,7
+ORGANIZATIONAL ECONOMICS,RESEARCH_CONCEPT,The application of economic principles to understand organizational behavior and design knowledge management systems,0,7
+REGRESSION ANALYSIS,METHODOLOGY,Statistical technique used to examine relationships between dependent and independent variables,0,14
+KNOWLEDGE-BASED VIEW,RESEARCH_CONCEPT,Theoretical perspective that sees knowledge as the most strategically important resource of the firm,0,8
+RESOURCE-BASED VIEW,RESEARCH_CONCEPT,Theoretical perspective that explains competitive advantage based on valuable rare inimitable and non-substitutable resources,0,8
+ORGANIZATIONAL LEARNING,RESEARCH_CONCEPT,The process through which organizations acquire process and retain knowledge to improve performance,0,8
+LANGUAGE-BASED LEARNING,RESEARCH_CONCEPT,Knowledge development that occurs through conversation and dialogue among organizational members,0,6
+NEW COMBINATIONS,RESEARCH_CONCEPT,Novel configurations of existing knowledge elements that create innovation opportunities,0,6
+SCHUMPETERIAN INNOVATION,RESEARCH_CONCEPT,The creation of new value through recombination of existing resources and knowledge,0,6
+KNOWLEDGE UTILIZATION,RESEARCH_CONCEPT,The application of acquired information and insights to improve organizational processes and outcomes,0,8
+FORMAL INCENTIVES,METHODOLOGY,Official rewards and recognition designed to encourage desired knowledge behaviors,0,7
+INFORMAL INCENTIVES,METHODOLOGY,Unofficial appreciation and recognition that motivates knowledge sharing behavior,0,7
+CROWDING OUT EFFECT,RESEARCH_CONCEPT,The phenomenon where extrinsic rewards diminish intrinsic motivation to engage in knowledge sharing,0,7
+PERCEIVED FAIRNESS,RESEARCH_CONCEPT,Individuals' assessments of the equity and justness of reward systems and knowledge management practices,0,7
+COMMUNICATION CODES,RESEARCH_CONCEPT,Specialized language and symbols that develop within communities and facilitate knowledge exchange,0,6
+MULTIDIMENSIONAL BEHAVIOR,RESEARCH_CONCEPT,Actions that encompass multiple aspects and cannot be easily reduced to single measurable dimensions,0,7
+ACTIVE REQUESTS,RESEARCH_CONCEPT,Direct solicitations for information and assistance from colleagues in other organizational units,0,7
+NETWORKING ACTIVITIES,RESEARCH_CONCEPT,Efforts to build and maintain connections with knowledge sources across the organization,0,7
+CLOSE SOCIAL TIES,RESEARCH_CONCEPT,Strong interpersonal relationships that facilitate trust and knowledge sharing between individuals,0,7
+TIME INVESTMENT,RESEARCH_CONCEPT,Hours and effort dedicated to knowledge sharing activities including documentation adaptation and training,0,8
+ADAPTATION COSTS,RESEARCH_CONCEPT,Resources required to modify knowledge from one context to make it applicable in another,0,8
+THEORY TESTING,METHODOLOGY,The empirical evaluation of conceptual relationships and predictions,0,15
+INTERNATIONALIZATION,RESEARCH_CONCEPT,The process of increasing involvement in business operations across national boundaries,0,9
+THEORETICAL FRAMEWORK,RESEARCH_CONCEPT,The conceptual structure that guides research by specifying key variables and their relationships,0,4
+ORGANIZATIONAL CAPABILITIES,RESEARCH_CONCEPT,Collective abilities to deploy resources and perform activities that create value,0,8
+SOCIAL COMPLEXITY,RESEARCH_CONCEPT,The intricate web of relationships and interactions that characterize knowledge processes in organizations,0,7
+KNOWLEDGE CHARACTERISTICS,RESEARCH_CONCEPT,Attributes of information and capabilities that influence their transferability and absorption,0,12
+SINGLE INFORMANT APPROACH,METHODOLOGY,Research design that relies on one respondent per organization unit to provide data,0,3
+MULTIPLE INFORMANT APPROACH,METHODOLOGY,Research design that incorporates data from several respondents per organizational unit,0,3
+AVERAGE PERCEPTION,RESEARCH_CONCEPT,The typical or mean assessment of organizational phenomena across different members,0,3
+POSITION BIAS,RESEARCH_CONCEPT,Systematic differences in perceptions based on respondents' roles and hierarchical locations,0,3
+ORGANIZATIONAL HOMOGENEITY,RESEARCH_CONCEPT,The degree of similarity in perspectives values and practices across different parts of an organization,0,3
+INFORMATION ACQUISITION,RESEARCH_CONCEPT,The process of obtaining knowledge from internal or external sources,0,4
+INFORMATION ASSIMILATION,RESEARCH_CONCEPT,The process of interpreting and understanding acquired knowledge,0,4
+INFORMATION APPLICATION,RESEARCH_CONCEPT,The process of using acquired and assimilated knowledge to create value,0,4
+KNOWLEDGE ANTECEDENTS,RESEARCH_CONCEPT,Factors that precede and influence knowledge flows and absorption,0,3
+BUSINESS IMPACT,VARIABLE,The effect of knowledge management practices on organizational performance outcomes,0,11
+EVIDENCE-BASED MANAGEMENT,RESEARCH_CONCEPT,The use of empirical evidence to inform organizational decisions and practices,0,17
+THEORETICAL INTEGRATION,RESEARCH_CONCEPT,The synthesis of concepts and findings from multiple research streams to create more comprehensive understanding,0,17
+CONTEXTUAL UNDERSTANDING,RESEARCH_CONCEPT,Appreciation of the specific organizational and environmental factors that shape knowledge management processes,0,9
+DATA COLLECTION PROCEDURES,METHODOLOGY,The systematic approaches used to gather information from research participants,0,10
+DATA ANALYSIS TECHNIQUES,METHODOLOGY,The statistical and qualitative methods used to examine and interpret research data,0,14
+RESEARCH QUESTIONS,RESEARCH_CONCEPT,The specific issues and relationships that guide empirical investigation,0,3
+THEORETICAL GAPS,RESEARCH_CONCEPT,Areas where existing knowledge is incomplete or inadequate requiring further investigation,0,3
+HYPOTHESIS DEVELOPMENT,METHODOLOGY,The process of formulating testable predictions based on theory and prior research,0,4
+GEOGRAPHICAL DISPERSION,RESEARCH_CONCEPT,The distribution of organizational units across multiple locations and countries,0,9
+ORGANIZATIONAL RESTRUCTURING,RESEARCH_CONCEPT,The reconfiguration of structures systems and processes to improve efficiency and effectiveness,0,9
+ACQUISITION STRATEGY,RESEARCH_CONCEPT,The approach to identifying selecting and integrating target companies to achieve corporate objectives,0,9
+KNOWLEDGE REPOSITORY,METHODOLOGY,A centralized system for storing and retrieving organizational information and expertise,0,6
+KNOWLEDGE MAPPING,METHODOLOGY,The process of identifying and cataloging the location and characteristics of knowledge resources within the organization,0,6
+KNOWLEDGE BROKERS,RESEARCH_CONCEPT,Individuals who facilitate knowledge flows by connecting knowledge seekers with knowledge sources,0,6
+BOUNDARY SPANNERS,RESEARCH_CONCEPT,Individuals who bridge different organizational units or knowledge domains facilitating information exchange,0,6
+KNOWLEDGE GATEKEEPERS,RESEARCH_CONCEPT,Individuals who control access to information and expertise in organizational settings,0,6
+INFORMATION OVERLOAD,RESEARCH_CONCEPT,The condition where the volume of available knowledge exceeds individuals' capacity to process and use it effectively,0,6
+SEARCH COSTS,RESEARCH_CONCEPT,Resources required to locate relevant knowledge and expertise within the organization,0,6
+COGNITIVE CAPACITY CONSTRAINTS,RESEARCH_CONCEPT,Limitations in individuals' ability to process absorb and utilize new information,0,8
+RESEARCH PROPOSITIONS,RESEARCH_CONCEPT,Formal statements of expected relationships between variables that guide empirical investigation,0,3
+CEMENT INDUSTRY,RESEARCH_CONCEPT,The business sector focused on the production and distribution of cement and related products,0,9
+CEMENT MANUFACTURING,RESEARCH_CONCEPT,The processes and technologies used to produce cement products,0,9
+BUSINESS AREAS,RESEARCH_CONCEPT,Distinct market segments or product categories within an organization's operations,0,10
+STRATEGIC KNOWLEDGE DOMAINS,RESEARCH_CONCEPT,Areas of expertise and information that are particularly important for organizational performance and competitive advantage,0,6
+FUNCTIONAL KNOWLEDGE,RESEARCH_CONCEPT,Information and capabilities related to specific organizational functions such as marketing finance or operations,0,6
+CROSS-FUNCTIONAL INTEGRATION,RESEARCH_CONCEPT,The coordination and combination of knowledge from different organizational specialties,0,6
+INTERDISCIPLINARY COLLABORATION,RESEARCH_CONCEPT,Cooperative work involving individuals from different knowledge domains and backgrounds,0,6
+STUDY LIMITATIONS,RESEARCH_CONCEPT,Constraints and weaknesses in research design and execution that may affect the validity or generalizability of findings,0,18
+GEOGRAPHIC BUSINESS AREAS,ORGANIZATION,Regional divisions of HeidelbergCement representing different market territories,0,10
+PAPER QUESTIONNAIRE,METHODOLOGY,Physical survey instrument distributed and returned via mail or fax,0,10
+BROCHURE,METHODOLOGY,Informational document explaining the scope and purpose of knowledge management initiatives,0,10
+MARKET KNOWLEDGE,RESEARCH_CONCEPT,Information and insights about customer needs competitor actions and market trends,0,6
+TECHNICAL KNOWLEDGE,RESEARCH_CONCEPT,Information and capabilities related to production processes and product specifications,0,6
+MANAGERIAL KNOWLEDGE,RESEARCH_CONCEPT,Information and capabilities related to planning organizing leading and controlling organizational activities,0,6
+MULTINATIONAL ORGANIZATION,RESEARCH_CONCEPT,An enterprise that operates in multiple countries with varying degrees of coordination and integration,0,2
+SUBSIDIARY AUTONOMY,RESEARCH_CONCEPT,The degree of freedom and independence that local units have in decision-making and operations,0,2
+HEADQUARTERS CONTROL,RESEARCH_CONCEPT,The extent to which central management directs and constrains subsidiary activities and decisions,0,2
+ORGANIZATIONAL STRUCTURE,RESEARCH_CONCEPT,The formal arrangement of roles responsibilities and reporting relationships within an enterprise,0,2
+TECHNOLOGICAL EMBEDDEDNESS,RESEARCH_CONCEPT,The degree to which a subsidiary's operations are integrated with and dependent on technologies from the parent company or other units,0,8
+RELATIONAL EMBEDDEDNESS,RESEARCH_CONCEPT,The degree to which a subsidiary's operations are integrated with and dependent on relationships with the parent company or other units,0,8
+RESEARCH IMPLICATIONS,RESEARCH_CONCEPT,The consequences of study findings for advancing knowledge and understanding in the field,0,17
+PRACTICAL APPLICATIONS,RESEARCH_CONCEPT,The ways in which research findings can be implemented to improve organizational practices and performance,0,17
+INTERNATIONAL JOINT VENTURE,RESEARCH_CONCEPT,A business arrangement where companies from different countries pool resources to pursue common objectives,0,3
+KNOWLEDGE ACQUISITION,RESEARCH_CONCEPT,The process of obtaining information insights and capabilities from external or internal sources,0,4
+KNOWLEDGE UTILIZATION,RESEARCH_CONCEPT,The application of acquired information and insights to improve organizational processes and outcomes,0,8
