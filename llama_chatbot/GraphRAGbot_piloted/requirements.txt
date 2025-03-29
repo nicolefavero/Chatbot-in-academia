@@ -1,0 +1,12 @@
+torch
+pymupdf
+networkx
+numpy
+pandas
+python-igraph
+leidenalg
+tqdm
+transformers
+langchain
+scikit-learn
+sentence-transformers
