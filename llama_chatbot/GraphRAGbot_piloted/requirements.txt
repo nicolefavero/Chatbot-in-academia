@@ -10,3 +10,5 @@ transformers
 langchain
 scikit-learn
 sentence-transformers
+accelerate>=0.26.0
+
