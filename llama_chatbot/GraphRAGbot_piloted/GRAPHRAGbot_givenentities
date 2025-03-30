@@ -28,11 +28,10 @@ def debug(msg):
         print("DEBUG:", msg)
 
 # File paths for storing data
-ENTITIES_CSV = "entities.csv"
-RELATIONSHIPS_CSV = "relationships.csv"
-GRAPH_PKL = "knowledge_graph.pkl"
-COMMUNITY_SUMMARIES_PKL = "community_summaries.pkl"
-HIERARCHICAL_SUMMARIES_PKL = "hierarchical_community_summaries.pkl"
+ENTITIES_CSV = "/work/Chatbot-in-academia/llama_chatbot/GraphRAGbot_piloted/entities.csv"
+RELATIONSHIPS_CSV = "/work/Chatbot-in-academia/llama_chatbot/GraphRAGbot_piloted/relationships.csv"
+GRAPH_PKL = "/work/Chatbot-in-academia/llama_chatbot/GraphRAGbot_piloted/knowledge_graph.pkl"
+HIERARCHICAL_SUMMARIES_PKL = "/work/Chatbot-in-academia/llama_chatbot/GraphRAGbot_piloted/hierarchical_community_summaries.pkl"
 
 
 ################################################################################
