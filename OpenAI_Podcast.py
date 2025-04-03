@@ -92,7 +92,7 @@ def generate_podcast_response(message, chat_history):
             response = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
-                    {"role": "system", "content": "You are a helpful, engaging conversational podcast assistant. Your scope is to help users generate podcast scripts based on accademic papers."},
+                    {"role": "system", "content": "You are a helpful, engaging conversational podcast assistant. Your scope is to help users generate podcast scripts based on accademic papers.Don't answer other questions that are not related to you podcasting task."},
                     {"role": "user", "content": message}
                 ],
                 temperature=0.7,

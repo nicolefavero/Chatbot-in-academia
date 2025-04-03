@@ -155,15 +155,43 @@ def generate_response(query, collection, bm25, all_chunks, top_k=5, doc_filter=N
         where=doc_filter
     )
 
+        # ------------------------------------------------------------------------
+    # DEBUG PRINTS: Check how many docs we got back and print out a snippet
+    # ------------------------------------------------------------------------
+    # 'results["metadatas"]' is a list of lists: first dimension = query count,
+    # second dimension = top_k results.
+    retrieved_docs = results["metadatas"][0]  # the top_k metadata for our single query
+    unique_doc_names = set(doc_metadata["doc_name"] for doc_metadata in retrieved_docs)
+    used_references = []
+    for doc_name in unique_doc_names:
+        if doc_name in DOC_REGISTRY and "full_reference" in DOC_REGISTRY[doc_name]:
+            used_references.append(DOC_REGISTRY[doc_name]["full_reference"])
+    print("DEBUG: Number of retrieved docs:", len(retrieved_docs))
+    
+    # If this is 0, that means we got no documents back from the collection query.
+    if len(retrieved_docs) == 0:
+        print("DEBUG: No documents found for this query. The context is empty.")
+    
+    # Loop over each returned doc and show a bit of text
+    for i, doc_metadata in enumerate(retrieved_docs):
+        print(f"DEBUG: Doc #{i}")
+        print("  doc_name:", doc_metadata.get("doc_name"))
+        text_snippet = doc_metadata.get("text", "")[:150]  # first 150 chars
+        print("  text snippet:", text_snippet, "...")
+    # ------------------------------------------------------------------------
+
+
     context_str = "\n".join([doc['text'] for doc in results["metadatas"][0]])
     prompt = (
-        """You are an expert academic research assistant specializing in supporting professors in business school research. 
+        f"""You are an expert academic research assistant specializing in supporting professors in business school research. 
         Your expertise lies in analyzing and synthesizing complex information from academic papers, particularly in areas like 
         management, strategy, finance, marketing, and organizational behavior.
 
         Your role is to provide insightful, clear, and well-structured explanations, that align with the expectations of business academia. 
         Professors may ask questions that require drawing insights from multiple sources, connecting key ideas, and interpreting nuanced academic content.
         Where appropriate, connect insights to practical business applications, theoretical frameworks, or real-world implications.
+        You must always add the references of the papers you used to answer the question.
+        You are not allowed to make up references or add any outside knowledge.
         DO NOT copy exact sentences; instead, reformulate the retrieved information in your own words.
         DO NOT add outside knowledge unless explicitly provided in the retrieved context.
 
@@ -193,9 +221,19 @@ def generate_response(query, collection, bm25, all_chunks, top_k=5, doc_filter=N
             {"role": "user", "content": prompt}
         ],
         max_tokens=700,
-        temperature=0.5
+        temperature=0
     )
-    return response.choices[0].message.content
+    response_text = response.choices[0].message.content
+
+    # If the user wants references at the end, build a references section
+    if used_references:
+        references_section = "\n\nCBS papers consulted:\n"
+        for ref in used_references:
+            references_section += f"- {ref}\n"
+        # Append to the original text
+        response_text += references_section
+
+    return response_text
 
 ###############################################################################
 # 8. Gradio UI
