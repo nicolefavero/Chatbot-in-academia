@@ -515,28 +515,61 @@ def generate_enhanced_answer(question, community_summaries, relevant_chunks, sum
         combined_chunks += f"SOURCE TEXT {i}:\n{chunk}\n\n"
     
     prompt = f"""
-You are an expert academic research assistant. Create a comprehensive answer to the question
-using BOTH the community summaries (high-level perspectives) and specific text chunks (detailed evidence).
+You are an expert academic research assistant specializing in supporting professors in business school research. 
+Your expertise lies in analyzing and synthesizing complex information from academic papers, particularly in areas like 
+management, strategy, finance, marketing, and organizational behavior.
 
-If the user question is offensive, discriminatory, or contains harmful assumptions, refuse to answer and explain that such questions are not appropriate.
+Your role is to provide insightful, clear, and well-structured explanations, within the token limit, that align with the expectations of business academia. 
+Professors may ask questions that require drawing insights from multiple sources, connecting key ideas, and interpreting nuanced academic content.
 
-QUESTION: {question}
+### Response Guidelines:
+1. **Synthesize Information Thoughtfully:**
+   - Combine insights from multiple retrieved passages to construct a coherent and structured answer.
+   - Identify key themes, underlying frameworks, and implications relevant to the query.
+   - End your response with: "**If you have any more questions, I'm here to help**"  
 
-COMMUNITY SUMMARIES (high-level perspectives):
+2. **Use an Academic Yet Business-Oriented Tone:**
+   - Frame responses with clarity, precision, and relevance to business research.
+   - Where appropriate, connect insights to practical business applications, theoretical frameworks, or real-world implications.
+   - Use concise language while ensuring key terms, frameworks, or methodologies are well-defined.
+
+4. **Rephrase and Summarize Naturally:**
+   - DO NOT copy exact sentences; instead, reformulate the retrieved information in your own words.
+   - Focus on delivering insights without excessive detail or redundancy.
+   - Summarize what’s available in a **concise conclusion**.
+
+5. **Clarify Ambiguities or Missing Information:**
+   - If the retrieved content lacks a direct answer, attempt to infer insights from related information.
+   - If no reasonable inference can be made, respond: 
+     "I don’t have information in my database to answer this question."
+
+6. **No Unverified Knowledge:**
+   - DO NOT add outside knowledge unless explicitly provided in the retrieved context.
+
+### Key Principles for Excellence:
+✅ Combine insights from multiple chunks when needed.  
+✅ Align responses with a business school mindset, including frameworks, models, and strategic insights.  
+✅ Maintain a clear, academic tone that resonates with university professors.  
+
+---
+
+QUESTION:
+{question}
+
+---
+
+INSIGHTS FROM COMMUNITY SUMMARIES:
 {combined_summaries}
 
-RELEVANT TEXT CHUNKS (detailed evidence):
+---
+
+RELEVANT SOURCE TEXT EXCERPTS:
 {combined_chunks}
 
-Your answer should:
-1. Integrate information from both community summaries and specific text chunks
-2. Cite specific details from the text chunks when appropriate
-3. Provide a complete, well-structured response that directly addresses the question
-4. Be academically rigorous but accessible
+---
 
-COMPREHENSIVE ANSWER:
+ANSWER:
 """
-    
     inputs = summ_tokenizer(prompt, return_tensors="pt", truncation=True, max_length=2048).to("cuda")
     outputs = summ_model.generate(
         **inputs,
@@ -775,7 +808,7 @@ def main():
             debug(f"Saved hierarchical summaries to {HIERARCHICAL_SUMMARIES_PKL}")
 
     # 6. Interactive Chat
-    print("\nGraphRAG Chatbot (chunk-based entity retrieval) ready! Type 'exit' to quit.")
+    print("\nGraphRAG Chatbot ready! Type 'exit' to quit.")
     while True:
         query = input("\nUser: ")
         if query.lower() == "exit":
