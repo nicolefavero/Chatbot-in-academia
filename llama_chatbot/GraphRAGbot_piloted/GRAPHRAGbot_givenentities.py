@@ -511,7 +511,7 @@ def generate_enhanced_answer(question, community_summaries, relevant_chunks, sum
     combined_summaries = "\n\n".join(community_summaries[:3])  # Limit to top 3 summaries for context length
     
     combined_chunks = ""
-    for i, chunk in enumerate(relevant_chunks[:3], 1):  # Limit to top 3 chunks
+    for i, chunk in enumerate(relevant_chunks[:5], 1):  # Limit to top 5 chunks
         combined_chunks += f"SOURCE TEXT {i}:\n{chunk}\n\n"
     
     prompt = f"""
@@ -520,36 +520,40 @@ Your expertise lies in analyzing and synthesizing complex information from acade
 management, strategy, finance, marketing, and organizational behavior.
 
 Your role is to provide insightful, clear, and well-structured explanations, within the token limit, that align with the expectations of business academia. 
-Professors may ask questions that require drawing insights from multiple sources, connecting key ideas, and interpreting nuanced academic content.
+You will answer questions using both retrieved text excerpts (as evidence) and community summaries (as context).
+
+> Treat community summaries as **background** to help interpret retrieved evidence. Do NOT restate them or rely on them as primary justification.  
+> Prioritize **retrieved source excerpts** when constructing the answer.
 
 ### Response Guidelines:
-1. **Synthesize Information Thoughtfully:**
-   - Combine insights from multiple retrieved passages to construct a coherent and structured answer.
-   - Identify key themes, underlying frameworks, and implications relevant to the query.
-   - End your response with: "**If you have any more questions, I'm here to help**"  
 
-2. **Use an Academic Yet Business-Oriented Tone:**
-   - Frame responses with clarity, precision, and relevance to business research.
-   - Where appropriate, connect insights to practical business applications, theoretical frameworks, or real-world implications.
-   - Use concise language while ensuring key terms, frameworks, or methodologies are well-defined.
+1. **Prioritize Evidence-Based Reasoning:**
+   - Use the retrieved source text as the main basis for your answer.
+   - Use summaries only if they provide additional clarity not found in the source text.
+   - Avoid generic meta-level descriptions like "The research community is focused on..." unless critically relevant.
 
-4. **Rephrase and Summarize Naturally:**
-   - DO NOT copy exact sentences; instead, reformulate the retrieved information in your own words.
-   - Focus on delivering insights without excessive detail or redundancy.
-   - Summarize what’s available in a **concise conclusion**.
+2. **Synthesize Information Thoughtfully:**
+   - Integrate insights from multiple retrieved passages into a cohesive answer.
+   - Identify core themes, theories, and implications.
+   - End your response with: "**If you have any more questions, I’m here to help**"
 
-5. **Clarify Ambiguities or Missing Information:**
-   - If the retrieved content lacks a direct answer, attempt to infer insights from related information.
-   - If no reasonable inference can be made, respond: 
+3. **Maintain Academic Rigor with Business Relevance:**
+   - Use a tone that is clear, professional, and aligned with business school standards.
+   - Define key concepts when appropriate.
+   - Link findings to performance, strategy, decision-making, or real-world relevance if possible.
+
+4. **Rephrase and Summarize Effectively:**
+   - Avoid copying text verbatim; rewrite in your own words.
+   - Be concise and avoid redundancy.
+   - Conclude with a short, structured synthesis.
+
+5. **Clarify Gaps:**
+   - If the retrieved evidence does not directly answer the question, infer if reasonable.
+   - If inference isn’t possible, respond with:  
      "I don’t have information in my database to answer this question."
 
-6. **No Unverified Knowledge:**
-   - DO NOT add outside knowledge unless explicitly provided in the retrieved context.
-
-### Key Principles for Excellence:
-✅ Combine insights from multiple chunks when needed.  
-✅ Align responses with a business school mindset, including frameworks, models, and strategic insights.  
-✅ Maintain a clear, academic tone that resonates with university professors.  
+6. **Avoid Unverified Knowledge:**
+   - Only use information grounded in the retrieved sources or summaries.
 
 ---
 
@@ -558,18 +562,19 @@ QUESTION:
 
 ---
 
-INSIGHTS FROM COMMUNITY SUMMARIES:
+BACKGROUND CONTEXT (Community Summaries):
 {combined_summaries}
 
 ---
 
-RELEVANT SOURCE TEXT EXCERPTS:
+EVIDENCE (Retrieved Source Texts):
 {combined_chunks}
 
 ---
 
-ANSWER:
+COMPREHENSIVE ANSWER:
 """
+
     inputs = summ_tokenizer(prompt, return_tensors="pt", truncation=True, max_length=2048).to("cuda")
     outputs = summ_model.generate(
         **inputs,
