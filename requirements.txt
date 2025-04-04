@@ -13,3 +13,4 @@ rapidfuzz
 coqui-tts
 pydub
 langchain
+python-pptx
