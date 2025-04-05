@@ -1,9 +1,8 @@
-################################################################################
-#  ACADEMIC SUMMARY GENERATOR (WITH PRELOADED LLAMA 3 - 70B MODEL)             #
-################################################################################
+###############################################################################
+#  ACADEMIC SUMMARY GENERATOR (WITH PRELOADED LLAMA 3 - 70B MODEL)           #
+###############################################################################
 
 import os
-import fitz  # PyMuPDF for PDF processing
 import torch
 import warnings
 import re
@@ -38,9 +37,9 @@ def load_llama_instructor():
 
     return tokenizer, model, device
 
-################################################################################
-# 1. PDF Preprocessing with Chunking
-################################################################################
+###############################################################################
+# 1. TXT Preprocessing with Chunking
+###############################################################################
 
 def preprocess_text(text: str) -> str:
     """
@@ -54,20 +53,14 @@ def preprocess_text(text: str) -> str:
     text = " ".join(text.split())                              # Normalize spaces
     return text
 
-def read_pdf_full_text(pdf_path: str) -> str:
+def read_txt_full_text(txt_path: str) -> str:
     """
-    Reads the entire PDF in one go, returning a single large string.
+    Reads the entire text file in one go, returning a single large string.
     """
-    document = fitz.Document(pdf_path)
-    all_text = []
-
-    for page_num in range(document.page_count):
-        page = document.load_page(page_num)
-        raw_text = page.get_text("text")
-        cleaned_text = preprocess_text(raw_text)
-        all_text.append(cleaned_text)
-
-    return "\n".join(all_text)
+    with open(txt_path, 'r', encoding='utf-8') as f:
+        raw_text = f.read()
+    cleaned_text = preprocess_text(raw_text)
+    return cleaned_text
 
 def chunk_text(text, chunk_size=4000, chunk_overlap=100):
     """
@@ -80,9 +73,9 @@ def chunk_text(text, chunk_size=4000, chunk_overlap=100):
     )
     return text_splitter.split_text(text)
 
-################################################################################
-# 2. Fuzzy Matching to Detect Target PDF in DOC_REGISTRY
-################################################################################
+###############################################################################
+# 2. Fuzzy Matching to Detect Target Document in DOC_REGISTRY
+###############################################################################
 
 def detect_target_doc(query: str, registry: dict, threshold=80):
     """
@@ -106,7 +99,7 @@ def detect_target_doc(query: str, registry: dict, threshold=80):
         return None
 
 ###############################################################################
-# 5. Stopping Criteria
+# 3. Stopping Criteria
 ###############################################################################
 class StopOnTokens(StoppingCriteria):
     """
@@ -122,10 +115,9 @@ class StopOnTokens(StoppingCriteria):
                     return True
         return False
 
-
-################################################################################
-# 3. Chunk Summarization Prompt
-################################################################################
+###############################################################################
+# 4. Chunk Summarization Prompt
+###############################################################################
 
 CHUNK_SUMMARY_PROMPT = """
 Here is an excerpt from an academic paper. Summarize it in a continuous text format that condenses the key information in max 50 tokens, it is fine if it's less. 
@@ -156,7 +148,6 @@ def summarize_chunk(chunk, model, tokenizer, device, chunk_idx, total_chunks):
     stop_strings = ["Summary:", "Text:"]  # Prevents prompt leakage
     stopping_criteria = StoppingCriteriaList([StopOnTokens(stop_strings, tokenizer)])
 
-
     output = model.generate(
         **inputs,
         max_new_tokens=200,
@@ -178,9 +169,9 @@ def summarize_chunk(chunk, model, tokenizer, device, chunk_idx, total_chunks):
     print(result)
     return summary  # <- Return only the clean summary
 
-################################################################################
-# 4. Final Summary Merging Prompt
-################################################################################
+###############################################################################
+# 5. Final Summary Merging Prompt
+###############################################################################
 
 FINAL_SUMMARY_PROMPT = """
 You are an expert academic writer. Your task is to refine and rewrite the following content into a clear, coherent, and continuous academic text. 
@@ -194,7 +185,7 @@ Content to Rewrite:
 def generate_final_summary(summaries, model, tokenizer, device):
     combined_summary = "\n".join(summaries)
 
-    # Ensure the input size + output tokens stay within the 4096-token limit
+    # Ensure the input size + output tokens stay within the model limit
     max_output_tokens = max(min(4096 - len(tokenizer(combined_summary)['input_ids']), 2000), 1000)
 
     final_summary_prompt = FINAL_SUMMARY_PROMPT.format(chunk_summaries=combined_summary)
@@ -210,45 +201,51 @@ def generate_final_summary(summaries, model, tokenizer, device):
 
     return tokenizer.decode(final_summary[0], skip_special_tokens=True).strip()
 
-################################################################################
-# 5. Full Pipeline: Generate Summary from PDF
-################################################################################
+###############################################################################
+# 6. Full Pipeline: Generate Summary from Text File
+###############################################################################
 
-def summarize_paper(user_query: str, pdf_folder_path: str, tokenizer, llama_model, device):
+def summarize_text_doc(user_query: str, txt_folder_path: str, tokenizer, llama_model, device):
     """
-    Full pipeline for detecting, reading, chunking, summarizing, and merging summaries.
+    Full pipeline for detecting, reading, chunking, summarizing, and merging summaries
+    from a plain text (.txt) file.
     """
 
+    # 1. Use fuzzy matching to find the doc in DOC_REGISTRY
     target_doc = detect_target_doc(user_query, DOC_REGISTRY, threshold=80)
     if target_doc is None:
-        return "I'm not sure which PDF you mean. Please specify the exact title or a known alias."
+        return "I'm not sure which text file you mean. Please specify the exact title or a known alias."
 
-    pdf_name = f"{target_doc}.pdf"
-    pdf_path = os.path.join(pdf_folder_path, pdf_name)
+    txt_name = f"{target_doc}.txt"
+    txt_path = os.path.join(txt_folder_path, txt_name)
 
-    if not os.path.isfile(pdf_path):
-        return f"PDF '{pdf_name}' not found in '{pdf_folder_path}'."
+    if not os.path.isfile(txt_path):
+        return f"Text file '{txt_name}' not found in '{txt_folder_path}'."
 
-    pdf_text = read_pdf_full_text(pdf_path)
-    pdf_chunks = chunk_text(pdf_text, chunk_size=4000, chunk_overlap=100)
+    # 2. Read the entire text
+    doc_text = read_txt_full_text(txt_path)
 
-    print(f"\n🧩 Total Chunks to Process: {len(pdf_chunks)}\n{'='*60}")
+    # 3. Chunk the text
+    doc_chunks = chunk_text(doc_text, chunk_size=4000, chunk_overlap=100)
+    print(f"\n🧩 Total Chunks to Process: {len(doc_chunks)}\n{'='*60}")
 
+    # 4. Summarize each chunk
     summaries = [
-        summarize_chunk(chunk, llama_model, tokenizer, device, idx, len(pdf_chunks))
-        for idx, chunk in enumerate(pdf_chunks)
+        summarize_chunk(chunk, llama_model, tokenizer, device, idx, len(doc_chunks))
+        for idx, chunk in enumerate(doc_chunks)
     ]
 
+    # 5. Generate a final, merged summary
     final_summary = generate_final_summary(summaries, llama_model, tokenizer, device)
 
     return final_summary
 
-################################################################################
-# 6. Example Usage
-################################################################################
+###############################################################################
+# 7. Example Usage
+###############################################################################
 
 if __name__ == "__main__":
-    pdf_folder = "papers-cleaned" 
+    txt_folder = "papers-cleaned"  # folder containing your .txt files
 
     # Load model & tokenizer
     tokenizer, llama_model, device = load_llama_instructor()
@@ -259,7 +256,7 @@ if __name__ == "__main__":
         if query.lower() == "exit":
             break
 
-        final_summary = summarize_paper(query, pdf_folder, tokenizer, llama_model, device)
+        final_summary = summarize_text_doc(query, txt_folder, tokenizer, llama_model, device)
 
         # Save the generated summary to a text file
         with open("generated_summary.txt", "w", encoding="utf-8") as f:
