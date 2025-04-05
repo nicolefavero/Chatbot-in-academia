@@ -1,0 +1,16 @@
+torch
+transformers
+pymupdf
+chromadb
+spacy
+numpy
+sentence-transformers
+langchain_text_splitters
+accelerate
+rank_bm25
+PyMuPDF
+rapidfuzz
+coqui-tts
+pydub
+langchain
+python-pptx
