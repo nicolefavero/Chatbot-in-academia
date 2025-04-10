@@ -119,7 +119,7 @@ def generate_final_podcast(summaries, model, tokenizer, device):
 
     output = model.generate(
         **inputs,
-        max_new_tokens=max_output_tokens,
+        max_new_tokens=2048,
         do_sample=False,
         temperature=0.7
     )
