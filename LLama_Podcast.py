@@ -1,36 +1,29 @@
-################################################################################
-#  PODCAST GENERATOR (WITH PRELOADED LLAMA 3 - 70B MODEL)                      #
-################################################################################
+###############################################################################
+#  ACADEMIC SUMMARY GENERATOR (WITH PRELOADED LLAMA 3 - 70B MODEL)           #
+###############################################################################
 
 import os
-import fitz  # PyMuPDF for PDF processing
 import torch
-import warnings
 import re
 from rapidfuzz import fuzz
 from DOC_REGISTRY import DOC_REGISTRY
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+###############################################################################
+# 0. Load LLaMA 3 Model + Tokenizer
+###############################################################################
 
 def load_llama_instructor():
-    """
-    Load a Llama-3 70B *instruction/chat* model from Hugging Face 
-    and distribute across GPUs. 
-    """
     device = "cuda" if torch.cuda.is_available() else "cpu"
     dtype = torch.float16 if device == "cuda" else torch.float32
 
-    # Replace with your Hugging Face token that has permission for Llama 2
     HF_TOKEN = "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"
-
-    # This is an example name for a chat/instruct-finetuned variant:
     model_name = "meta-llama/Llama-3.3-70B-Instruct"
 
-    print(f"Loading model on {device} (4 GPUs)...")
+    print(f"Loading model on {device}...")
 
-    tokenizer = AutoTokenizer.from_pretrained(
-        model_name, 
-        use_auth_token=HF_TOKEN
-    )
+    tokenizer = AutoTokenizer.from_pretrained(model_name, use_auth_token=HF_TOKEN)
     model = AutoModelForCausalLM.from_pretrained(
         model_name,
         use_auth_token=HF_TOKEN,
@@ -40,103 +33,39 @@ def load_llama_instructor():
 
     return tokenizer, model, device
 
-################################################################################
-# 1. PDF Preprocessing with Chunking
-################################################################################
+###############################################################################
+# 1. Preprocessing and File Handling
+###############################################################################
 
 def preprocess_text(text: str) -> str:
-    """
-    Clean whitespace and normalize text.
-    """
     text = text.strip()
-    # Remove inline citations like [1], (Doe et al., 2020)
     text = re.sub(r"\[\d+\]|\(\w+ et al\., \d+\)", "", text)
-
-    # Remove figure references like (see Fig. 3)
     text = re.sub(r"\(see Fig\.\s?\d+\)", "", text)
-
-    # Remove special characters (common in PDF noise)
     text = re.sub(r"[*_#]", "", text)
-
-    # Fix awkward line breaks in PDFs (like "word-\nnextword")
     text = re.sub(r"-\n", "", text)
+    return " ".join(text.split())
 
-    # Normalize spacing
-    text = " ".join(text.split())
-
-    return text
-
-def read_pdf_full_text(pdf_path: str) -> str:
-    """
-    Reads the entire PDF in one go, returning a single large string.
-    No chunking is done here; chunking happens later.
-    """
-    document = fitz.Document(pdf_path)
-    pages = document.page_count
-
-    all_text = []
-    for page_num in range(pages):
-        page = document.load_page(page_num)
-        raw_text = page.get_text("text")
-        cleaned_text = preprocess_text(raw_text)
-        all_text.append(cleaned_text)
-
-    return "\n".join(all_text)
-
-def chunk_text(text, max_chunk_size=4000):
-    """
-    Splits text into chunks ensuring no chunk exceeds `max_chunk_size`.
-    Splits at sentence boundaries if possible to maintain coherence.
-    """
-    import re
-    sentences = re.split(r'(?<=[.!?])\s+', text)  # Split at sentence boundaries
-    chunks = []
-    current_chunk = ""
-
-    for sentence in sentences:
-        if len(current_chunk) + len(sentence) <= max_chunk_size:
-            current_chunk += sentence + " "
-        else:
-            chunks.append(current_chunk.strip())
-            current_chunk = sentence + " "
-
-    if current_chunk.strip():
-        chunks.append(current_chunk.strip())
-
-    return chunks
-
-################################################################################
-# 2. Fuzzy Matching to Detect Target PDF in DOC_REGISTRY
-################################################################################
+def read_txt_full_text(file_path: str) -> str:
+    with open(file_path, "r", encoding="utf-8") as f:
+        return preprocess_text(f.read())
 
 def detect_target_doc(query: str, registry: dict, threshold=80):
-    """
-    Use fuzzy matching on all doc aliases in registry to find the best match.
-    Returns the doc_name (key in registry) if the highest match is above threshold,
-    else returns None.
-    """
     query_lower = query.lower()
     best_doc = None
     best_score = 0
-
     for doc_name, data in registry.items():
-        aliases = data["aliases"]
-        for alias in aliases:
+        for alias in data["aliases"]:
             score = fuzz.partial_ratio(query_lower, alias.lower())
             if score > best_score:
                 best_score = score
                 best_doc = doc_name
+    return best_doc if best_score >= threshold else None
 
-    if best_score >= threshold:
-        return best_doc
-    else:
-        return None
+###############################################################################
+# 2. Prompt and Final Summary Generator
+###############################################################################
 
-################################################################################
-# 3. The Podcast System Prompt
-################################################################################
-
-SYSTEM_PROMPT = """
+PODCAST_PROMPT = """
 You are a world-class podcast writer; you have worked as a ghost writer for 
 Joe Rogan, Lex Fridman, Ben Shapiro, and Tim Ferriss. 
 
@@ -172,74 +101,78 @@ DO NOT GIVE EPISODE TITLES SEPARATELY, LET SPEAKER 1 TITLE IT IN HER SPEECH.
 DO NOT GIVE CHAPTER TITLES.
 IT SHOULD STRICTLY BE THE DIALOGUES. 
 IT MUST END WITH THE SPEAKER 1 SAYING THANK YOU TO SPEAKER 2 AND GOODBYE. 
+
+Below is the content for the podcast:
+
+{chunk_summaries}
+
+Your Podcast:
 """
 
-################################################################################
-# 4. Generate Podcast from PDF with Chunking
-################################################################################
+def generate_final_podcast(summaries, model, tokenizer, device):
+    combined_summary = "\n".join(summaries)
+    prompt = PODCAST_PROMPT.format(chunk_summaries=combined_summary)
 
-def generate_podcast_from_pdf(user_query: str, pdf_folder_path: str, tokenizer, llama_model, device):
-    """
-    1. Detect the best-matching PDF from the registry.
-    2. Read and chunk the PDF content.
-    3. Process each chunk with the Llama model and combine results.
-    4. Return the full podcast script.
-    """
+    inputs = tokenizer(prompt, return_tensors="pt").to(device)
 
+    max_output_tokens = max(min(4096 - len(inputs['input_ids'][0]), 2000), 1000)
+
+    output = model.generate(
+        **inputs,
+        max_new_tokens=max_output_tokens,
+        do_sample=False,
+        temperature=0.7
+    )
+
+    full_output = tokenizer.decode(output[0], skip_special_tokens=True).strip()
+
+    # Only extract what's after "Your Podcast:"
+    if "Your Podcast:" in full_output:
+        summary_only = full_output.split("Your Podcast:")[-1].strip()
+    else:
+        summary_only = full_output  # fallback
+
+    return summary_only
+
+###############################################################################
+# 3. Full Pipeline to Summarize Text File (Chunking not yet included)
+###############################################################################
+
+def summarize_text_doc(user_query: str, txt_folder_path: str, tokenizer, llama_model, device):
     target_doc = detect_target_doc(user_query, DOC_REGISTRY, threshold=80)
     if target_doc is None:
-        return "I'm not sure which PDF you mean. Please specify the exact title or a known alias."
+        return "I'm not sure which text file you mean. Please specify the exact title or a known alias."
 
-    pdf_name = f"{target_doc}.pdf"
-    pdf_path = os.path.join(pdf_folder_path, pdf_name)
+    txt_path = os.path.join(txt_folder_path, f"{target_doc}.txt")
+    if not os.path.isfile(txt_path):
+        return f"Text file '{target_doc}.txt' not found in '{txt_folder_path}'."
 
-    if not os.path.isfile(pdf_path):
-        return f"PDF '{pdf_name}' not found in '{pdf_folder_path}'."
+    doc_text = read_txt_full_text(txt_path)
 
-    pdf_text = read_pdf_full_text(pdf_path)
-    pdf_chunks = chunk_text(pdf_text, max_chunk_size=3000)
+    # Placeholder chunking: treat whole text as a single chunk
+    summaries = [doc_text]  # You can add real chunking logic here later
 
-    podcast_segments = []
-    for idx, chunk in enumerate(pdf_chunks):
-        print(f"Processing chunk {idx + 1} of {len(pdf_chunks)}...")
+    final_podcast = generate_final_podcast(summaries, llama_model, tokenizer, device)
+    return final_podcast
 
-        prompt = f"{SYSTEM_PROMPT}\n\nHere is a part of the document text that needs to be turned into a podcast:\n\n{chunk}\n\nNow, continue the podcast transcript."
-        inputs = tokenizer(prompt, return_tensors="pt").to(device)
+###############################################################################
+# 4. CLI Runner
+###############################################################################
 
-        with torch.no_grad():
-            output = llama_model.generate(
-                **inputs,
-                max_new_tokens=2048,
-                do_sample=True,
-                temperature=1.0
-            )
-
-        generated_text = tokenizer.decode(output[0], skip_special_tokens=True)
-        podcast_segments.append(generated_text.strip())
-
-    final_podcast_script = "\n".join(podcast_segments)
-    return final_podcast_script
-
-################################################################################
-# 5. Example Usage
-################################################################################
 if __name__ == "__main__":
-    pdf_folder = "papers-testing"  # Path to your PDFs
+    txt_folder = "papers-cleaned"
 
-    # Load model & tokenizer
     tokenizer, llama_model, device = load_llama_instructor()
 
-    print("\nPodcast Generator is ready! Type 'exit' to quit.")
+    print("\nSummary Generator is ready! Type 'exit' to quit.")
     while True:
         query = input("\nYou: ")
         if query.lower() == "exit":
             break
 
-        podcast_script = generate_podcast_from_pdf(query, pdf_folder, tokenizer, llama_model, device)
+        final_podcast = summarize_text_doc(query, txt_folder, tokenizer, llama_model, device)
 
-        # Save the generated script to a text file
         with open("generated_podcast_script.txt", "w", encoding="utf-8") as f:
-            f.write(podcast_script)
-        
-        print(f"\nPodcast Script saved as: generated_podcast_script.txt")
+            f.write(final_podcast)
 
+        print(f"\n✅ Podcast saved to: generated_podcast_script.txt")

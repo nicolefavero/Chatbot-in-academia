@@ -3,7 +3,7 @@
 ################################################################################
 
 import torch
-import fitz  # PyMuPDF for PDF processing
+import fitz 
 import re
 import os
 import chromadb

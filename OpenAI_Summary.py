@@ -32,7 +32,7 @@ def detect_target_doc(query: str, registry: dict, threshold=80):
                 best_doc = doc_name
     return best_doc if best_score >= threshold else None
 
-def generate_podcast_response(message, chat_history):
+def generate_summary_response(message, chat_history):
     matched_doc = detect_target_doc(message, DOC_REGISTRY)
     if matched_doc:
         try:
@@ -79,7 +79,7 @@ def generate_podcast_response(message, chat_history):
 
 # Gradio UI
 chatbot = gr.ChatInterface(
-    fn=generate_podcast_response,
+    fn=generate_summary_response,
     title="🎙️ CBS-bot (Summary Bot)",
     theme="messages",
     chatbot=gr.Chatbot(show_copy_button=True)
