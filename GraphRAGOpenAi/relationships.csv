@@ -1,0 +1,120 @@
+source,target,relationship type,description,strength
+ABSORPTIVE CAPACITY,KNOWLEDGE INFLOWS,ENABLES,Higher absorptive capacity increases knowledge inflows from other MNC units,5
+KNOWLEDGE MANAGEMENT TOOLS,ABSORPTIVE CAPACITY,DEVELOPS,Knowledge management tools develop and strengthen a subsidiary's absorptive capacity,5
+KNOWLEDGE INFLOWS,SUBSIDIARY PERFORMANCE,INFLUENCES,Knowledge inflows positively affect multiple dimensions of subsidiary performance,5
+COMMUNITIES OF PRACTICE,ABSORPTIVE CAPACITY,ENHANCES,Communities of practice enhance absorptive capacity by facilitating tacit knowledge exchange,5
+CORPORATE UNIVERSITY,ABSORPTIVE CAPACITY,ENHANCES,Corporate university enhances employee ability to recognize and assimilate knowledge,3
+GROUP BENCHMARKING,ABSORPTIVE CAPACITY,ENHANCES,Group benchmarking improves ability to identify and apply leading practices,5
+LEARNING SYSTEM,ABSORPTIVE CAPACITY,ENHANCES,Learning systems reduce transaction costs of knowledge search and improve access,3
+REWARD SYSTEMS,ABSORPTIVE CAPACITY,INFLUENCES,Reward systems affect employee motivation to participate in knowledge sharing,1
+ABILITY TO LEARN,ABSORPTIVE CAPACITY,COMPONENT_OF,Ability to learn is a key component of absorptive capacity,5
+MOTIVATION TO LEARN,ABSORPTIVE CAPACITY,COMPONENT_OF,Motivation to learn is a key component of absorptive capacity,5
+HEIDELBERGER CEMENT,KNOWLEDGE MANAGEMENT TOOLS,IMPLEMENTS,HeidelbergCement implemented various knowledge management tools,5
+MNC,KNOWLEDGE INFLOWS,FACILITATES,MNCs facilitate knowledge flows between geographically dispersed subsidiaries,5
+FORMAL ACKNOWLEDGEMENT,SUBSIDIARY PERFORMANCE,IMPACTS,Formal acknowledgement of subsidiary knowledge positively impacts performance,1
+KNOWLEDGE ADAPTATION,SUBSIDIARY PERFORMANCE,IMPACTS,The need to adapt knowledge can affect the performance impact of knowledge inflows,3
+INTRINSIC MOTIVATION,KNOWLEDGE SHARING BEHAVIOR,DRIVES,Intrinsic motivation is a powerful driver of knowledge sharing behavior,5
+EXTRINSIC MOTIVATION,KNOWLEDGE SHARING BEHAVIOR,DRIVES,Extrinsic motivation can drive knowledge sharing through formal rewards,3
+DIFFERENTIATED NETWORK,MNC,CHARACTERIZES,The differentiated network concept characterizes modern MNCs,5
+EMPIRICAL STUDIES,ABSORPTIVE CAPACITY,INVESTIGATES,Empirical studies examine absorptive capacity as a determinant of knowledge transfer,5
+TACIT KNOWLEDGE,COMMUNITIES OF PRACTICE,EXCHANGED_IN,Tacit knowledge is primarily exchanged in communities of practice,5
+EXPLICIT KNOWLEDGE,CORPORATE UNIVERSITY,EXCHANGED_IN,Explicit knowledge is primarily shared through corporate university programs,5
+INTRANET SOLUTION,LEARNING SYSTEM,COMPONENT_OF,Intranet solutions are key components of effective learning systems,5
+KNOWLEDGE SEARCH,TRANSACTION COSTS,ASSOCIATED_WITH,Knowledge search involves transaction costs that can impede knowledge flows,3
+EXPERT TEAMS,GROUP BENCHMARKING,CONDUCTS,Expert teams conduct group benchmarking to identify leading practices,5
+LEADING PRACTICES,GROUP BENCHMARKING,IDENTIFIED_BY,Leading practices are identified by group benchmarking processes,5
+COMBINATIVE CAPABILITIES,KNOWLEDGE CREATION,ENABLES,Combinative capabilities enable the creation of new knowledge from existing sources,5
+KNOWLEDGE HOSTILITY,ABSORPTIVE CAPACITY,REDUCES,Knowledge hostility reduces a subsidiary's absorptive capacity,5
+POTENTIAL ABSORPTIVE CAPACITY,REALIZED ABSORPTIVE CAPACITY,PRECEDES,Potential absorptive capacity is necessary but not sufficient for realized capacity,5
+KNOWLEDGE SHARING BEHAVIOR,KNOWLEDGE INFLOWS,INFLUENCES,Knowledge sharing behavior of source units influences knowledge inflows to recipient units,5
+NOT-INVENTED-HERE SYNDROME,ABSORPTIVE CAPACITY,REDUCES,Not-invented-here syndrome reduces absorptive capacity by lowering motivation,5
+CAUSAL AMBIGUITY,REWARD SYSTEMS,COMPLICATES,Causal ambiguity makes it difficult to design effective knowledge sharing rewards,5
+MEASUREMENT BASE,REWARD SYSTEMS,REQUIRED_FOR,A sound measurement base is required for effective reward systems,5
+INFORMAL ACKNOWLEDGEMENT,INTRINSIC MOTIVATION,SUPPORTS,Informal acknowledgement supports intrinsic motivation for knowledge sharing,5
+SIGNALING,ORGANIZATIONAL SUPPORT,COMMUNICATES,Signaling communicates organizational support for knowledge sharing,3
+COMMON GOALS,INTRINSIC MOTIVATION,FOSTERS,Common goals foster intrinsic motivation for knowledge sharing,5
+KNOWING-DOING GAP,KNOWLEDGE INFLOWS,LIMITS,Knowing-doing gaps limit the performance impact of knowledge inflows,5
+ROUTINE ADAPTATION,KNOWLEDGE INFLOWS,MEDIATES,Routine adaptation mediates the relationship between knowledge inflows and performance,5
+COGNITIVE CAPACITY,ABILITY TO LEARN,DETERMINES,Cognitive capacity determines an individual's ability to learn new knowledge,5
+SPECIALIZED KNOWLEDGE DOMAIN,COGNITIVE FOCUS,CREATES,Specialized knowledge domains create cognitive focus that can limit absorptive capacity,3
+PERCEPTUAL MEASURES,SUBSIDIARY PERFORMANCE,ASSESSES,Perceptual measures assess forward-looking dimensions of subsidiary performance,5
+COST SAVINGS,SUBSIDIARY PERFORMANCE,DIMENSION_OF,Cost savings are one dimension of subsidiary performance affected by knowledge inflows,5
+ADDITIONAL REVENUE,SUBSIDIARY PERFORMANCE,DIMENSION_OF,Additional revenue is one dimension of subsidiary performance affected by knowledge inflows,5
+PROCESS IMPROVEMENTS,SUBSIDIARY PERFORMANCE,DIMENSION_OF,Process improvements are one dimension of subsidiary performance,5
+PRODUCT IMPROVEMENTS,SUBSIDIARY PERFORMANCE,DIMENSION_OF,Product improvements are one dimension of subsidiary performance,5
+NEW PRODUCTS AND PROCESSES,SUBSIDIARY PERFORMANCE,DIMENSION_OF,New products and processes are one dimension of subsidiary performance,5
+SURVEY METHODOLOGY,INDIVIDUAL PERCEPTION,MEASURES,Survey methodology measures individual perceptions of knowledge management practices,5
+LIKERT SCALE,SURVEY METHODOLOGY,USED_IN,Likert scales are used in survey methodology to measure perceptions,5
+MULTI-ITEM CONSTRUCT,ABSORPTIVE CAPACITY,MEASURES,Multi-item constructs measure complex variables like absorptive capacity,5
+THREE-STAGE LEAST SQUARES,SIMULTANEOUS EQUATION MODEL,ESTIMATES,Three-stage least squares estimates simultaneous equation models with endogenous variables,5
+ENDOGENOUS CONSTRUCT,ABSORPTIVE CAPACITY,CHARACTERIZES,Absorptive capacity is characterized as an endogenous construct influenced by management,5
+EXOGENOUS CONSTRUCT,KNOWLEDGE MANAGEMENT TOOLS,CHARACTERIZES,Knowledge management tools are characterized as exogenous constructs in the model,5
+KNOWLEDGE TRANSFER PERFORMANCE,SUBSIDIARY PERFORMANCE,CONTRIBUTES_TO,Knowledge transfer performance contributes to overall subsidiary performance,5
+ACQUISITION INTEGRATION,HEIDELBERGER CEMENT,CHALLENGE_FOR,Acquisition integration was a challenge for HeidelbergCement after rapid expansion,5
+MULTINATIONAL EXPANSION,HEIDELBERGER CEMENT,STRATEGY_OF,Multinational expansion was a strategy of HeidelbergCement,5
+SINGLE-SITE SAMPLING,CONTEXTUAL FACTORS,CONTROLS_FOR,Single-site sampling controls for contextual factors in research design,5
+INTRA-FIRM NETWORKS,KNOWLEDGE INFLOWS,FACILITATES,Intra-firm networks facilitate knowledge inflows between subsidiaries,5
+BUSINESS UNITS,HEIDELBERGER CEMENT,COMPONENT_OF,Business units are organizational components of HeidelbergCement,5
+FACE VALIDITY,SURVEY METHODOLOGY,QUALITY_OF,Face validity is a quality of well-designed survey methodology,3
+RESPONSE RATE,SURVEY METHODOLOGY,INDICATES,Response rate indicates the representativeness of survey results,5
+ALPHA RELIABILITY,MULTI-ITEM CONSTRUCT,MEASURES,Alpha reliability measures the internal consistency of multi-item constructs,5
+CORRELATION MATRIX,MULTICOLLINEARITY,DETECTS,Correlation matrix helps detect potential multicollinearity in statistical models,5
+R-SQUARE,THEORETICAL MODEL,EVALUATES,R-square evaluates the explanatory power of theoretical models,5
+HYPOTHESIS TESTING,THEORETICAL MODEL,EVALUATES,Hypothesis testing evaluates the validity of theoretical models,5
+INTRA-FIRM KNOWLEDGE FLOWS,MNC,OCCURS_WITHIN,Intra-firm knowledge flows occur within MNC networks,5
+INTER-FIRM KNOWLEDGE FLOWS,EXTERNAL KNOWLEDGE ACQUISITION,REPRESENTS,Inter-firm knowledge flows represent external knowledge acquisition,5
+INSTRUMENT VARIABLES,THREE-STAGE LEAST SQUARES,USED_IN,Instrument variables are used in three-stage least squares to address endogeneity,5
+HIERARCHICAL KNOWLEDGE FLOWS,MNC,OCCURS_WITHIN,Hierarchical knowledge flows occur within MNC structures,3
+LATERAL KNOWLEDGE FLOWS,DIFFERENTIATED NETWORK,CHARACTERISTIC_OF,Lateral knowledge flows are characteristic of differentiated networks,5
+KNOWLEDGE REPLICATION,SUBSIDIARY PERFORMANCE,CONTRIBUTES_TO,Knowledge replication contributes to subsidiary performance through standardization,3
+KNOWLEDGE RECOMBINATION,INNOVATION CAPACITY,ENHANCES,Knowledge recombination enhances innovation capacity through new combinations,5
+LEARNING CULTURE,ABSORPTIVE CAPACITY,FACILITATES,Learning culture facilitates the development of absorptive capacity,3
+CAUSAL IMPACT,EMPIRICAL CORROBORATION,ESTABLISHED_BY,Causal impact is established by empirical corroboration of theoretical relationships,5
+STRATEGIC ROLES,DIFFERENTIATED NETWORK,ASSIGNED_IN,Strategic roles are assigned to subsidiaries in differentiated networks,5
+KNOWLEDGE EXCHANGE RELATION,KNOWLEDGE INFLOWS,STRUCTURES,Knowledge exchange relations structure knowledge inflows between units,3
+OPPORTUNITY COSTS,KNOWLEDGE SHARING,ASSOCIATED_WITH,Opportunity costs are associated with knowledge sharing activities,3
+COGNITIVE FOCUS,ABILITY TO LEARN,CONSTRAINS,Cognitive focus can constrain the ability to learn across knowledge domains,3
+STANDARDIZATION,KNOWLEDGE REPLICATION,FACILITATES,Standardization facilitates knowledge replication across subsidiaries,5
+CODIFICATION OF KNOWLEDGE,KNOWLEDGE INFLOWS,FACILITATES,Codification of knowledge facilitates knowledge inflows by making knowledge explicit,3
+SUBSIDIARY MANAGERS,KNOWLEDGE MANAGEMENT TOOLS,IMPLEMENTS,Subsidiary managers implement knowledge management tools at the local level,5
+ENGINEERS,INTRA-FIRM KNOWLEDGE FLOWS,PARTICIPATES_IN,Engineers participate in intra-firm knowledge flows on a day-to-day basis,5
+INTERNATIONAL KNOWLEDGE MANAGEMENT INITIATIVE,HEIDELBERGER CEMENT,LAUNCHED_BY,International knowledge management initiative was launched by HeidelbergCement,5
+MNC PERFORMANCE,SUBSIDIARY PERFORMANCE,AGGREGATES,MNC performance aggregates the performance of individual subsidiaries,5
+EMPIRICAL STUDY ON KNOWLEDGE FLOWS,KNOWLEDGE INFLOWS,INVESTIGATES,Empirical studies on knowledge flows investigate antecedents and effects of knowledge inflows,5
+INDIVIDUAL PERCEPTION,ABSORPTIVE CAPACITY,COMPONENT_OF,Individual perceptions are components of collective absorptive capacity,5
+HOMOGENEOUS PERCEPTIONS,METHODOLOGICAL ASSUMPTION,QUESTIONED_BY,The assumption of homogeneous perceptions is questioned by multiple-informant research,5
+OPEN COMMUNICATION CHANNELS,LEARNING SYSTEM,COMPONENT_OF,Open communication channels are components of effective learning systems,5
+RESEARCH GENERALIZABILITY,SINGLE-SITE SAMPLING,LIMITED_BY,Research generalizability is limited by single-site sampling,5
+MANAGERIAL DISCRETION,ABSORPTIVE CAPACITY,INFLUENCES,Managerial discretion influences the development of absorptive capacity,5
+KNOWLEDGE MANAGEMENT INVESTMENT,SUBSIDIARY PERFORMANCE,IMPACTS,Knowledge management investment impacts subsidiary performance through capacity development,5
+VALUE CREATION,KNOWLEDGE INFLOWS,OUTCOME_OF,Value creation is an outcome of effective knowledge inflows,5
+RESEARCH CONTRIBUTION,EMPIRICAL CORROBORATION,STRENGTHENED_BY,Research contribution is strengthened by empirical corroboration of theoretical relationships,5
+CONTROL VARIABLE,CODIFICATION OF KNOWLEDGE,EXAMPLE_OF,Codification of knowledge is an example of a control variable in knowledge flow studies,3
+CONCEPTUALIZATION,ABSORPTIVE CAPACITY,APPLIED_TO,Conceptualization is applied to absorptive capacity as ability and motivation to learn,5
+OPERATIONALIZATION,ABSORPTIVE CAPACITY,APPLIED_TO,Operationalization is applied to absorptive capacity through measurable indicators,5
+PILOT TESTING,SURVEY METHODOLOGY,PHASE_OF,Pilot testing is a phase of sound survey methodology development,5
+CEO SUPPORT,RESPONSE RATE,ENHANCES,CEO support enhances survey response rates,5
+THEORETICAL MODEL,HYPOTHESIS TESTING,GUIDES,Theoretical models guide hypothesis testing in empirical research,5
+KNOWLEDGE CHARACTERISTICS,KNOWLEDGE INFLOWS,INFLUENCES,Knowledge characteristics influence the ease and effectiveness of knowledge inflows,3
+SINGLE INFORMANT APPROACH,METHODOLOGICAL ASSUMPTION,BASED_ON,Single informant approach is based on assumptions of homogeneous perceptions,5
+MULTIPLE INFORMANT APPROACH,HEIDELBERGER CEMENT,USED_IN,Multiple informant approach was used in the HeidelbergCement study,5
+INFORMATION ACQUISITION,ABSORPTIVE CAPACITY,PHASE_OF,Information acquisition is a phase of absorptive capacity development,5
+INFORMATION ASSIMILATION,ABSORPTIVE CAPACITY,PHASE_OF,Information assimilation is a phase of absorptive capacity development,5
+INFORMATION APPLICATION,REALIZED ABSORPTIVE CAPACITY,PHASE_OF,Information application is a phase of realized absorptive capacity,5
+KNOWLEDGE ANTECEDENTS,KNOWLEDGE MANAGEMENT TOOLS,EXAMPLE_OF,Knowledge management tools are examples of knowledge antecedents,5
+EVIDENCE-BASED MANAGEMENT,KNOWLEDGE MANAGEMENT TOOLS,SUPPORTS,Evidence-based management supports the implementation of effective knowledge management tools,5
+THEORETICAL INTEGRATION,RESEARCH CONTRIBUTION,ACHIEVES,Theoretical integration achieves significant research contribution
+BOUNDARY SPANNERS,COMMUNITIES OF PRACTICE,MEMBERS_OF,Boundary spanners are often members of communities of practice,3
+SEARCH COSTS,TRANSACTION COSTS,COMPONENT_OF,Search costs are components of knowledge transaction costs,5
+RESEARCH PROPOSITIONS,HYPOTHESIS TESTING,PRECEDES,Research propositions precede formal hypothesis testing,5
+CEMENT INDUSTRY,HEIDELBERGER CEMENT,OPERATES_IN,HeidelbergCement operates in the cement industry,5
+STRATEGIC KNOWLEDGE DOMAINS,KNOWLEDGE MANAGEMENT TOOLS,TARGETED_BY,Strategic knowledge domains are targeted by knowledge management tools,5
+KNOWLEDGE HOSTILITY,NOT-INVENTED-HERE SYNDROME,MANIFESTS_AS,Knowledge hostility manifests as not-invented-here syndrome,5
+CROSS-FUNCTIONAL INTEGRATION,KNOWLEDGE RECOMBINATION,FACILITATES,Cross-functional integration facilitates knowledge recombination across domains,5
+COMMUNICATION CODES,TACIT KNOWLEDGE EXCHANGE,FACILITATES,Community-specific communication codes facilitate tacit knowledge exchange,5
+ENERGY EFFICIENCY,STRATEGIC KNOWLEDGE DOMAINS,EXAMPLE_OF,Energy efficiency is an example of a strategic knowledge domain in HeidelbergCement,5
+NEW CONCRETE APPLICATIONS,STRATEGIC KNOWLEDGE DOMAINS,EXAMPLE_OF,New concrete applications represent a strategic knowledge domain targeted by knowledge tools,5
+LOGISTICS,STRATEGIC KNOWLEDGE DOMAINS,EXAMPLE_OF,Logistics is a strategic knowledge domain where benchmarking identified leading practices,5
+INTERDISCIPLINARY TEAMS,KNOWLEDGE INTEGRATION,CONDUCTS,Interdisciplinary teams conduct knowledge integration across functional domains,5
+RAPID EXPANSION,ACQUISITION INTEGRATION,NECESSITATES,HeidelbergCement's rapid expansion necessitated effective acquisition integration,5
+SUBSIDIARY AUTONOMY,KNOWLEDGE SHARING BEHAVIOR,INFLUENCES,The degree of subsidiary autonomy influences knowledge sharing behavior,4
