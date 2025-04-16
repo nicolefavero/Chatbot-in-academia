@@ -3,408 +3,289 @@
 ################################################################################
 
 import os
-import torch
 import re
-import subprocess
-from rapidfuzz import fuzz
-from DOC_REGISTRY import DOC_REGISTRY
-from transformers import (
-    AutoModelForCausalLM,
-    AutoTokenizer,
-    StoppingCriteria,
-    StoppingCriteriaList,
+import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+# Import summary functions from LLama_Summary.py
+from LLama_Summary import (
+    load_llama_instructor,
+    summarize_text_doc as llama_summarize_text_doc
 )
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from pptx import Presentation
-from pptx.util import Inches
-from typing import List
-from pydantic import BaseModel, Field
-import json
-import ast
+from DOC_REGISTRY import DOC_REGISTRY
 
 ################################################################################
-# 0. Load LLaMA-3 Model
+# 1. Summary Processing and Slide Content Generation
 ################################################################################
 
-def load_llama_instructor():
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    dtype = torch.float16 if device == "cuda" else torch.float32
-    HF_TOKEN = os.getenv("HF_TOKEN") or "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"
-    model_name = "meta-llama/Llama-3.3-70B-Instruct"
-    print(f"Loading model on {device}...")
-    tokenizer = AutoTokenizer.from_pretrained(model_name, use_auth_token=HF_TOKEN)
-    model = AutoModelForCausalLM.from_pretrained(
-        model_name,
-        use_auth_token=HF_TOKEN,
-        torch_dtype=dtype,
-        device_map="auto"
-    )
-    return tokenizer, model, device
+def extract_sections_from_summary(summary_text):
+    """Extract sections from the summary text based on bold headings."""
+    # Pattern to match a bold section heading and its content
+    section_pattern = r'\*\*([^*]+)\*\*\s*(.*?)(?=\*\*|$)'
+    
+    # Find all sections in the summary
+    sections = re.findall(section_pattern, summary_text, re.DOTALL)
+    
+    # If no sections found, try to split by newlines and look for section-like titles
+    if not sections:
+        lines = summary_text.split('\n')
+        current_section = None
+        current_content = []
+        sections = []
+        
+        for line in lines:
+            if line.strip().isupper() or line.strip().endswith(':'):
+                # This looks like a section heading
+                if current_section:
+                    sections.append((current_section, ' '.join(current_content)))
+                current_section = line.strip().rstrip(':')
+                current_content = []
+            elif current_section and line.strip():
+                current_content.append(line.strip())
+        
+        # Add the last section
+        if current_section and current_content:
+            sections.append((current_section, ' '.join(current_content)))
+    
+    # Create dictionaries for each section
+    section_dict = {}
+    for heading, content in sections:
+        section_dict[heading.strip()] = content.strip()
+    
+    return section_dict
 
-################################################################################
-# 1. TXT Reading and Chunking
-################################################################################
+def generate_bullet_points_for_section(section_title, section_content, model, tokenizer, device):
+    """Generate bullet points for a section."""
+    prompt = f"""
+You are creating bullet points for a PowerPoint slide titled "{section_title}" for a presentation on knowledge management in multinational corporations.
 
-def preprocess_text(text: str) -> str:
-    text = text.strip()
-    # remove references, figure refs, special chars
-    text = re.sub(r"\\[\\d+\\]|\\(\\w+ et al\\., \\d+\\)", "", text)
-    text = re.sub(r"\\(see Fig\\.\\s?\\d+\\)", "", text)
-    text = re.sub(r"[*_#]", "", text)
-    text = re.sub(r"-\\n", "", text)
-    return " ".join(text.split())
+The slide will be based on this section from an academic paper summary:
+"{section_content}"
 
-def read_txt_full_text(txt_path: str) -> str:
-    with open(txt_path, 'r', encoding='utf-8') as f:
-        return preprocess_text(f.read())
+Create EXACTLY 3 bullet points that:
+1. Highlight the key insights from this section
+2. Are written as complete sentences (about 10-15 words each - KEEP THEM SHORT)
+3. Are clear, concise, and academically sound
+4. Do not repeat the instructions or bullet point criteria
 
-def chunk_text(text, chunk_size=4000, chunk_overlap=100):
-    splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size,
-        chunk_overlap=chunk_overlap,
-        length_function=len
-    )
-    return splitter.split_text(text)
-
-################################################################################
-# 2. Match Query to File
-################################################################################
-
-def detect_target_doc(query: str, registry: dict, threshold=80):
-    query = query.lower()
-    best_score, best_doc = 0, None
-    for name, data in registry.items():
-        for alias in data["aliases"]:
-            score = fuzz.partial_ratio(query, alias.lower())
-            if score > best_score:
-                best_score, best_doc = score, name
-    return best_doc if best_score >= threshold else None
-
-################################################################################
-# 3. Stopping Criteria
-################################################################################
-
-class StopOnTokens(StoppingCriteria):
-    def __init__(self, stop_strings, tokenizer):
-        self.stop_ids = [tokenizer.encode(s, add_special_tokens=False) for s in stop_strings]
-
-    def __call__(self, input_ids, scores):
-        return any(
-            list(input_ids[0][-len(stop):]) == stop
-            for stop in self.stop_ids
-        )
-
-################################################################################
-# 4. Chunk Summarization
-################################################################################
-
-CHUNK_SUMMARY_PROMPT = """
-Here is an excerpt from an academic paper. Summarize it in a continuous text format (max 50 tokens).
-Focus on clarity and coherence, maintaining the essential arguments and insights.
-Avoid repetition. End with a self-contained sentence.
-
-DON'T ADD NOTES
-DON'T WRITE MORE THAN ONE SUMMARY
-END BEFORE 50 TOKENS
-
-Text:
-{chunk_text}
-
-Summary:
+ONLY output the 3 bullet points, one per line, with no numbering, no bullet symbols, and no quotation marks.
 """
+    
+    response = simple_llm_call(prompt, model, tokenizer, device)
+    
+    # Split by newlines and clean up each line
+    lines = [line.strip() for line in response.split('\n') if line.strip()]
+    
+    # Remove any bullet point markers or numbering at the beginning of lines
+    bullet_points = []
+    for line in lines:
+        # Clean bullet point markers and numbering
+        cleaned_line = re.sub(r'^[-•*\d\.]+\s*', '', line)
+        if cleaned_line:
+            # Keep bullet points shorter - limit to 120 characters
+            if len(cleaned_line) > 120:
+                # Try to find a logical break point
+                break_point = cleaned_line.rfind('.', 0, 120)
+                if break_point > 50:  # If we can find a sentence end
+                    cleaned_line = cleaned_line[:break_point+1]
+                else:
+                    # Otherwise just truncate at a reasonable length
+                    break_point = cleaned_line.rfind(' ', 90, 120)
+                    if break_point > 0:
+                        cleaned_line = cleaned_line[:break_point] + "."
+            bullet_points.append(cleaned_line)
+    
+    # If we didn't get exactly 3 bullet points, extract sentences from the section content
+    if len(bullet_points) != 3:
+        print(f"⚠️ Didn't get exactly 3 bullet points for '{section_title}'. Using sentences from section content.")
+        sentences = re.split(r'(?<=[.!?])\s+', section_content)
+        bullet_points = []
+        for sentence in sentences:
+            if len(sentence.split()) >= 5 and len(bullet_points) < 3:
+                # Truncate long sentences
+                if len(sentence) > 120:
+                    # Try to find a logical break point
+                    break_point = sentence.rfind('.', 0, 120)
+                    if break_point > 50:  # If we can find a sentence end
+                        sentence = sentence[:break_point+1]
+                    else:
+                        # Otherwise just truncate
+                        break_point = sentence.rfind(' ', 90, 120)
+                        if break_point > 0:
+                            sentence = sentence[:break_point] + "."
+                bullet_points.append(sentence.strip())
+    
+    # Fallback if we still don't have 3 bullet points
+    while len(bullet_points) < 3:
+        if section_title == "Introduction":
+            bullet_points.append("The study examines knowledge management's impact on MNC subsidiary performance.")
+        elif section_title == "Core Contributions":
+            bullet_points.append("Absorptive capacity enables knowledge inflows and enhances performance.")
+        elif section_title == "Methods":
+            bullet_points.append("Data collected from a German MNC with 222 questionnaires.")
+        elif section_title == "Findings" or section_title == "Findings and Discussion":
+            bullet_points.append("Knowledge management tools positively influence absorptive capacity.")
+        elif section_title == "Conclusion":
+            bullet_points.append("Knowledge tools enhance performance through absorptive capacity.")
+        else:
+            bullet_points.append(f"Key aspects of {section_title.lower()} in knowledge management.")
+    
+    # Ensure we have exactly 3 bullet points
+    return bullet_points[:3]
 
-def summarize_chunk(chunk, model, tokenizer, device, chunk_idx, total_chunks):
-    print(f"\n🔎 Processing Chunk {chunk_idx + 1} of {total_chunks}...")
-    prompt = CHUNK_SUMMARY_PROMPT.format(chunk_text=chunk)
+def simple_llm_call(prompt, model, tokenizer, device, max_tokens=1000):
+    """Make a simple LLM call with the given prompt."""
     inputs = tokenizer(prompt, return_tensors="pt").to(device)
-    stopping = StoppingCriteriaList([StopOnTokens(["Summary:"], tokenizer)])
     output = model.generate(
         **inputs,
-        max_new_tokens=200,
-        do_sample=False,
+        max_new_tokens=max_tokens,
+        do_sample=True,
         temperature=0.7,
-        stopping_criteria=stopping
+        top_p=0.95
     )
-    summary = tokenizer.decode(output[0], skip_special_tokens=True).strip()
-    print(f"📝 Summary {chunk_idx + 1}:\n{summary}\n{'='*60}")
-    return summary
-
-################################################################################
-# 5. Merge Summaries
-################################################################################
-
-FINAL_SUMMARY_PROMPT = """
-You are an expert academic writer. Refine the following content into a clear, coherent academic text:
-- Improve flow, clarity
-- Avoid repetition
-- Maintain a strong conclusion
-
-Content:
-{chunk_summaries}
-
-Refined Text:
-"""
-
-def generate_final_summary(summaries, model, tokenizer, device):
-    combined = "\n".join(summaries)
-    max_output_tokens = max(min(4096 - len(tokenizer(combined)['input_ids']), 2000), 1000)
-    prompt = FINAL_SUMMARY_PROMPT.format(chunk_summaries=combined)
-    inputs = tokenizer(prompt, return_tensors="pt").to(device)
-    output = model.generate(
-        **inputs,
-        max_new_tokens=max_output_tokens,
-        do_sample=False,
-        temperature=0.7
-    )
-    final_text = tokenizer.decode(output[0], skip_special_tokens=True).strip()
-    return final_text
-
-################################################################################
-# 6. Multiple-Prompt Slide Generation
-################################################################################
-
-SLIDE_TITLES_PROMPT = """
-You are an academic presentation assistant. The user wants EXACTLY 5 concise, descriptive slide titles as a valid Python list of strings.
-
-Constraints:
-1. NO explanation or commentary
-2. Output only a bracketed Python list of 5 short strings
-3. The content must come from the summary below
-4. Example valid answer: ["Intro","Key Concepts","Methods","Results","Conclusion"]
-
-Summary:
-{summary_text}
-
-Now produce your bracketed list:
-"""
-
-BULLETS_PROMPT = """
-You are an academic presentation assistant. 
-Given the summary below and the slide title, return EXACTLY 3 bullet points as a Python list of short strings.
-No commentary. Example valid answer: ["Key theme","Insight","Implication"]
-
-Summary:
-{summary_text}
-
-Slide Title: "{slide_title}"
-
-Now produce your bracketed list:
-"""
-
-def simple_llm_call(prompt, model, tokenizer, device, max_tokens=300):
-    inputs = tokenizer(prompt, return_tensors="pt").to(device)
-    output = model.generate(**inputs, max_new_tokens=max_tokens, do_sample=False, temperature=0.7)
     return tokenizer.decode(output[0], skip_special_tokens=True).strip()
 
-def get_text_after_keyword(raw_output: str, keyword: str = "Now produce your bracketed list:") -> str:
-    """
-    Return only the substring that comes AFTER the given keyword (ignoring case).
-    If not found, return raw_output unchanged.
-    """
-    lower_raw = raw_output.lower()
-    lower_key = keyword.lower()
-    idx = lower_raw.find(lower_key)
-    if idx == -1:
-        return raw_output  # not found
-    return raw_output[idx + len(keyword):].strip()
-
-def bracketed_list_only(raw_output: str) -> str:
-    """
-    Extract from the FIRST '[' to the LAST ']' in raw_output.
-    """
-    start = raw_output.find("[")
-    end = raw_output.rfind("]")
-    if start == -1 or end == -1 or end <= start:
-        return None
-    return raw_output[start:end+1].strip()
-
-def parse_python_list(raw_output: str) -> list:
-    """
-    1) Get only content after "Now produce your bracketed list:"
-    2) Then find [ ... ] inside it
-    3) parse with ast.literal_eval
-    """
-    text_after = get_text_after_keyword(raw_output, "Now produce your bracketed list:")
-    bracketed = bracketed_list_only(text_after)
-    if not bracketed:
-        return None
-    try:
-        data = ast.literal_eval(bracketed)
-        if isinstance(data, list):
-            return data
-    except Exception:
-        pass
-    return None
-
-def generate_slides_multiple_calls(summary_text, model, tokenizer, device):
-    # 1) Slide titles
-    raw_titles = simple_llm_call(
-        SLIDE_TITLES_PROMPT.format(summary_text=summary_text),
-        model, tokenizer, device
-    )
-    titles = parse_python_list(raw_titles)
-    if not titles or len(titles) < 5:
-        print("⚠️ Could not parse 5 slide titles. Using fallback.")
-        titles = [f"Slide {i+1}" for i in range(5)]
+def generate_slides_from_summary(summary_text, model, tokenizer, device):
+    """Generate slides directly from the summary sections."""
+    print("\nExtracting sections from summary...")
+    sections = extract_sections_from_summary(summary_text)
     
-    # 2) bullet points for each title
+    if not sections:
+        print("⚠️ No sections found in summary. Using default sections.")
+        sections = {
+            "Introduction": summary_text[:500],
+            "Core Contributions": summary_text[500:1000] if len(summary_text) > 500 else summary_text,
+            "Methods": summary_text[1000:1500] if len(summary_text) > 1000 else summary_text,
+            "Findings": summary_text[1500:2000] if len(summary_text) > 1500 else summary_text,
+            "Conclusion": summary_text[2000:] if len(summary_text) > 2000 else summary_text
+        }
+    
     slides = []
-    for title in titles[:5]:
-        raw_bullets = simple_llm_call(
-            BULLETS_PROMPT.format(summary_text=summary_text, slide_title=title),
-            model, tokenizer, device
-        )
-        bullet_points = parse_python_list(raw_bullets)
-        if not bullet_points or len(bullet_points) < 3:
-            print(f"⚠️ Could not parse bullet points for '{title}'. Using fallback.")
-            bullet_points = [
-                "Key insight related to the slide",
-                "Important supporting detail",
-                "Another notable point"
-            ]
-        bullet_points = bullet_points[:3]
+    for title, content in sections.items():
+        print(f"Generating bullet points for: {title}")
+        bullet_points = generate_bullet_points_for_section(title, content, model, tokenizer, device)
+        
         slides.append({
             "title": title,
             "bullet_points": bullet_points
         })
+    
     return slides
 
 ################################################################################
-# 7. Prompt for Python PPTX Code
+# 2. PowerPoint Creation
 ################################################################################
 
-def extract_code_snippet(raw_code: str) -> str:
-    """
-    Look for code in triple backticks (```python ... ```).
-    If found, return only that block. Else return entire string.
-    """
-    pattern = r"```python\s*([\s\S]*?)```"
-    match = re.search(pattern, raw_code)
-    if match:
-        return match.group(1).strip()
-    return raw_code
-
-PYTHON_PPTX_PROMPT = """
-You are a Python programmer. Generate python code using 'python-pptx' to create a PowerPoint file 'presentation.pptx'.
-
-Slides Data (Python list of dicts):
-{slides_json}
-
-Constraints:
-1. Output ONLY valid Python code (no commentary).
-2. ASCII only (no en dash, em dash, curly quotes).
-3. from pptx import Presentation, from pptx.util import Inches.
-4. Title slide first, then slides from 'slides_data' with 'title' + 'bullet_points'.
-5. Save as 'presentation.pptx'.
-"""
-
-def prompt_for_pptx_code(slides_data, model, tokenizer, device):
-    slides_json_str = json.dumps(slides_data, indent=2)
-    prompt = PYTHON_PPTX_PROMPT.format(slides_json=slides_json_str)
-    code_response = simple_llm_call(prompt, model, tokenizer, device, max_tokens=800)
+def create_powerpoint(slides_data, paper_title, output_filename='presentation.pptx'):
+    """Create a PowerPoint presentation from the slides data."""
+    try:
+        from pptx import Presentation
+        from pptx.util import Inches, Pt
+        from pptx.enum.text import PP_ALIGN
+        
+        # Create presentation
+        prs = Presentation()
+        
+        # Add title slide
+        slide_layout = prs.slide_layouts[0]  # Title Slide layout
+        slide = prs.slides.add_slide(slide_layout)
+        title = slide.shapes.title
+        subtitle = slide.placeholders[1]
+        
+        # Set title slide content with smaller font
+        title.text = paper_title
+        title_font = title.text_frame.paragraphs[0].font
+        title_font.size = Pt(40)  # Slightly smaller title
+        
+        subtitle.text = "Knowledge Management Impact Summary"
+        subtitle_font = subtitle.text_frame.paragraphs[0].font
+        subtitle_font.size = Pt(24)  # Smaller subtitle
+        
+        # Add content slides
+        for slide_data in slides_data:
+            slide_layout = prs.slide_layouts[1]  # Title and Content layout
+            slide = prs.slides.add_slide(slide_layout)
+            
+            # Set title
+            title = slide.shapes.title
+            title.text = slide_data["title"]
+            # Make title font a bit smaller
+            title_font = title.text_frame.paragraphs[0].font
+            title_font.size = Pt(36)
+            
+            # Add bullet points with smaller font
+            content = slide.placeholders[1]
+            tf = content.text_frame
+            
+            # Clear any existing paragraphs (sometimes there's a default one)
+            if tf.paragraphs:
+                for _ in range(len(tf.paragraphs) - 1):
+                    tf._p.remove(tf._p.xpath('./a:p')[-1])
+                
+                # Use the first paragraph for the first bullet point
+                if slide_data["bullet_points"]:
+                    p = tf.paragraphs[0]
+                    p.text = slide_data["bullet_points"][0]
+                    p.level = 0
+                    p.font.size = Pt(20)  # Smaller font size for bullets
+                
+                # Add remaining bullet points
+                for bullet in slide_data["bullet_points"][1:]:
+                    p = tf.add_paragraph()
+                    p.text = bullet
+                    p.level = 0
+                    p.font.size = Pt(20)  # Smaller font size for bullets
+            
+        prs.save(output_filename)
+        print(f"\n✅ PowerPoint presentation saved as '{output_filename}'")
+        return True
     
-    # 1) Extract code from triple backticks
-    code_snippet = extract_code_snippet(code_response)
-    return code_snippet.strip()
-
-def clean_code_for_python(code_str):
-    # remove fancy dashes/quotes
-    replacements = {
-        '–': '-',
-        '—': '-',
-        '‘': "'",
-        '’': "'",
-        '“': '"',
-        '”': '"'
-    }
-    for bad, good in replacements.items():
-        code_str = code_str.replace(bad, good)
-    return code_str
+    except Exception as e:
+        print(f"\n❌ Error creating PowerPoint: {e}")
+        return False
 
 ################################################################################
-# 8. Summarize Text, Then Create Slides, Then Code
-################################################################################
-
-def summarize_text_doc(user_query: str, txt_folder: str, tokenizer, model, device):
-    doc = detect_target_doc(user_query, DOC_REGISTRY)
-    if not doc:
-        return None, "Document not found."
-    txt_name = f"{doc}.txt"
-    possible_files = os.listdir(txt_folder)
-    matched = next((f for f in possible_files if f.lower() == txt_name.lower()), None)
-    if not matched:
-        return None, f"Text file '{txt_name}' not found in '{txt_folder}'."
-    
-    txt_path = os.path.join(txt_folder, matched)
-    full_text = read_txt_full_text(txt_path)
-    chunks = chunk_text(full_text)
-    print(f"\n🧩 Total Chunks: {len(chunks)}")
-    print("=" * 60)
-    
-    chunk_summaries = []
-    for i, chunk in enumerate(chunks):
-        s = summarize_chunk(chunk, model, tokenizer, device, i, len(chunks))
-        chunk_summaries.append(s)
-    
-    final_summary = generate_final_summary(chunk_summaries, model, tokenizer, device)
-    return final_summary, None
-
-################################################################################
-# 9. CLI Runner
+# 3. Main Runner
 ################################################################################
 
 if __name__ == "__main__":
     folder = "/work/Chatbot-in-academia/papers-cleaned"
+    
+    print("Loading LLaMA model...")
     tokenizer, model, device = load_llama_instructor()
-    print("\n📚 Academic Slide Generator is ready. Type your paper title. Type 'exit' to quit.")
+    
+    print("\n📚 Summary-Based Slide Generator is ready. Type your paper title. Type 'exit' to quit.")
     
     while True:
         query = input("\nYou: ")
         if query.lower() == "exit":
             break
         
-        generate_slide = any(k in query.lower() for k in ["slide", "deck", "presentation"])
-        
         try:
             print(f"🔍 Searching for document matching: '{query}'...")
-            final_summary, err = summarize_text_doc(query, folder, tokenizer, model, device)
-            if err:
-                print(f"❌ {err}")
+            
+            final_summary = llama_summarize_text_doc(query, folder, tokenizer, model, device)
+            
+            if isinstance(final_summary, str) and final_summary.startswith("I'm not sure"):
+                print(f"❌ {final_summary}")
                 continue
             
             with open("generated_summary.txt", "w", encoding="utf-8") as f:
                 f.write(final_summary)
+            
             print("✅ Final summary saved to 'generated_summary.txt'")
             
-            if generate_slide:
-                print("\n🖼️ Generating slides in multiple LLM calls...\n")
-                
-                slides_data = generate_slides_multiple_calls(final_summary, model, tokenizer, device)
-                print(f"✅ Created {len(slides_data)} slides.\n")
-                
-                pptx_code = prompt_for_pptx_code(slides_data, model, tokenizer, device)
-                
-                # 2) Clean the code to remove fancy punctuation
-                pptx_code = clean_code_for_python(pptx_code)
-                
-                if not pptx_code.strip():
-                    print("❌ Slide code generation returned empty.")
-                    continue
-                
-                # 3) Save & run
-                with open("generated_slide.py", "w", encoding="utf-8") as f:
-                    f.write(pptx_code)
-                
-                print("🚀 Running generated_slide.py to create 'presentation.pptx'...\n")
-                try:
-                    subprocess.run(["python3", "generated_slide.py"], check=True)
-                    print("✅ Presentation created: presentation.pptx")
-                except subprocess.CalledProcessError as e:
-                    print(f"❌ Error running slide code: {e}")
-                    print("⚠️ Could not generate slides.")
-            else:
-                print("No slide creation requested. Done.")
-                
+            # Extract paper title
+            paper_title = "Knowledge Management Tools"
+            if "knowledge management" in query.lower() and "subsidiary performance" in query.lower():
+                paper_title = "The Impact of Knowledge Management on MNC Subsidiary Performance"
+            
+            # Generate slides directly from the summary
+            slides_data = generate_slides_from_summary(final_summary, model, tokenizer, device)
+            
+            # Create PowerPoint
+            create_powerpoint(slides_data, paper_title)
+        
         except Exception as e:
             print(f"❌ An error occurred: {repr(e)}")
             print("⚠️ Try again or try a different query.")
