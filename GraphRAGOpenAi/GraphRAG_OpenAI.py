@@ -190,7 +190,7 @@ def synthesize_answers(question, answers):
         question: The question to be answered.
         answers: List of tuples containing score and answer text.
     Returns: 
-        response: syntethized answers put together.'''
+        response: synthesized answers put together.'''
     partials = "\n\n".join([f"[Score: {score}]\n{ans}" for score, ans in answers])
     prompt = f"""
 You are an academic assistant. Combine the following partial answers into a unified response.
@@ -257,7 +257,7 @@ def launch_ui():
         fn=answer_question,
         inputs=gr.Textbox(label="Ask a research question"),
         outputs=gr.Textbox(label="Answer with synthesis and citations"),
-        title="GraphRAG Chatbot with GPT-4o-mini (Hierarchical + Synthesized + Cited)"
+        title="GraphRAG Chatbot with GPT-4o-mini"
     ).launch()
 
 # -------------------------------

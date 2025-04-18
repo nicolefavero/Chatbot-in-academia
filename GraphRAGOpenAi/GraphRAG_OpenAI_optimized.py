@@ -1,3 +1,7 @@
+##################################################################
+# OPTIMIZED IMPLEMENTATION OF GRAPH RAG ON OPENAI'S GPT-4o-MINI 
+##################################################################
+
 import os
 import pickle
 import re
@@ -22,8 +26,8 @@ def debug(msg):
 
 client = OpenAI(api_key="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")
 
-ENTITIES_CSV = "GraphRAGOpenAi/entities.csv"
-RELATIONSHIPS_CSV = "GraphRAGOpenAi/relationships.csv"
+ENTITIES_CSV = "GraphRAGOpenAI/entities.csv"
+RELATIONSHIPS_CSV = "GraphRAGOpenAI/relationships.csv"
 GRAPH_PKL = "knowledge_graph.pkl"
 HIERARCHICAL_SUMMARIES_PKL = "community_summaries.pkl"
 PDF_PATHS = ["papers-cleaned/6495.txt"]
@@ -34,6 +38,13 @@ sent_transformer = SentenceTransformer("all-MiniLM-L6-v2")
 # PDF Processing
 # -------------------------------
 def process_pdf_chunks(pdf_path, metadata_pages=2):
+    '''
+    Process PDF files into chunks of text for further analysis.
+    Args: 
+        pdf_path: Path to the PDF file.
+        metadata_pages: Number of pages to skip for metadata.
+    Returns:
+        list: List of text chunks.'''
     doc = fitz.open(pdf_path)
     pages = doc.page_count
     text = []
@@ -49,12 +60,19 @@ def process_pdf_chunks(pdf_path, metadata_pages=2):
 # Graph Construction
 # -------------------------------
 def create_graph_from_manual_data(entities_df, relationships_df):
+    '''
+    Create a graph from entities and relationships.
+    Args:
+        entities_df: DataFrame containing entity information.
+        relationships_df: DataFrame containing relationship information.
+    Returns:
+        G: NetworkX graph object.'''
     G = nx.Graph()
     for _, row in entities_df.iterrows():
         G.add_node(
             row["name"],
             description=row["description"],
-            type=row.get("type", "CONCEPT"),
+            type=row.get("type", "CONCEPT"), # defaulting to concept is the type is missing
             doc_idx=row.get("doc_idx", 0),
             chunk_idx=row.get("chunk_idx", 0)
         )
@@ -75,11 +93,18 @@ def create_graph_from_manual_data(entities_df, relationships_df):
 # Hierarchical Community Detection
 # -------------------------------
 def detect_hierarchical_communities(G, levels=2):
+    '''
+    Detect hierarchical communities in the graph.
+    Args:
+        G: NetworkX graph object.
+        levels: Number of hierarchical levels to detect.
+    Returns:
+        partitions: Community memberships at different levels.'''
     nodes = list(G.nodes())
     node_idx = {n: i for i, n in enumerate(nodes)}
-    edges = [(node_idx[u], node_idx[v]) for u, v in G.edges()]
+    edges = [(node_idx[u], node_idx[v]) for u, v in G.edges()] # coversion of edges from name to numeric index
     g = ig.Graph(n=len(nodes), edges=edges)
-    g.vs["name"] = nodes
+    g.vs["name"] = nodes # assign original names back to the nodes
 
     partitions = {}
     resolutions = [0.5, 1.0][:levels]
@@ -95,6 +120,14 @@ def detect_hierarchical_communities(G, levels=2):
 # Summarization using GPT-4o mini
 # -------------------------------
 def summarize_community_gpt(community_nodes, G, chunks):
+    '''
+    Summarize the community using GPT-4o mini.
+    Args:
+        community_nodes: List of nodes in the community.
+        G: NetworkX graph object.
+        chunks: List of text chunks.
+    Returns:
+        response: Summarized text.'''
     parts = []
     for node in community_nodes:
         parts.append(f"ENTITY: {node}\nTYPE: {G.nodes[node].get('type')}\nDESCRIPTION: {G.nodes[node].get('description')}\n")
@@ -105,11 +138,11 @@ def summarize_community_gpt(community_nodes, G, chunks):
     for node in community_nodes:
         d_idx = G.nodes[node].get("doc_idx", 0)
         c_idx = G.nodes[node].get("chunk_idx", 0)
-        if d_idx < len(chunks) and c_idx < len(chunks[d_idx]):
-            seen.add((d_idx, c_idx, chunks[d_idx][c_idx]))
+        if d_idx < len(chunks) and c_idx < len(chunks[d_idx]): # check lenght of document and chunk 
+            seen.add((d_idx, c_idx, chunks[d_idx][c_idx])) # store in tuple the document index, the chunk index and the actual text chunk
 
     for d_idx, c_idx, txt in list(seen)[:2]:
-        parts.append(f"SOURCE TEXT [doc {d_idx}, chunk {c_idx}]: {txt}\n")
+        parts.append(f"SOURCE TEXT [doc {d_idx}, chunk {c_idx}]: {txt}\n") # adding 2 examples to ground the summary
 
     prompt = f"""
 You are an academic research assistant. Based on the following information, summarize the main research themes and how they relate:
@@ -132,17 +165,31 @@ SUMMARY:
 # Chunk Retrieval & Answering
 # -------------------------------
 def find_relevant_chunks(question, entities, chunks):
+    '''Retrieval of the most relevant chunks based on the question and entities.
+    Args:
+        question: The question to be answered.
+        entities: List of entities to consider.
+        chunks: List of text chunks.
+    Returns: 
+        results: List of tuples containing similarity score and chunk text.'''
     results = []
     q_vec = sent_transformer.encode(question)
     for d_idx, doc_chunks in enumerate(chunks):
         for c_idx, ch in enumerate(doc_chunks):
-            if any(ent.lower() in ch.lower() for ent in entities):
+            if any(ent.lower() in ch.lower() for ent in entities): # check match between entities and chunks without case sensitivity
                 c_vec = sent_transformer.encode(ch)
-                sim = cosine_similarity([q_vec], [c_vec])[0][0]
+                sim = cosine_similarity([q_vec], [c_vec])[0][0] # cosine similarity between question vector and chunk vector
                 results.append((sim, f"[Source: doc {d_idx}, chunk {c_idx}]", ch))
     return sorted(results, reverse=True)[:4]
 
 def synthesize_answers_with_quotes_and_summary(question, quotes, summaries):
+    '''Synthesize the final answer using quotes and summaries.
+    Args:
+        question: The question to be answered. 
+        quotes: The quotes retrieved from the chunks.
+        summaries: The summaries of the communities.
+    Returns:
+        response: The synthesized answer.'''
     quote_text = "\n\n".join([f"{src}\nQUOTE: \"{chunk.strip()}\"\nScore: {score}" for score, src, chunk in quotes])
     summary_text = "\n\n".join(summaries)
 
@@ -176,12 +223,17 @@ FINAL ANSWER:
     return response.choices[0].message.content.strip()
 
 def answer_question(question):
+    '''Full question-answer loop. 
+    Args: 
+        question: The question posed by the user. 
+    Returns: 
+        response: The synthesized answer.'''
     scored_answers = []
     query_vec = sent_transformer.encode(question)
     group_scores = []
     for group, nodes in GLOBAL_COMMUNITIES.items():
         summary = GLOBAL_SUMMARIES[group]
-        summ_vec = sent_transformer.encode(summary)
+        summ_vec = sent_transformer.encode(summary) # summary embedded in vector space
         sim = cosine_similarity([query_vec], [summ_vec])[0][0]
         group_scores.append((sim, group, nodes, summary))
 
@@ -201,6 +253,7 @@ def answer_question(question):
 # Gradio UI
 # -------------------------------
 def launch_ui():
+    '''Launch the Gradio UI for the chatbot.'''
     gr.Interface(
         fn=answer_question,
         inputs=gr.Textbox(label="Ask a research question"),
