@@ -1,5 +1,5 @@
 ############################################################################################################
-#  CHATBOT WITH Llama 3.3 70B FOR QUESTION ANSWERING & MANUAL ENTITIES  #
+#  CHATBOT WITH Llama 3.3 70B FOR QUESTION ANSWERING & MANUAL ENTITIES AND RELATIONSHIPS
 ############################################################################################################
 
 import os
@@ -20,7 +20,6 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
 
-# Debug flag
 DEBUG = True
 
 def debug(msg):
@@ -34,9 +33,9 @@ GRAPH_PKL = "/work/Chatbot-in-academia/llama_chatbot/GraphRAGbot_piloted/knowled
 HIERARCHICAL_SUMMARIES_PKL = "/work/Chatbot-in-academia/llama_chatbot/GraphRAGbot_piloted/hierarchical_community_summaries.pkl"
 
 
-################################################################################
+# ------------------------------------------------------------
 # 1. Load Models
-################################################################################
+# ------------------------------------------------------------
 
 def load_summarization_model():
     debug("Loading summarization model...")
@@ -50,12 +49,11 @@ def load_summarization_model():
     return summ_tokenizer, summ_model
 
 
-################################################################################
+# ------------------------------------------------------------
 # 2. PDF Processing & Text Chunking
-################################################################################
+# ------------------------------------------------------------
 
 def process_pdf_for_rag(pdf_path, metadata_pages=2):
-    """Process a PDF file to extract text chunks."""
     debug(f"Processing PDF: {pdf_path}")
     doc = fitz.Document(pdf_path)
     pages = doc.page_count
@@ -90,7 +88,6 @@ def process_pdf_for_rag(pdf_path, metadata_pages=2):
         raw_text = page.get_text("text").strip()
         main_text.append(raw_text)
 
-    # Split text into chunks using LangChain
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1200,
         chunk_overlap=100,
@@ -100,7 +97,6 @@ def process_pdf_for_rag(pdf_path, metadata_pages=2):
     meta_chunks = text_splitter.create_documents([full_metadata]) if full_metadata.strip() else []
     main_chunks = text_splitter.create_documents(["\n".join(main_text)]) if main_text else []
 
-    # Convert each Document to just the text
     meta_chunks_text = [doc.page_content for doc in meta_chunks]
     main_chunks_text = [doc.page_content for doc in main_chunks]
 
@@ -110,7 +106,6 @@ def process_pdf_for_rag(pdf_path, metadata_pages=2):
 
 
 def process_all_pdfs(pdf_paths_with_idx):
-    """Process multiple PDFs and return a list-of-lists of chunks."""
     all_chunks = []
     doc_citations = []
     for (doc_idx, pdf_path) in pdf_paths_with_idx:
@@ -121,22 +116,23 @@ def process_all_pdfs(pdf_paths_with_idx):
     return all_chunks, doc_citations
 
 
-################################################################################
+# ------------------------------------------------------------
 # 3. Manual Knowledge Graph Creation
-################################################################################
+# ------------------------------------------------------------
 
 def create_knowledge_graph_from_manual_data(entities_data, relationships_data):
     """
     Create a knowledge graph from manually provided entities and relationships.
-    
-    entities_data: List of dicts with keys 'name','type','description','doc_idx','chunk_idx'
-    relationships_data: List of dicts with keys 'source','target','description','strength','doc_idx','chunk_idx'
+    Args: 
+        entities_data: List of dictionaries with entity information.
+        relationships_data: List of dictionaries with relationship information.
+    Returns:
+        G: A NetworkX graph object representing the knowledge graph.
     """
     debug("Creating knowledge graph from manual data")
 
     G = nx.Graph()
 
-    # Add nodes from entities
     for entity in entities_data:
         G.add_node(
             entity['name'],
@@ -146,7 +142,6 @@ def create_knowledge_graph_from_manual_data(entities_data, relationships_data):
             chunk_idx=entity.get('chunk_idx', 0)
         )
 
-    # Add edges from relationships
     for rel in relationships_data:
         source = rel['source']
         target = rel['target']
@@ -167,12 +162,19 @@ def create_knowledge_graph_from_manual_data(entities_data, relationships_data):
     return G
 
 
-################################################################################
+# ------------------------------------------------------------
 # 4. Community Detection and Summarization
-################################################################################
+# ------------------------------------------------------------
 
 def detect_hierarchical_communities(G, max_levels=2):
-    """Use Leiden to detect communities at multiple levels."""
+    """Use Leiden to detect communities at multiple levels.
+    Args:
+        G: A NetworkX graph object.
+        max_levels: Maximum number of hierarchical levels to detect.
+    Returns:
+        hierarchical_partitions: A dictionary mapping each level to its community partition.
+        community_hierarchy: A dictionary mapping child communities to their parent communities.
+    """
     debug("Detecting hierarchical communities via Leiden algorithm")
 
     edges = list(G.edges())
@@ -206,7 +208,7 @@ def detect_hierarchical_communities(G, max_levels=2):
         level0_dict[nodes[idx]] = cluster_id
     hierarchical_partitions[0] = level0_dict
 
-    # Additional levels
+    # Other levels
     resolutions = [1.0, 2.0]
     for level, resolution in enumerate(resolutions[:max_levels-1], 1):
         partition = leidenalg.find_partition(
@@ -227,7 +229,7 @@ def detect_hierarchical_communities(G, max_levels=2):
 
         hierarchical_partitions[level] = level_dict
 
-    # Build parent-child relationships
+    # parent-child relationships
     community_hierarchy = {}
     for lvl in range(1, len(hierarchical_partitions)):
         parent_level = lvl - 1
@@ -244,12 +246,28 @@ def detect_hierarchical_communities(G, max_levels=2):
 
 
 def get_community_nodes(partition, community_id):
-    """Return all nodes that belong to a given community_id in a partition dictionary."""
+    """Return all nodes that belong to a given community_id in a partition dictionary.
+    Args:
+        partition: A dictionary mapping nodes to community IDs.
+        community_id: The ID of the community to retrieve nodes for.
+    Returns:
+        A list of nodes that belong to the specified community.
+    """
     return [node for node, comm_id in partition.items() if comm_id == community_id]
 
 
 def summarize_community(G, community_nodes, all_chunks, summ_tokenizer, summ_model, max_tokens=1800):
-    """Generate a summary for a single community of nodes."""
+    """Generate a summary for a single community of nodes.
+    Args:
+        G: A NetworkX graph object.
+        community_nodes: A list of nodes in the community to summarize.
+        all_chunks: A list of all text chunks from the documents.
+        summ_tokenizer: The tokenizer for the summarization model.
+        summ_model: The summarization model.
+        max_tokens: Maximum number of tokens for the summary.
+    Returns:
+        A string containing the generated summary.
+    """
     debug(f"Summarizing community of {len(community_nodes)} nodes")
     if not community_nodes:
         return "No nodes in this community."
@@ -268,7 +286,7 @@ def summarize_community(G, community_nodes, all_chunks, summ_tokenizer, summ_mod
         edge_desc = G[u][v].get("description", f"Relationship between {u} and {v}.")
         community_info.append(f"RELATIONSHIP: {u} → {v}\nDESCRIPTION: {edge_desc}\n")
 
-    # Possibly attach source text for these nodes (doc_idx/chunk_idx)
+    # attach source text 
     relevant_chunks = set()
     for node in community_nodes:
         d_idx = G.nodes[node].get("doc_idx", 0)
@@ -314,12 +332,21 @@ SUMMARY:
 
 def summarize_hierarchical_communities(G, hierarchical_partitions, community_hierarchy, all_chunks,
                                        summ_tokenizer, summ_model):
-    """Build summaries for hierarchical communities at different levels."""
+    """Build summaries for hierarchical communities at different levels.
+    Args:
+        G: A NetworkX graph object.
+        hierarchical_partitions: A dictionary mapping levels to community partitions.
+        community_hierarchy: A dictionary mapping child communities to parent communities.
+        all_chunks: A list of all text chunks from the documents.
+        summ_tokenizer: The tokenizer for the summarization model.
+        summ_model: The summarization model.
+    Returns:
+        A dictionary mapping each level to its community summaries.
+    """
     debug("Building hierarchical community summaries")
     leaf_level = max(hierarchical_partitions.keys())
     level_summaries = {}
 
-    # Summarize leaf-level communities first
     leaf_partitions = hierarchical_partitions[leaf_level]
     unique_leaf_comms = set(leaf_partitions.values())
     debug(f"Summarizing {len(unique_leaf_comms)} leaf communities at level {leaf_level}")
@@ -331,7 +358,6 @@ def summarize_hierarchical_communities(G, hierarchical_partitions, community_hie
         leaf_summ[comm_id] = summary
     level_summaries[leaf_level] = leaf_summ
 
-    # Build up to higher levels
     for lvl in range(leaf_level - 1, -1, -1):
         debug(f"Summarizing communities at level {lvl}")
         partitions = hierarchical_partitions[lvl]
@@ -348,7 +374,6 @@ def summarize_hierarchical_communities(G, hierarchical_partitions, community_hie
             if child_comms:
                 child_texts = []
                 for c_id in child_comms:
-                    # Next level is lvl+1
                     if c_id in level_summaries[lvl+1]:
                         child_summary = level_summaries[lvl+1][c_id]
                         child_texts.append(f"SUBCOMMUNITY SUMMARY: {child_summary}")
@@ -391,12 +416,21 @@ INTEGRATED SUMMARY:
     return level_summaries
 
 
-################################################################################
+# ------------------------------------------------------------
 # 5. Query Processing
-################################################################################
+# ------------------------------------------------------------
 
 def generate_answer_from_community_summary(question, community_summary, summ_tokenizer, summ_model):
-    """Generate a partial answer + helpfulness score from a single community summary."""
+    """Generate a partial answer + helpfulness score from a single community summary.
+    Args: 
+        question: Question posed by the user.
+        community_summary: Summary of the community.
+        summ_tokenizer: The tokenizer for the summarization model.
+        summ_model: The summarization model.
+    Returns:
+        answer: The generated answer based on the community summary.
+        score: A helpfulness score from 0-100.
+    """
     debug(f"Generating partial answer from community summary for question: {question}")
     prompt = f"""
 You are a specialized academic research assistant. Extract information from the community summary
@@ -451,21 +485,26 @@ HELPFULNESS SCORE (0-100):
 
 
 def combine_answers(question, scored_answers, summ_tokenizer, summ_model):
-    """Combine multiple partial answers into a final coherent response, prioritizing by helpfulness score."""
+    """Combine multiple partial answers into a final coherent response, prioritizing by helpfulness score.
+    Args: 
+        question: The original user question.
+        scored_answers: A list of tuples (answer, score) from different community summaries.
+        summ_tokenizer: The tokenizer for the summarization model.
+        summ_model: The summarization model.
+    Returns:
+        final_response: A final comprehensive answer based on the combined partial answers.
+    """
     debug("Combining partial answers by helpfulness score")
     if not scored_answers:
         return "No relevant information found."
 
-    # Sort by descending score
     sorted_answers = sorted(scored_answers, key=lambda x: x[1], reverse=True)
-    # Filter out zeros
     filtered_answers = [(ans, scr) for ans, scr in sorted_answers if scr > 0]
     if not filtered_answers:
         return "No relevant information found in the dataset for this question."
 
-    # Combine top 5
     selected_answers = []
-    for ans, scr in filtered_answers[:5]:
+    for ans, scr in filtered_answers[:5]: # combine top 5
         selected_answers.append(f"[Score: {scr}/100] {ans}")
 
     combined_text = "\n\n".join(selected_answers)
@@ -497,22 +536,26 @@ FINAL COMPREHENSIVE ANSWER:
     return final_response
 
 
-################################################################################
+# ------------------------------------------------------------
 # 6. Chunk-Level Entity Retrieval
-################################################################################
+# ------------------------------------------------------------
 
 def find_chunks_for_entities(query, community_nodes, all_chunks, sent_transformer, top_k=5):
     """
-    Perform chunk-level entity-based retrieval:
-    1) For each chunk in all_chunks, check if it mentions any of the given community_nodes.
-    2) Combine entity mention count with a query-chunk similarity to produce a final ranking.
-    3) Return top_k chunk texts.
+    Perform chunk-level entity-based retrieval.
+    Args: 
+        query: The user query.
+        community_nodes: A list of nodes in the community.
+        all_chunks: A list of all text chunks from the documents.
+        sent_transformer: The sentence transformer model for encoding.
+        top_k: The number of top chunks to return.
+    Returns:
+        best: A list of the top K relevant chunks based on entity mentions and query similarity.
     """
     debug(f"Searching chunks for entity references + query similarity. Entities: {community_nodes}")
     entity_names = [n.lower() for n in community_nodes if n]  # Lowercase for matching
 
     candidate_chunks = []
-    # Flatten all_chunks => each element all_chunks[i] is the list of chunk strings for doc i
     for doc_idx, doc_chunks in enumerate(all_chunks):
         for c_idx, chunk_text in enumerate(doc_chunks):
             chunk_lower = chunk_text.lower()
@@ -530,36 +573,42 @@ def find_chunks_for_entities(query, community_nodes, all_chunks, sent_transforme
                 final_score = 0.3 * mention_count + 0.7 * sim_score
                 candidate_chunks.append((chunk_text, final_score))
 
-    # Sort descending by final_score
     candidate_chunks.sort(key=lambda x: x[1], reverse=True)
     best = [c[0] for c in candidate_chunks[:top_k]]
     debug(f"Selected {len(best)} relevant chunks from entity-based scanning.")
     return best
 
 
-################################################################################
+# ------------------------------------------------------------
 # 7. Enhanced Query Processing
-################################################################################
+# ------------------------------------------------------------
 
 def process_query_enhanced(question, G, hierarchical_partitions, level_summaries, all_chunks,
                            sent_transformer, summ_tokenizer, summ_model):
     """
-    Enhanced query processing that:
-    1) Picks the best community level
-    2) Finds top relevant communities
-    3) Collects their nodes => does chunk-level entity-based retrieval
-    4) Combines the top chunks with the community summaries => final answer
+    Enhanced query processing by picking the best community level,
+    finding top relevant communities, and collecting their nodes, to then comibe the top chunks with the summaries
+    and generate the final answer.
+    Args:
+        question: The user query.
+        G: The knowledge graph.
+        hierarchical_partitions: The hierarchical community partitions.
+        level_summaries: The community summaries at different levels.
+        all_chunks: The text chunks from the documents.
+        sent_transformer: The sentence transformer model for encoding.
+        summ_tokenizer: The tokenizer for the summarization model.
+        summ_model: The summarization model.
+    Returns:
+        final_answer: The final answer generated based on the query and community information.
     """
     debug(f"Processing query with chunk-level entity retrieval: {question}")
     q_lower = question.lower()
 
-    # 1. Determine community level
     general_patterns = ["main topics", "overview", "summary", "what is the data about",
                         "high level", "general themes", "main findings"]
     specific_patterns = ["specific", "detail", "exactly", "precisely", "tell me more about",
                          "what is the relationship between", "how does"]
 
-    # If it matches a "general" question
     if any(p in q_lower for p in general_patterns):
         best_level = 0
     elif any(p in q_lower for p in specific_patterns):
@@ -572,12 +621,10 @@ def process_query_enhanced(question, G, hierarchical_partitions, level_summaries
 
     debug(f"Selected community level {best_level} for query")
 
-    # 2. Check for special queries about the knowledge graph
     if "how many" in q_lower and ("entities" in q_lower or "nodes" in q_lower or "concepts" in q_lower):
         return f"The knowledge graph contains {G.number_of_nodes()} entities and {G.number_of_edges()} edges."
 
     if "what are the main" in q_lower and ("entities" in q_lower or "concepts" in q_lower):
-        # Return top 10 by centrality
         c_map = nx.degree_centrality(G)
         top_ents = sorted(c_map.items(), key=lambda x: x[1], reverse=True)[:10]
         response = "The main entities in the knowledge graph are:\n\n"
@@ -586,12 +633,10 @@ def process_query_enhanced(question, G, hierarchical_partitions, level_summaries
             response += f"{i}. {ent} (Type: {e_type})\n"
         return response
 
-    # 3. Gather the relevant communities
     community_summaries = level_summaries.get(best_level, {})
     if not community_summaries:
         return "No community summaries available at that level."
 
-    # Score each community by query similarity
     query_vec = sent_transformer.encode(question)
     comm_scores = []
     for comm_id, summary in community_summaries.items():
@@ -611,18 +656,14 @@ def process_query_enhanced(question, G, hierarchical_partitions, level_summaries
     if not top_communities:
         return "I couldn't find specific information to answer that question in the dataset."
 
-    # 4. For each of these communities, gather their nodes
     partitions = hierarchical_partitions[best_level]
     all_community_nodes = []
     for comm_id in top_communities:
         comm_nodes = get_community_nodes(partitions, comm_id)
         all_community_nodes.extend(comm_nodes)
 
-    # 5. Do chunk-level entity-based retrieval
     relevant_chunks = find_chunks_for_entities(question, all_community_nodes, all_chunks, sent_transformer, top_k=5)
 
-    # 6. Create final answer from top communities + chunk references
-    #    First, generate partial answers from each community summary
     scored_answers = []
     for comm_id, summary_text in top_communities.items():
         ans, s = generate_answer_from_community_summary(question, summary_text, summ_tokenizer, summ_model)
@@ -630,18 +671,12 @@ def process_query_enhanced(question, G, hierarchical_partitions, level_summaries
             scored_answers.append((ans, s))
 
     final_answer = combine_answers(question, scored_answers, summ_tokenizer, summ_model)
-    # Then use "generate_enhanced_answer" if you want to incorporate the chunk text explicitly.
-    # But your code can remain simpler if you just want the final answer from combine_answers.
-
-    # If you want to incorporate the chunk text directly, do it here:
-    # final_answer = generate_enhanced_answer(question, list(top_communities.values()), relevant_chunks, summ_tokenizer, summ_model)
-
     return final_answer
 
 
-################################################################################
+# ------------------------------------------------------------
 # Main
-################################################################################
+# ------------------------------------------------------------
 
 def main():
     debug("Starting GraphRAG chatbot with chunk-based entity retrieval...")
@@ -651,12 +686,10 @@ def main():
     summ_tokenizer, summ_model = load_summarization_model()
     sent_transformer = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
-    # 2. Process PDFs => chunk them
-    pdf_paths = ["/work/Chatbot-in-academia/papers-testing/6495.pdf"]
+    pdf_paths = ["/work/Chatbot-in-academia/papers-testing/7294.pdf"]
     pdf_paths_with_idx = [(i, path) for i, path in enumerate(pdf_paths)]
     all_chunks, doc_citations = process_all_pdfs(pdf_paths_with_idx)
 
-    # 3. Load Entities & Relationships
     debug(f"Loading entities from {ENTITIES_CSV}")
     try:
         entities_df = pd.read_csv(ENTITIES_CSV)
@@ -701,14 +734,12 @@ def main():
         print(f"Error: Could not load relationships from {RELATIONSHIPS_CSV}. Check format.")
         return
 
-    # 4. Build knowledge graph
     G = create_knowledge_graph_from_manual_data(entities_data, relationships_data)
     if GRAPH_PKL:
         with open(GRAPH_PKL, "wb") as f:
             pickle.dump(G, f)
         debug(f"Knowledge graph saved to {GRAPH_PKL}")
 
-    # 5. Detect communities and Summarize
     debug("Detecting hierarchical communities...")
     hierarchical_partitions, community_hierarchy = detect_hierarchical_communities(G, max_levels=2)
     for lvl, partition in hierarchical_partitions.items():
@@ -729,7 +760,7 @@ def main():
                 pickle.dump(level_summaries, f)
             debug(f"Saved hierarchical summaries to {HIERARCHICAL_SUMMARIES_PKL}")
 
-    # 6. Interactive Chat
+    # Interactive loop
     print("\nGraphRAG Chatbot (chunk-based entity retrieval) ready! Type 'exit' to quit.")
     while True:
         query = input("\nUser: ")
