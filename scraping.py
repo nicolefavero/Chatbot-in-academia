@@ -1,3 +1,7 @@
+################################################################################
+#  Scraping for PDF Documents from CBS Archive
+################################################################################
+
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
@@ -17,10 +21,20 @@ BASE_URL = "https://research.cbs.dk/en/publications/?publicationYear={}&nofollow
 
 # Function to sanitize file names for saving
 def sanitize_filename(filename):
+    '''Sanitize the filename by removing invalid characters.
+    Args: 
+        filename (str): The original filename.
+    Returns:
+        str: The sanitized filename.
+    '''
     return re.sub(r'[<>:"/\\|?*]', '', filename)
 
 # Function to initialize Selenium WebDriver with Chrome
 def init_driver():
+    '''Initialize the Selenium WebDriver with Chrome options.
+    Returns:
+        driver: The initialized Chrome WebDriver.
+    '''
     options = Options()
     options.add_argument("--headless")  # Run in headless mode to avoid opening browser
     options.add_argument("--no-sandbox")
@@ -33,6 +47,12 @@ def init_driver():
 
 # Function to get publication links for a specific year using Selenium
 def get_publication_links_for_year(year):
+    '''Get publication links for a specific year.
+    Args:
+        year: The year to scrape.
+    Returns:
+        list: A list of publication links for the specified year.
+    '''
     driver = init_driver()
     url = BASE_URL.format(year)
 
@@ -61,6 +81,11 @@ def get_publication_links_for_year(year):
 
 # Function to download PDFs from publication links and store them by year
 def download_full_text_pdfs(publication_links, year):
+    '''Download full-text PDFs from publication links.
+    Args:
+        publication_links: List of publication links.
+        year: The year of the publications. 
+    '''
     year_folder = f"cbs_publications_pdfs/{year}"
     os.makedirs(year_folder, exist_ok=True)
 
@@ -114,6 +139,13 @@ def download_full_text_pdfs(publication_links, year):
 
 # Function to save PDF files in year-based subfolders with improved handling
 def save_pdf(pdf_url, publication_url, year, driver):
+    '''Save the PDF file to a specified path.
+    Args:
+        pdf_url: The URL of the PDF file.
+        publication_url: The URL of the publication page.
+        year: The year of the publication.
+        driver: The Selenium WebDriver instance.
+    '''
     sanitized_name = sanitize_filename(publication_url.split("/")[-1]) + ".pdf"
     pdf_path = os.path.join(f"cbs_publications_pdfs/{year}", sanitized_name)
 
@@ -133,6 +165,11 @@ def save_pdf(pdf_url, publication_url, year, driver):
 
 # Function to save publication links as a text file
 def save_publication_links_to_txt(publication_links, year):
+    '''Save publication links to a text file.
+    Args:
+        publication_links: List of publication links.
+        year: The year of the publications.
+    '''
     with open(f"publication_links_{year}.txt", "w", encoding="utf-8") as file:
         for link in publication_links:
             file.write(link + "\n")
@@ -140,6 +177,11 @@ def save_publication_links_to_txt(publication_links, year):
 
 # Function to save publication links and titles to a CSV file
 def save_to_csv(publication_links, year):
+    '''Save publication links and titles to a CSV file.
+    Args:
+        publication_links: List of publication links.
+        year: The year of the publications.
+    '''
     with open(f"publications_{year}.csv", "w", newline="", encoding="utf-8") as csvfile:
         csvwriter = csv.writer(csvfile)
         csvwriter.writerow(["Title", "URL"])
