@@ -59,7 +59,7 @@ def generate_summary_response(message, chat_history):
             return response.choices[0].message.content
 
         except Exception as e:
-            return f"⚠️ Error generating podcast: {e}"
+            return f"⚠️ Error generating summary: {e}"
     else:
         # If no paper is found, delegate to a general conversation handling
         try:

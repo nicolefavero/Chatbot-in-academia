@@ -22,6 +22,43 @@ client = OpenAI(api_key="sk-proj-bXyJX9ZvjtdT5qKK4qHGFDUzL_sFrfPqiNpl9GyBtA0eN_w
 nlp = spacy.load("en_core_web_sm")
 
 ###############################################################################
+# 0. Intent Classification & Small-Talk Handling
+###############################################################################
+
+def is_small_talk(query: str) -> bool:
+    """
+    Quick rule-based check for greetings / small-talk.
+    """
+    q = query.lower()
+    patterns = [
+        r"\bhel+o+\b!*",       # matches hello, hellooo, hello!!, etc.
+        r"\bhi+\b!*",          # matches hi, hiiii, hi!!
+        r"\bhey+\b!*",         # matches hey, heyyy, hey!!!
+        r"\bcan you help\b",
+        r"\bhelp me\b",
+        r"\bhow are you\b",
+        r"\bwhat'?s up\b",
+        r"\bthanks?\b",
+        r"\bthank you\b"
+    ]
+    return any(re.search(p, q) for p in patterns)
+
+def handle_small_talk(query: str) -> str:
+    """
+    Generate a friendly small-talk response using GPT-4o Mini.
+    """
+    resp = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "You are a helpful, engaging conversational Q&A assistant. Your scope is to help users answering questions about accademic papers. Don't answer other questions that are not related to your Q&A task."},
+            {"role": "user",   "content": query}
+        ],
+        max_tokens=128,
+        temperature=0.7
+    )
+    return resp.choices[0].message.content
+
+###############################################################################
 # 1. OpenAI Embedding Function
 ###############################################################################
 
@@ -155,33 +192,25 @@ def generate_response(query, collection, bm25, all_chunks, top_k=5, doc_filter=N
         where=doc_filter
     )
 
-        # ------------------------------------------------------------------------
+    # ------------------------------------------------------------------------
     # DEBUG PRINTS: Check how many docs we got back and print out a snippet
     # ------------------------------------------------------------------------
-    # 'results["metadatas"]' is a list of lists: first dimension = query count,
-    # second dimension = top_k results.
-    retrieved_docs = results["metadatas"][0]  # the top_k metadata for our single query
+    retrieved_docs = results["metadatas"][0]
     unique_doc_names = set(doc_metadata["doc_name"] for doc_metadata in retrieved_docs)
     used_references = []
     for doc_name in unique_doc_names:
         if doc_name in DOC_REGISTRY and "full_reference" in DOC_REGISTRY[doc_name]:
             used_references.append(DOC_REGISTRY[doc_name]["full_reference"])
     print("DEBUG: Number of retrieved docs:", len(retrieved_docs))
-    
-    # If this is 0, that means we got no documents back from the collection query.
     if len(retrieved_docs) == 0:
         print("DEBUG: No documents found for this query. The context is empty.")
-    
-    # Loop over each returned doc and show a bit of text
     for i, doc_metadata in enumerate(retrieved_docs):
         print(f"DEBUG: Doc #{i}")
         print("  doc_name:", doc_metadata.get("doc_name"))
-        text_snippet = doc_metadata.get("text", "")[:150]  # first 150 chars
+        text_snippet = doc_metadata.get("text", "")[:150]
         print("  text snippet:", text_snippet, "...")
-    # ------------------------------------------------------------------------
 
-
-    context_str = "\n".join([doc['text'] for doc in results["metadatas"][0]])
+    context_str = "\n".join([doc['text'] for doc in retrieved_docs])
     prompt = (
         f"""You are an expert academic research assistant specializing in supporting professors in business school research. 
         Your expertise lies in analyzing and synthesizing complex information from academic papers, particularly in areas like 
@@ -198,7 +227,6 @@ def generate_response(query, collection, bm25, all_chunks, top_k=5, doc_filter=N
         End your response with: "**If you have any more questions, I'm here to help**"  
         If no reasonable inference can be made, respond: 
             "I don’t have information in my database to answer this question."
-
 
         ### Key Principles for Excellence:
         ✅ Combine insights from multiple chunks when needed.
@@ -225,12 +253,10 @@ def generate_response(query, collection, bm25, all_chunks, top_k=5, doc_filter=N
     )
     response_text = response.choices[0].message.content
 
-    # If the user wants references at the end, build a references section
     if used_references:
         references_section = "\n\nCBS papers consulted:\n"
         for ref in used_references:
             references_section += f"- {ref}\n"
-        # Append to the original text
         response_text += references_section
 
     return response_text
@@ -240,14 +266,18 @@ def generate_response(query, collection, bm25, all_chunks, top_k=5, doc_filter=N
 ###############################################################################
 
 def gradio_interface(message, chat_history):
+    # First check: small talk or real research question?
+    if is_small_talk(message):
+        return handle_small_talk(message)
+
+    # Otherwise, proceed with RAG pipeline
     folder_path = "papers-testing"
     embedding_model = "text-embedding-ada-002"
     collection = get_or_create_embedding_collection(folder_path, embedding_model)
     all_chunks = process_all_pdfs(folder_path)
     bm25 = create_bm25_index(all_chunks)
 
-    response = generate_response(message, collection, bm25, all_chunks)
-    return response
+    return generate_response(message, collection, bm25, all_chunks)
 
 chatbot = gr.ChatInterface(
     fn=gradio_interface,

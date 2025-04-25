@@ -58,16 +58,16 @@ def preprocess_text(text: str) -> str:
     Clean whitespace and normalize text.
     """
     text = text.strip()
-    # Remove inline citations like [1], (Doe et al., 2020)
+    # Remove inline citations
     text = re.sub(r"\[\d+\]|\(\w+ et al\., \d+\)", "", text)
 
-    # Remove figure references like (see Fig. 3)
+    # Remove figure references like
     text = re.sub(r"\(see Fig\.\s?\d+\)", "", text)
 
-    # Remove special characters (common in PDF noise)
+    # Remove special characters
     text = re.sub(r"[*_#]", "", text)
 
-    # Fix awkward line breaks in PDFs (like "word-\nnextword")
+    # Fix awkward line breaks in PDFs
     text = re.sub(r"-\n", "", text)
 
     # Normalize spacing
