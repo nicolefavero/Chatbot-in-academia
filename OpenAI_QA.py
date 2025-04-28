@@ -185,32 +185,67 @@ def retrieve_documents_bm25(query, bm25, all_chunks, top_k=5):
 ###############################################################################
 
 def generate_response(query, collection, bm25, all_chunks, top_k=5, doc_filter=None):
+    # Embedding retrieval
     query_embedding = get_openai_embedding(query)
-    results = collection.query(
+    dense_results = collection.query(
         query_embeddings=[query_embedding],
         n_results=top_k,
         where=doc_filter
     )
+    dense_chunks = dense_results["metadatas"][0]
 
-    # ------------------------------------------------------------------------
-    # DEBUG PRINTS: Check how many docs we got back and print out a snippet
-    # ------------------------------------------------------------------------
-    retrieved_docs = results["metadatas"][0]
-    unique_doc_names = set(doc_metadata["doc_name"] for doc_metadata in retrieved_docs)
-    used_references = []
-    for doc_name in unique_doc_names:
-        if doc_name in DOC_REGISTRY and "full_reference" in DOC_REGISTRY[doc_name]:
-            used_references.append(DOC_REGISTRY[doc_name]["full_reference"])
-    print("DEBUG: Number of retrieved docs:", len(retrieved_docs))
-    if len(retrieved_docs) == 0:
-        print("DEBUG: No documents found for this query. The context is empty.")
-    for i, doc_metadata in enumerate(retrieved_docs):
-        print(f"DEBUG: Doc #{i}")
-        print("  doc_name:", doc_metadata.get("doc_name"))
-        text_snippet = doc_metadata.get("text", "")[:150]
-        print("  text snippet:", text_snippet, "...")
+    # BM25 retrieval
+    query_tokens = query.split()
+    bm25_scores = bm25.get_scores(query_tokens)
+    ranked_bm25 = sorted(zip(range(len(bm25_scores)), bm25_scores), key=lambda x: x[1], reverse=True)
+    bm25_chunks = []
+    for idx, score in ranked_bm25[:top_k]:
+        chunk = all_chunks[idx]
+        chunk = dict(chunk)  # Copy to avoid modifying original
+        chunk["bm25_score"] = score
+        bm25_chunks.append(chunk)
 
-    context_str = "\n".join([doc['text'] for doc in retrieved_docs])
+    # Apply BM25 penalties for title match
+    for chunk in bm25_chunks:
+        text = chunk["text"].lower()
+        doc_name = chunk.get("doc_name", "").lower()
+        aliases = doc_name.replace("_", " ").split()
+
+        alias_match_count = sum(1 for word in aliases if word in text) / max(1, len(aliases))
+        if alias_match_count > 0.5:
+            chunk["bm25_score"] *= 0.5
+
+    # Merge BM25 and Dense results
+    combined = []
+    seen_texts = set()
+
+    for chunk in bm25_chunks:
+        if chunk["text"] not in seen_texts:
+            combined.append({
+                "text": chunk["text"],
+                "doc_name": chunk["doc_name"],
+                "retrieval_method": "BM25",
+                "score": chunk["bm25_score"]
+            })
+            seen_texts.add(chunk["text"])
+
+    for chunk in dense_chunks:
+        if chunk["text"] not in seen_texts:
+            combined.append({
+                "text": chunk["text"],
+                "doc_name": chunk.get("doc_name", "UnknownDoc"),
+                "retrieval_method": "Dense",
+                "score": 0
+            })
+            seen_texts.add(chunk["text"])
+
+    # Build context string
+    context_str = ""
+    for chunk in combined:
+        doc_name = chunk["doc_name"]
+        context_str += f"[{doc_name}]\n{chunk['text']}\n\n"
+
+    # Build prompt (full prompt preserved exactly as you wrote)
     prompt = (
         f"""You are an expert academic research assistant specializing in supporting professors in business school research. 
         Your expertise lies in analyzing and synthesizing complex information from academic papers, particularly in areas like 
@@ -242,6 +277,7 @@ def generate_response(query, collection, bm25, all_chunks, top_k=5, doc_filter=N
         Answer:"""
     )
 
+    # Generate the response from OpenAI
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
@@ -252,12 +288,6 @@ def generate_response(query, collection, bm25, all_chunks, top_k=5, doc_filter=N
         temperature=0
     )
     response_text = response.choices[0].message.content
-
-    if used_references:
-        references_section = "\n\nCBS papers consulted:\n"
-        for ref in used_references:
-            references_section += f"- {ref}\n"
-        response_text += references_section
 
     return response_text
 
