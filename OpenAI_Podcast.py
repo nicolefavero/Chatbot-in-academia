@@ -3,6 +3,8 @@ from DOC_REGISTRY import DOC_REGISTRY
 from openai import OpenAI
 import re
 from fuzzywuzzy import fuzz
+from pathlib import Path
+from pydub import AudioSegment
 
 client = OpenAI(api_key="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")
 
@@ -13,6 +15,11 @@ def preprocess_text(text: str) -> str:
     text = re.sub(r"[*_#]", "", text)
     text = re.sub(r"-\n", "", text)
     text = " ".join(text.split())
+    return text
+
+def clean_for_tts(text):
+    text = re.sub(r"\*\*(.*?)\*\*", r"\1", text)
+    text = re.sub(r"\[(.*?)\]", r"<break time='500ms'/> (\1)", text)
     return text
 
 def read_txt_full_text(file_path: str) -> str:
@@ -31,6 +38,18 @@ def detect_target_doc(query: str, registry: dict, threshold=80):
                 best_score = score
                 best_doc = doc_name
     return best_doc if best_score >= threshold else None
+
+def parse_script(script_text):
+    """
+    Parses the podcast script into [(speaker, line), ...], skipping narration and metadata.
+    Handles **Julie**:, [John]:, or plain Julie:
+    """
+    lines = []
+    for match in re.finditer(r"(?:\*\*|\[)?(Julie|John)(?:\*\*|\])?:\s(.+?)(?=\n(?:\*\*|\[)?(?:Julie|John)(?:\*\*|\])?:|\Z)", script_text, re.DOTALL):
+        speaker = match.group(1).strip()
+        line = match.group(2).strip().replace("\n", " ")
+        lines.append((speaker, line))
+    return lines
 
 def generate_podcast_response(message, chat_history):
     matched_doc = detect_target_doc(message, DOC_REGISTRY)
@@ -68,10 +87,15 @@ def generate_podcast_response(message, chat_history):
 
             It should be a real podcast with every fine nuance documented in as much detail 
             as possible. Welcome the listeners with a super fun overview and keep it really 
-            catchy and almost borderline clickbait."""
+            catchy and almost borderline clickbait.
+            DO NOT include any ** or [] in the output. 
+            DO NOT include an intro or outro music in the output.
+            DO NOT include any comment, only the podcast script with Julie and John's lines.
+            To distinguish between speakers, use the format: "Julie:" and "John:"."""
                 + full_text
             )
 
+            # 1. Generate the podcast script
             response = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
@@ -81,34 +105,100 @@ def generate_podcast_response(message, chat_history):
                 temperature=0.8,
                 max_tokens=1500
             )
+            script_text = response.choices[0].message.content
 
-            return response.choices[0].message.content
+            # 2. Parse the script
+            script_lines = parse_script(script_text)
+
+            # 3. Generate TTS per speaker
+            voices = {
+                "Julie": "coral",
+                "John": "onyx"
+            }
+
+            instructions = {
+                "Julie": "Speak in a friendly, captivating podcast host tone.",
+                "John": "Speak in a curious, engaged and warm tone."
+            }
+
+            output_dir = Path("generated_audio")
+            segment_dir = output_dir / "segments"
+            segment_dir.mkdir(parents=True, exist_ok=True)
+
+            audio_segments = []
+            errors = []
+
+            for idx, (speaker, text) in enumerate(script_lines):
+                audio_path = segment_dir / f"{idx:02d}_{speaker}.mp3"
+                preview = text[:60].strip() + ("..." if len(text) > 60 else "")
+                print(f"🔊 Generating segment {idx:02d}: {speaker} - \"{preview}\"")
+
+                try:
+                    response = client.audio.speech.create(
+                        model="tts-1",
+                        voice=voices[speaker],
+                        input=text,
+                        speed=1.0
+                    )
+                    with open(audio_path, "wb") as f:
+                        f.write(response.content)
+                    audio_segments.append(audio_path)
+
+                except Exception as e:
+                    print(f"❌ Error on segment {idx:02d} ({speaker}): {e}")
+                    errors.append((idx, speaker, str(e)))
+
+            # 4. Merge audio segments
+            final_audio = AudioSegment.empty()
+            for seg in audio_segments:
+                final_audio += AudioSegment.from_mp3(seg)
+
+            final_path = output_dir / f"podcast_{matched_doc}.mp3"
+            final_audio.export(final_path, format="mp3")
+
+            if errors:
+                print(f"\n⚠️ Podcast generated with {len(errors)} segment error(s).")
+                for idx, speaker, err in errors:
+                    print(f" - Segment {idx:02d} ({speaker}) failed: {err}")
+            else:
+                print("✅ All segments generated successfully.")
+
+            return script_text, str(final_path)
 
         except Exception as e:
-            return f"⚠️ Error generating podcast: {e}"
+            return f"⚠️ Error generating podcast: {e}", None
+
     else:
-        # If no paper is found, delegate to a general conversation handling
         try:
             response = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
-                    {"role": "system", "content": "You are a helpful, engaging conversational podcast assistant. Your scope is to help users generate podcast scripts based on accademic papers.Don't answer other questions that are not related to you podcasting task."},
+                    {"role": "system", "content": "You are a helpful, engaging conversational podcast assistant. Your scope is to help users generate podcast scripts based on academic papers. Don't answer other questions that are not related to your podcasting task."},
                     {"role": "user", "content": message}
                 ],
                 temperature=0.7,
                 max_tokens=500
             )
-            return response.choices[0].message.content
-
+            raw_output = response.choices[0].message.content
+            cleaned_output = clean_for_tts(raw_output)
+            return cleaned_output, None
         except Exception as e:
-            return f"⚠️ Error handling your message: {e}"
+            return f"⚠️ Error handling your message: {e}", None
 
 # Gradio UI
-chatbot = gr.ChatInterface(
-    fn=generate_podcast_response,
-    title="🎙️ CBS-bot (Podcast Bot)",
-    theme="messages",
-    chatbot=gr.Chatbot(show_copy_button=True)
-)
+def gradio_wrapper(message, history):
+    script, audio_path = generate_podcast_response(message, history)
+    if audio_path:
+        return [script, audio_path]
+    else:
+        return [script, None]
 
-chatbot.launch()
+gr.Interface(
+    fn=gradio_wrapper,
+    inputs=[gr.Textbox(label="Ask about a paper")],
+    outputs=[
+        gr.Textbox(label="Podcast Script"),
+        gr.Audio(label="Download Podcast Audio", type="filepath")
+    ],
+    title="🎙️ CBS-bot (Podcast Bot)"
+).launch()
