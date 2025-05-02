@@ -9,13 +9,12 @@ from DOC_REGISTRY import DOC_REGISTRY
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.enum.text import PP_PARAGRAPH_ALIGNMENT
-import matplotlib.pyplot as plt
-from textwrap import wrap
+import fitz  # PyMuPDF for rendering pages
 
 client = OpenAI(api_key="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")
 
 def preprocess_text(text: str) -> str:
-    text = text.strip()
+    text = text.strip() if text else ""
     text = re.sub(r"\[\d+\]|\(\w+ et al\., \d+\)", "", text)
     text = re.sub(r"\(see Fig\.\s?\d+\)", "", text)
     text = re.sub(r"[*_#]", "", text)
@@ -26,6 +25,23 @@ def read_txt_full_text(file_path: str) -> str:
     with open(file_path, "r", encoding="utf-8") as f:
         raw_text = f.read()
     return preprocess_text(raw_text)
+
+def extract_figure_pages_as_images(pdf_path, max_images=5):
+    image_paths = []
+    try:
+        doc = fitz.open(pdf_path)
+        for page_num in range(len(doc)):
+            text = doc[page_num].get_text().lower()
+            if "figure" in text or "fig." in text:
+                pix = doc[page_num].get_pixmap(dpi=200)
+                img_path = f"rendered_page_{page_num}.png"
+                pix.save(img_path)
+                image_paths.append(img_path)
+                if len(image_paths) >= max_images:
+                    break
+    except Exception as e:
+        print(f"⚠️ Rendering failed: {e}")
+    return image_paths
 
 def detect_target_doc(query: str, registry: dict, threshold=80):
     query_lower = query.lower()
@@ -61,14 +77,6 @@ def parse_python_list(raw_output: str) -> list:
         pass
     return []
 
-def parse_visual_description(raw_visual):
-    chart_types = ["bar chart", "pie chart", "line chart", "histogram", "scatter plot", "flowchart", "venn diagram"]
-    raw = raw_visual.lower()
-    for ctype in chart_types:
-        if ctype in raw:
-            return ctype.title(), raw.strip().capitalize()
-    return None, None
-
 def generate_slide_deck(full_text: str):
     titles_prompt = f"""
 You are an academic presentation assistant. Generate EXACTLY 5 concise slide titles as a Python list based on the following academic content:
@@ -95,43 +103,14 @@ Content:
         bullets = parse_python_list(raw_bullets)
         if len(bullets) < 3:
             bullets = ["Point 1", "Point 2", "Point 3"]
-
-        visual_prompt = f"""
-Given the title '{title}' and these bullet points:
-{bullets}
-Suggest ONE appropriate chart to visualize the content. Choose from: 
-["Bar chart", "Pie chart", "Line chart", "Histogram", "Scatter plot", "Flowchart", "Venn diagram", "None"]
-
-Return ONLY the chart type and a short description, like: "Bar chart comparing user types".
-"""
-        raw_visual = gpt_response("Suggest a single chart idea for a slide.", visual_prompt, 100).strip()
-        chart_type, visual_idea = parse_visual_description(raw_visual)
-
-        slides.append({
-            "title": title,
-            "bullet_points": bullets,
-            "visual": visual_idea if visual_idea and chart_type else None,
-            "chart_type": chart_type
-        })
+        slides.append({"title": title, "bullet_points": bullets})
     return slides
 
-def generate_visual_slide(description: str, img_path="chart.png"):
-    labels = ["A", "B", "C", "D"]
-    values = [0.4, 0.7, 0.5, 0.6]
-    plt.figure(figsize=(10, 5))
-    plt.bar(labels, values, color="mediumpurple")
-    plt.xlabel("CEM Dimensions")
-    plt.ylabel("Impact Score")
-    plt.tight_layout()
-    plt.savefig(img_path, dpi=300)
-    plt.close()
-    return img_path
-
-def build_pptx(slides, output_path="presentation.pptx"):
+def build_pptx(slides, image_paths=None, output_path="presentation.pptx"):
     prs = Presentation()
     title_slide_layout = prs.slide_layouts[0]
     bullet_slide_layout = prs.slide_layouts[1]
-    blank_layout = prs.slide_layouts[6]
+    blank_slide_layout = prs.slide_layouts[6]
 
     slide = prs.slides.add_slide(title_slide_layout)
     slide.shapes.title.text = "Academic Slide Deck"
@@ -139,9 +118,7 @@ def build_pptx(slides, output_path="presentation.pptx"):
 
     for i, item in enumerate(slides):
         slide = prs.slides.add_slide(bullet_slide_layout)
-        title_shape = slide.shapes.title
-        title_shape.text = item["title"]
-
+        slide.shapes.title.text = item["title"]
         content = slide.shapes.placeholders[1]
         tf = content.text_frame
         tf.clear()
@@ -153,34 +130,10 @@ def build_pptx(slides, output_path="presentation.pptx"):
             p.font.size = Pt(16)
             p.alignment = PP_PARAGRAPH_ALIGNMENT.LEFT
 
-        if item.get("visual"):
-            image_path = generate_visual_slide(item["visual"], f"chart_{i}.png")
-            visual_slide = prs.slides.add_slide(blank_layout)
-
-            title_box = visual_slide.shapes.add_textbox(Inches(0.5), Inches(0.3), Inches(9), Inches(1.0))
-            title_frame = title_box.text_frame
-            title_frame.word_wrap = True
-            title_frame.clear()
-
-            wrapped_title = wrap(item["visual"].strip().capitalize(), width=55)
-            if wrapped_title:
-                title_para = title_frame.paragraphs[0]
-                title_para.text = wrapped_title[0]
-                title_para.font.size = Pt(20)
-                title_para.alignment = PP_PARAGRAPH_ALIGNMENT.CENTER
-                for line in wrapped_title[1:]:
-                    p = title_frame.add_paragraph()
-                    p.text = line
-                    p.font.size = Pt(14)
-                    p.alignment = PP_PARAGRAPH_ALIGNMENT.CENTER
-
-            visual_slide.shapes.add_picture(image_path, Inches(1.0), Inches(1.5), width=Inches(8.5))
-
-            explanation_box = visual_slide.shapes.add_textbox(Inches(0.5), Inches(6.5), Inches(9), Inches(1))
-            explanation_tf = explanation_box.text_frame
-            explanation_tf.text = f"This {item['chart_type'].lower()} illustrates key points from the slide titled '{item['title']}'"
-            explanation_tf.paragraphs[0].font.size = Pt(14)
-            explanation_tf.paragraphs[0].alignment = PP_PARAGRAPH_ALIGNMENT.CENTER
+    if image_paths:
+        for img_path in image_paths:
+            img_slide = prs.slides.add_slide(blank_slide_layout)
+            img_slide.shapes.add_picture(img_path, Inches(1), Inches(1.5), width=Inches(8))
 
     prs.save(output_path)
     return output_path
@@ -199,12 +152,13 @@ def handle_user_query(message, chat_history):
             return f"⚠️ Error while handling unknown input: {e}"
 
     try:
-        file_path = f"./papers-cleaned/{matched_doc}.txt"
-        full_text = read_txt_full_text(file_path)
+        txt_path = f"./papers-cleaned/{matched_doc}.txt"
+        pdf_path = f"./papers-cleaned/{matched_doc}.pdf"
+        full_text = read_txt_full_text(txt_path)
         slides = generate_slide_deck(full_text)
-        pptx_path = build_pptx(slides)
+        image_paths = extract_figure_pages_as_images(pdf_path)
+        pptx_path = build_pptx(slides, image_paths=image_paths)
         return gr.File(pptx_path, label="📥 Download your slides")
-
     except Exception as e:
         return f"⚠️ Error: {e}"
 
