@@ -13,7 +13,7 @@ from rank_bm25 import BM25Okapi
 from rapidfuzz import fuzz
 import gradio as gr
 from DOC_REGISTRY import DOC_REGISTRY
-from openai import OpenAI  # Using OpenAI client
+from openai import OpenAI
 
 # Initialize OpenAI client
 client = OpenAI(api_key="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")

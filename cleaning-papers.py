@@ -1,6 +1,6 @@
 import os
 import re
-import fitz  # PyMuPDF
+import fitz
 
 def extract_text_between_sections(pdf_path):
     text = ""
