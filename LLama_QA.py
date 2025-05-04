@@ -22,7 +22,7 @@ from rank_bm25 import BM25Okapi
 from rapidfuzz import fuzz
 from DOC_REGISTRY import DOC_REGISTRY
 
-# Load spaCy NLP model for sentence splitting + NER
+# Load spaCy NLP model for sentence splitting
 nlp = spacy.load("en_core_web_sm")
 
 ###############################################################################
@@ -50,7 +50,7 @@ def load_llama_model():
 
 
 ###############################################################################
-# 2. Preprocessing & Chunking Text from PDFs (NEW CODE)
+# 2. Preprocessing & Chunking Text from PDFs
 ###############################################################################
 
 def preprocess_text(text: str) -> str:
@@ -121,7 +121,7 @@ def process_pdf_for_rag(pdf_path: str, metadata_pages=2):
         metadata_text.append(raw_text)
     full_metadata_text = "\n".join(metadata_text)
 
-    # Split metadata into sentences (often short anyway)
+    # Split metadata into sentences
     meta_sentences = split_into_sentences(full_metadata_text)
 
     # Collect main content from the rest
@@ -485,7 +485,7 @@ def generate_response(query, tokenizer, model, embedding_model, collection, devi
     If BM25 is provided, do hybrid retrieval; else, embedding-only.
     """
 
-        # (A) Detect if user refers to a specific PDF from the registry
+        # Detect if user refers to a specific PDF from the registry
     matched_doc_name = detect_target_doc(query, DOC_REGISTRY, threshold=90)
     if matched_doc_name:
         doc_filter = {"doc_name": matched_doc_name}
@@ -623,7 +623,7 @@ Answer:
 # 7. Main
 ###############################################################################
 if __name__ == "__main__":
-    folder_path = "papers-testing"  # Path to your PDFs
+    folder_path = "papers-testing"
 
     # 1) Load model & tokenizer
     tokenizer, llama_model, device = load_llama_model()

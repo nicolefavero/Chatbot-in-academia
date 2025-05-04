@@ -2,13 +2,13 @@ import re
 from pathlib import Path
 from openai import OpenAI
 
-# === Setup ===
+# Setup
 client = OpenAI(api_key="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")
-input_file = Path("generated_podcast_script.txt")  # Replace with your filename
+input_file = Path("generated_podcast_script.txt")
 output_dir = Path("audio_segments")
 output_dir.mkdir(exist_ok=True)
 
-# === Voice Mapping ===
+# Voice Mapping 
 voices = {
     "Julie": "coral",  # Female voice
     "John": "onyx",    # Male voice
@@ -19,7 +19,7 @@ instructions = {
     "John": "Speak in a curious and engaged tone.",
 }
 
-# === Step 1: Read and Parse Transcript ===
+# Step 1: Read and Parse Transcript
 with open(input_file, "r", encoding="utf-8") as f:
     text = f.read()
 
@@ -39,7 +39,7 @@ for match in re.finditer(r"(\w+):\s(.+?)(?=\n\w+:|\Z)", text, re.DOTALL):
     if speaker in voices:
         lines.append((speaker, line))
 
-# === Step 2: Generate Audio ===
+# Step 2: Generate Audio 
 for idx, (speaker, line) in enumerate(lines):
     speech_file_path = output_dir / f"{idx:02d}_{speaker}.mp3"
     print(f"Generating audio for: {speaker}: {line[:50]}...")

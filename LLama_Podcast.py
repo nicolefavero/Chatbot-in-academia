@@ -115,7 +115,6 @@ def generate_final_podcast(summaries, model, tokenizer, device):
 
     inputs = tokenizer(prompt, return_tensors="pt").to(device)
 
-    max_output_tokens = max(min(4096 - len(inputs['input_ids'][0]), 2000), 1000)
 
     output = model.generate(
         **inputs,
@@ -135,7 +134,7 @@ def generate_final_podcast(summaries, model, tokenizer, device):
     return summary_only
 
 ###############################################################################
-# 3. Full Pipeline to Summarize Text File (Chunking not yet included)
+# 3. Full Pipeline to Summarize Text File 
 ###############################################################################
 
 def summarize_text_doc(user_query: str, txt_folder_path: str, tokenizer, llama_model, device):
@@ -149,7 +148,7 @@ def summarize_text_doc(user_query: str, txt_folder_path: str, tokenizer, llama_m
 
     doc_text = read_txt_full_text(txt_path)
 
-    # Placeholder chunking: treat whole text as a single chunk
+    # Treat whole text as a single chunk
     summaries = [doc_text]  # You can add real chunking logic here later
 
     final_podcast = generate_final_podcast(summaries, llama_model, tokenizer, device)
