@@ -21,6 +21,10 @@ from DOC_REGISTRY import DOC_REGISTRY
 def extract_sections_from_summary(summary_text):
     """
     Extract structured sections from academic summary text using Markdown-style, bolded, or all-caps headers.
+    Args: 
+        summary_text (str): The summary text to process.
+    Returns:    
+        dict: A dictionary with section titles as keys and their content as values.
     """
     # Remove trailing helper signatures
     summary_text = re.split(r'(?:Best regards|Your Academic Writer|Note:)', summary_text)[0]
@@ -47,7 +51,16 @@ def extract_sections_from_summary(summary_text):
     return section_dict
 
 def generate_bullet_points_for_section(section_title, section_content, model, tokenizer, device):
-    """Generate bullet points for a section."""
+    """Generate bullet points for a section.
+    Args:
+        section_title (str): The title of the section.
+        section_content (str): The content of the section.
+        model: The language model to use.
+        tokenizer: The tokenizer for the model.
+        device: The device to run the model on.
+    Returns:
+        list: A list of bullet points.
+    """
     prompt = f"""
 You are creating bullet points for a PowerPoint slide titled \"{section_title}\" for a presentation on international business strategy.
 
@@ -90,6 +103,16 @@ ONLY output the 3 bullet points, one per line, no quotes or numbering.
     return bullet_points[:3]
 
 def simple_llm_call(prompt, model, tokenizer, device, max_tokens=1000):
+    ''' Function to call the LLaMA model with a prompt.
+    Args:
+        prompt (str): The prompt to send to the model.
+        model: The language model to use.
+        tokenizer: The tokenizer for the model.
+        device: The device to run the model on.
+        max_tokens (int): Maximum number of tokens to generate.
+    Returns:
+        str: The model's response.
+    '''
     inputs = tokenizer(prompt, return_tensors="pt").to(device)
     output = model.generate(
         **inputs,
@@ -101,6 +124,15 @@ def simple_llm_call(prompt, model, tokenizer, device, max_tokens=1000):
     return tokenizer.decode(output[0], skip_special_tokens=True).strip()
 
 def generate_slides_from_summary(summary_text, model, tokenizer, device):
+    ''' Function to generate slides from a summary.
+    Args:
+        summary_text (str): The summary text.
+        model: The language model to use.
+        tokenizer: The tokenizer for the model.
+        device: The device to run the model on.
+    Returns:
+        list: A list of dictionaries containing slide titles and bullet points.
+    '''
     print("\nExtracting sections from summary...")
     sections = extract_sections_from_summary(summary_text)
     print("\n✅ Extracted sections:")
@@ -120,6 +152,14 @@ def generate_slides_from_summary(summary_text, model, tokenizer, device):
 ################################################################################
 
 def create_powerpoint(slides_data, paper_title, output_filename='presentation.pptx'):
+    ''' Function to create a PowerPoint presentation.
+    Args:
+        slides_data (list): The slide data.
+        paper_title (str): The title of the paper.
+        output_filename (str): The name of the output file.
+    Returns:
+        bool: True if successful, False otherwise.
+    '''
     try:
         from pptx import Presentation
         from pptx.util import Pt
