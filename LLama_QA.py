@@ -36,7 +36,7 @@ def load_llama_model():
     dtype = torch.float16 if device == "cuda" else torch.float32
 
     print(f"Loading model on {device} (4 GPUs)...")
-    HF_TOKEN = "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"
+    HF_TOKEN = "Your-Hugging-Face-Token"
 
     tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-3.3-70B-Instruct", token=HF_TOKEN)
     model = AutoModelForCausalLM.from_pretrained(

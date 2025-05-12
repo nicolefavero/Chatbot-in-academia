@@ -16,7 +16,7 @@ from DOC_REGISTRY import DOC_REGISTRY
 from openai import OpenAI
 
 # Initialize OpenAI client
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="Your-OpenAI-API-Key")
 
 # Load spaCy NLP model for sentence splitting
 nlp = spacy.load("en_core_web_sm")
