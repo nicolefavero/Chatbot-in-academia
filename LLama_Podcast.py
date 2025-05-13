@@ -18,7 +18,7 @@ def load_llama_instructor():
     device = "cuda" if torch.cuda.is_available() else "cpu"
     dtype = torch.float16 if device == "cuda" else torch.float32
 
-    HF_TOKEN = "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"
+    HF_TOKEN = "Your-Hugging-Face-Token"
     model_name = "meta-llama/Llama-3.3-70B-Instruct"
 
     print(f"Loading model on {device}...")

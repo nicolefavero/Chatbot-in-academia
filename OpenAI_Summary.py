@@ -4,7 +4,7 @@ from openai import OpenAI
 import re
 from fuzzywuzzy import fuzz
 
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="Your-OpenAI-API-Key")
 
 def preprocess_text(text: str) -> str:
     text = text.strip()
