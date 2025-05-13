@@ -14,3 +14,12 @@ coqui-tts
 pydub
 langchain
 python-pptx
+networkx
+pandas
+python-igraph
+leidenalg
+tqdm
+scikit-learn
+
+# Run also this in the terminal for spacy
+# python -m spacy download en_core_web_sm
