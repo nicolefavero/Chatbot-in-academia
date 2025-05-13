@@ -75,8 +75,8 @@ Academic papers are sourced from the **CBS Research Archive**.
 ```bash
 python scraping.py 
 ```
-# Cleaned papers: papers-cleaned/
-# Test set: papers-testing/
+- **Cleaned papers**: papers-cleaned/
+- **Test set**: papers-testing/
 
 ---
 
@@ -129,7 +129,8 @@ If you use this repository or its results in your research, please cite:
 Francesca Salute 
 Nicole Favero  
 Department of Digitalization, Copenhagen Business School
-or you can also reference this GitHub Repository:  
+```
+You can also reference this GitHub Repository:  
 Chatbot-in-Academia
 
 
