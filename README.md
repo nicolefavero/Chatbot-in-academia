@@ -60,11 +60,48 @@ CHATBOT-IN-ACADEMIA/
 ```
 ---
 
-## ⚙️ Install required packages
+## 🚀 How to Run the Code
 
-```bash
-pip install -r requirements.txt
-```
+1. **Install all dependencies**
+
+   First, install all required Python packages:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Set your API keys**
+
+   This project requires access to both **Hugging Face** and **OpenAI** models. You need to provide your API keys to use these services.
+
+   Open the relevant Python files and replace the placeholder strings with your actual API keys:
+
+   ```python
+   # Example for Hugging Face
+   HF_TOKEN = "Your-Hugging-Face-Token"
+
+   # Example for OpenAI
+   client = OpenAI(api_key="Your-OpenAI-API-Key")
+   ```
+
+   Make sure to update all scripts you intend to use (e.g., `LLama_Summary.py`, `OpenAI_QA.py`, etc.).
+
+
+3. **Navigate to the project directory and run the desired script**
+
+   Before running any script, make sure you are inside the project folder:
+
+   ```bash
+   cd /work/Chatbot-in-academia
+   ```
+
+   Then run your desired script, for example:
+
+   ```bash
+   python OpenAI_Summary.py
+   python LLama_Podcast.py
+   python OpenAI_Slidedeck.py
+   ```
 
 ## 📁 Dataset
 
