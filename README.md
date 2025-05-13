@@ -57,11 +57,14 @@ CHATBOT-IN-ACADEMIA/
 ├── README.md
 ├── requirements.txt
 └── scraping.py
+```
+---
 
 ## ⚙️ Install required packages
 
 ```bash
 pip install -r requirements.txt
+```
 
 ## 📁 Dataset
 
@@ -70,7 +73,8 @@ Academic papers are sourced from the **CBS Research Archive**.
 ### To scrape papers:
 
 ```bash
-python scraping.py
+python scraping.py 
+```
 # Cleaned papers: papers-cleaned/
 # Test set: papers-testing/
 
